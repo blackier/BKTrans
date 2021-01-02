@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Platforms>x64;x86</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="resource\setting.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Include="src/App.xaml"></ApplicationDefinition>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="resource\setting.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BKAssembly\BKAssembly.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="src\BKTextWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
+
+</Project>
