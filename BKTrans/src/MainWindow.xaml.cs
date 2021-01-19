@@ -16,17 +16,6 @@ namespace BKTrans
     {
         #region 成员变量定义
 
-        private string settings_path_;
-
-        private string api_key_;
-        private string secret_key_;
-        private string language_type_;
-
-        private string app_id_;
-        private string app_secret_key_;
-        private string from_type_;
-        private string to_type_;
-
         private BKScreenCapture screen_capture_;
 
         private NotifyIcon notify_icon_;
@@ -35,7 +24,9 @@ namespace BKTrans
         private Rectangle capture_rect_;
         private Rectangle text_wnd_rect_;
 
-        private BKTextWindow target_text_window_;
+        private FloatTextWindow target_text_window_;
+
+        private Settings.Options options_;
 
         // 热键详见：Win32API: RegisterHotKey function
         private enum HotKeyId
@@ -57,11 +48,14 @@ namespace BKTrans
 
         public MainWindow()
         {
-            settings_path_ = @".\settings.json";
-            target_text_window_ = new BKTextWindow();
-            cap_type = CaptureType.button;
-
             InitializeComponent();
+
+            cap_type = CaptureType.button;
+            options_ = Settings.LoadSetting();
+            RestoreLanguageTypeMap();
+
+            target_text_window_ = new FloatTextWindow();
+
             // 设置托盘图标
             notify_close_ = false;
             var notify_icon_cms = new ContextMenuStrip();
@@ -82,9 +76,6 @@ namespace BKTrans
 
             // 关联关闭函数，设置为最小化到托盘
             this.Closing += new CancelEventHandler(Window_Closing);
-
-            // 设置
-            GetSettings();
         }
 
         #endregion 公有成员函数定义
@@ -115,76 +106,6 @@ namespace BKTrans
         #endregion 保护成员函数定义
 
         #region 私有成员函数定义
-
-        private void GetSettings()
-        {
-            do
-            {
-                if (!File.Exists(settings_path_))
-                {
-                    using (var stream = File.Create(settings_path_))
-                    {
-                        var json_options = new JsonWriterOptions
-                        {
-                            Indented = true
-                        };
-                        using (var json_writer = new Utf8JsonWriter(stream, json_options))
-                        {
-                            json_writer.WriteStartObject();
-                            json_writer.WriteStartObject("OCR");
-                            json_writer.WriteString("api_key", "");
-                            json_writer.WriteString("secret_key", "");
-                            json_writer.WriteString("language_type", "");
-                            json_writer.WriteEndObject();
-                            json_writer.WriteStartObject("Trans");
-                            json_writer.WriteString("app_id", "");
-                            json_writer.WriteString("app_secret_key", "");
-                            json_writer.WriteString("from_type", "");
-                            json_writer.WriteString("to_type", "");
-                            json_writer.WriteEndObject();
-                            json_writer.WriteEndObject();
-                        }
-                    }
-                    SetSourceText("settings.json不存在，已自动生成，前往程序目录下配置，下次启动生效。");
-                    break;
-                }
-                using (var steam = File.OpenRead(settings_path_))
-                {
-                    using (var jdoc_settings = JsonDocument.Parse(steam))
-                    {
-                        var root_element = jdoc_settings.RootElement;
-                        if (!root_element.TryGetProperty("OCR", out var ocr_settings) || !root_element.TryGetProperty("Trans", out var trans_settings))
-                        {
-                            SetSourceText("settings.json文件出错，请将文件删除后重启应程序。");
-                        }
-                        else
-                        {
-                            try
-                            {
-                                api_key_ = ocr_settings.GetProperty("api_key").GetString();
-                                secret_key_ = ocr_settings.GetProperty("secret_key").GetString();
-                                language_type_ = ocr_settings.GetProperty("language_type").GetString();
-
-                                app_id_ = trans_settings.GetProperty("app_id").GetString();
-                                app_secret_key_ = trans_settings.GetProperty("app_secret_key").GetString();
-                                from_type_ = trans_settings.GetProperty("from_type").GetString();
-                                to_type_ = trans_settings.GetProperty("to_type").GetString();
-                            }
-                            catch (KeyNotFoundException e)
-                            {
-                                SetSourceText(String.Format("{0}", e));
-                            }
-                        }
-                    }
-                }
-            } while (false);
-
-        }
-
-        private void SetSettings()
-        {
-
-        }
 
         private void SetSourceText(string src_text)
         {
@@ -242,8 +163,31 @@ namespace BKTrans
             return new Rectangle { X = (int)(capture_rect_.X * p), Y = (int)(capture_rect_.Y * p), Width = (int)(capture_rect_.Width * p), Height = (int)(capture_rect_.Height * p) };
         }
 
+        private void RestoreLanguageTypeMap()
+        {
+            if (options_.language_type != null && options_.language_type.Length != 0)
+            {
+                comboBox_src_text.SelectedIndex = BKBaiduOCR.LanguageType.FindIndex(type => type == options_.language_type);
+            }
+            if (options_.to != null && options_.to.Length != 0)
+            {
+                comboBox_target_text.SelectedIndex = BKBaiduFanyi.LanguageType.FindIndex(type => type == options_.to);
+            }
+        }
+
+        private void DoLanguageTypeMap()
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                options_.language_type = BKBaiduOCR.LanguageType[comboBox_src_text.SelectedIndex];
+                options_.from = BKBaiduFanyi.LanguageType[comboBox_src_text.SelectedIndex];
+                options_.to = BKBaiduFanyi.LanguageType[comboBox_target_text.SelectedIndex];
+            });
+        }
+
         private void DoCaptureOCR(bool only_trans = false)
         {
+            DoLanguageTypeMap();
             if (screen_capture_ == null)
             {
                 screen_capture_ = new BKScreenCapture((cb_data) =>
@@ -269,7 +213,7 @@ namespace BKTrans
                         }
 
                         SetSourceText("截取完成，等待OCR翻译...");
-                        var ocr_request = new BKBaiduOCR(api_key_, secret_key_);
+                        var ocr_request = new BKBaiduOCR(options_.client_id, options_.client_secret);
                         ocr_request.DoOCR((string ocr_result) =>
                         {
                             string ocr_result_text = "";
@@ -294,7 +238,7 @@ namespace BKTrans
                             }
                             SetSourceText(ocr_result_text);
                             DoTextTrans();
-                        }, bmp_data, language_type_);
+                        }, bmp_data, options_.language_type);
                     } while (false);
 
                 });
@@ -311,8 +255,9 @@ namespace BKTrans
 
         private void DoTextTrans()
         {
+            DoLanguageTypeMap();
             SetTargetText("文本翻译中...");
-            var trans_request = new BKBaiduFanyi(app_id_, app_secret_key_, "");
+            var trans_request = new BKBaiduFanyi(options_.appid, options_.secretkey, "");
             trans_request.DoFanyi((string trans_result) =>
             {
                 string trans_result_text = "";
@@ -339,7 +284,7 @@ namespace BKTrans
                     target_text_window_.SetText(trans_result_text);
                     target_text_window_.ShowWnd();
                 }
-            }, GetSourceText(), from_type_, to_type_);
+            }, GetSourceText(), options_.from, options_.to);
         }
 
         #region 界面按钮事件处理
@@ -360,7 +305,11 @@ namespace BKTrans
 
         private void Button_Click_Setting(object sender, RoutedEventArgs e)
         {
-
+            var settings_window_ = new Settings
+            {
+                Owner = this
+            };
+            settings_window_.ShowDialog();
         }
         #endregion 界面按钮事件处理
 
@@ -424,6 +373,7 @@ namespace BKTrans
         {
             if (notify_close_)
             {
+                Settings.SaveSettings();
                 target_text_window_.Close();
                 e.Cancel = false;
             }

@@ -15,6 +15,20 @@ namespace BKAssembly
     {
         #region 成员变量定义
 
+        public static readonly List<string> LanguageType = new()
+        {
+            "CHN_ENG", /*中英文*/
+            "JAP", /*日语*/
+            "ENG", /*英语*/
+            "KOR", /*韩语*/
+            "FRE", /*法语*/
+            "GER", /*德语*/
+            "RUS", /*俄语*/
+            "SPA", /*西班牙语*/
+            "POR", /*葡萄牙语*/
+            "ITA", /*意大利语*/
+        };
+
         private readonly string api_key_;
         private readonly string secret_key_;
 
@@ -83,8 +97,10 @@ namespace BKAssembly
                 string content_string = string.Format("grant_type={0}&client_id={1}&client_secret={2}",
                    ak_grant_type_, api_key_, secret_key_);
 
-                HttpRequestMessage ak_req_msg = new HttpRequestMessage(HttpMethod.Post, ak_oauth_uri_);
-                ak_req_msg.Content = new StringContent(content_string);
+                HttpRequestMessage ak_req_msg = new HttpRequestMessage(HttpMethod.Post, ak_oauth_uri_)
+                {
+                    Content = new StringContent(content_string)
+                };
 
                 HttpClient ak_request = BKUtility.GetHttpClient();
                 HttpResponseMessage ak_response = ak_request.SendAsync(ak_req_msg).Result;

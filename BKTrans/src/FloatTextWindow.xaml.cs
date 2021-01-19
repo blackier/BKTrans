@@ -5,9 +5,9 @@ namespace BKTrans
 {
 
     #region 公有成员函数定义
-    public partial class BKTextWindow : Window
+    public partial class FloatTextWindow : Window
     {
-        public BKTextWindow()
+        public FloatTextWindow()
         {
             InitializeComponent();
             this.WindowStartupLocation = WindowStartupLocation.Manual;

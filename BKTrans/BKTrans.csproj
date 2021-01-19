@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="src\BKTextWindow.xaml">
+    <Page Update="src\FloatTextWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>

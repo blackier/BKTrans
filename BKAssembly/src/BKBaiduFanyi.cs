@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,20 @@ namespace BKAssembly
     public class BKBaiduFanyi
     {
         #region 成员变量定义
+
+        public static readonly List<string> LanguageType = new()
+        {
+            "zh", /*中文*/
+            "jp", /*日语*/
+            "en", /*英语*/
+            "kor", /*韩语*/
+            "fra", /*法语*/
+            "de", /*德语*/
+            "ru", /*俄语*/
+            "spa", /*西班牙语*/
+            "pt", /*葡萄牙语*/
+            "it", /*意大利语*/
+        };
 
         private readonly string app_id_;
         private readonly string secret_key_;

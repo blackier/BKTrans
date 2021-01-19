@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace BKAssembly
 {
@@ -47,18 +48,67 @@ namespace BKAssembly
             return src_builder.ToString();
         }
 
-        public static HttpClient GetHttpClient()
+        public static HttpClient GetHttpClient(WebProxy http_proxy = null)
         {
             lock (http_client_lock_)
             {
                 if (http_client_ == null)
                 {
-                    //var handler = new HttpClientHandler();
-                    //handler.Proxy = new WebProxy("https://127.0.0.1/",8888);
-                    http_client_ = new HttpClient(/*handler*/);
+                    if (http_proxy != null)
+                    {
+                        var hanlder = new HttpClientHandler()
+                        {
+                            Proxy = http_proxy,
+                            UseProxy = true
+                        };
+                        http_client_ = new(hanlder);
+                    }
+                    else
+                    {
+                        http_client_ = new();
+                    }
                 }
             }
             return http_client_;
+        }
+
+        public static string JsonSerialize<T>(T obj, bool ignore_null_values = true, bool write_indented = true)
+        {
+            JsonSerializerOptions options = new()
+            {
+                IgnoreNullValues = ignore_null_values,
+                WriteIndented = write_indented
+            };
+            return JsonSerializer.Serialize<T>(obj, options);
+        }
+
+        public static T JsonDeserialize<T>(string str)
+        {
+            return JsonSerializer.Deserialize<T>(str);
+        }
+
+        public static string LoadTextFile(string file_path)
+        {
+            string return_value = "";
+            if (File.Exists(file_path))
+            {
+                return_value = File.ReadAllText(file_path);
+            }
+            return return_value;
+        }
+
+        public static bool SaveTextFile(string file_path, string text)
+        {
+            bool return_value = true;
+            try
+            {
+                File.WriteAllText(file_path, text);
+            }
+            catch
+            {
+                return_value = false;
+            }
+            return return_value;
         }
 
         #endregion 公有成员函数定义
