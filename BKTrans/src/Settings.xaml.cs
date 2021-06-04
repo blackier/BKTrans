@@ -49,7 +49,15 @@ namespace BKTrans
                 {
                     settings_file_path_ = Path.Combine(Directory.GetCurrentDirectory(), "settings.json");
                 }
-                options_ = BKUtility.JsonDeserialize<Options>(BKUtility.LoadTextFile(settings_file_path_));
+                try
+                {
+                    options_ = BKUtility.JsonDeserialize<Options>(BKUtility.LoadTextFile(settings_file_path_));
+                }
+                catch
+                {
+                    options_ = new Options();
+                }
+
             }
             return options_;
         }
