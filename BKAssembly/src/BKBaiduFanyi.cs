@@ -9,9 +9,7 @@ namespace BKAssembly
 {
     public class BKBaiduFanyi
     {
-        #region 成员变量定义
-
-        public static readonly List<string> LanguageType = new()
+        public static readonly List<string> mLanguageType = new()
         {
             "zh", /*中文*/
             "jp", /*日语*/
@@ -25,86 +23,77 @@ namespace BKAssembly
             "it", /*意大利语*/
         };
 
-        private readonly string app_id_;
-        private readonly string secret_key_;
-        private string salt_;
+        private readonly string mAppId;
+        private readonly string mSecretKey;
+        private string mSalt;
 
-        private readonly string translate_uri_;
+        private readonly string mTranslateUri;
 
-        Action<string> fanyi_result_callback_;
+        private Action<string> mFanyiResultCallback;
 
-        #endregion 成员变量定义
-
-        #region 公有成员函数定义
-
-        public BKBaiduFanyi(string app_id, string secret_key, string salt)
+        public BKBaiduFanyi(string appId, string secretKey, string salt)
         {
-            app_id_ = app_id;
-            secret_key_ = secret_key;
+            mAppId = appId;
+            mSecretKey = secretKey;
 
-            salt_ = salt;
-            if (string.IsNullOrEmpty(salt_))
+            mSalt = salt;
+            if (string.IsNullOrEmpty(mSalt))
             {
-                salt_ = string.Format("{0}", (new Random()).Next(100000, 999999));
+                mSalt = string.Format("{0}", (new Random()).Next(100000, 999999));
             }
 
             // 常量，参考：http://api.fanyi.baidu.com/doc/21
-            translate_uri_ = "https://fanyi-api.baidu.com/api/trans/vip/translate";
+            mTranslateUri = "https://fanyi-api.baidu.com/api/trans/vip/translate";
         }
 
-        public async void DoFanyi(Action<string> result_callback, string src_text, string from_type, string to_type)
+        public async void DoFanyi(Action<string> resultCallback, string srcText, string fromType, string toType)
         {
-            fanyi_result_callback_ = result_callback;
+            mFanyiResultCallback = resultCallback;
             await Task.Run(() =>
             {
 
                 string result;
                 do
                 {
-                    if (string.IsNullOrEmpty(app_id_) || string.IsNullOrEmpty(secret_key_))
+                    if (string.IsNullOrEmpty(mAppId) || string.IsNullOrEmpty(mSecretKey))
                     {
                         result = string.Format("{{\"error\":\"{0}\"}}", "api id or secret key is empty.");
                         break;
                     }
-                    result = Translate(src_text, from_type, to_type);
+                    result = Translate(srcText, fromType, toType);
                 } while (false);
 
-                fanyi_result_callback_(result);
+                mFanyiResultCallback(result);
             });
         }
 
-        #endregion 公有成员函数定义
-
-        #region 私有成员函数定义
-
-        private string Translate(string src_text, string from_type, string to_type)
+        private string Translate(string srcText, string fromType, string toType)
         {
-            string trans_result = "";
+            string transResult = "";
             do
             {
-                if (string.IsNullOrEmpty(app_id_) || string.IsNullOrEmpty(secret_key_))
+                if (string.IsNullOrEmpty(mAppId) || string.IsNullOrEmpty(mSecretKey))
                 {
                     break;
                 }
 
-                string content_string = string.Format("q={0}&from={1}&to={2}&appid={3}&salt={4}&sign={5}",
-                                HttpUtility.UrlEncode(src_text), from_type, to_type, app_id_, salt_,
-                                BKUtility.CalculMD5(app_id_ + src_text + salt_ + secret_key_));
+                string contentString = string.Format("q={0}&from={1}&to={2}&appid={3}&salt={4}&sign={5}",
+                                HttpUtility.UrlEncode(srcText), fromType, toType, mAppId, mSalt,
+                                BKUtility.CalculMD5(mAppId + srcText + mSalt + mSecretKey));
 
-                HttpRequestMessage trans_req_msg = new HttpRequestMessage(HttpMethod.Post, translate_uri_)
+                HttpRequestMessage transReqMsg = new HttpRequestMessage(HttpMethod.Post, mTranslateUri)
                 {
-                    Content = new StringContent(content_string, Encoding.UTF8, "application/x-www-form-urlencoded")
+                    Content = new StringContent(contentString, Encoding.UTF8, "application/x-www-form-urlencoded")
                 };
 
-                HttpClient trans_request = BKUtility.GetHttpClient();
-                HttpResponseMessage ocr_response = trans_request.SendAsync(trans_req_msg).Result;
+                HttpClient transReq = BKUtility.GetHttpClient();
+                HttpResponseMessage ocrRes = transReq.SendAsync(transReqMsg).Result;
 
-                trans_result = ocr_response.Content.ReadAsStringAsync().Result;
+                transResult = ocrRes.Content.ReadAsStringAsync().Result;
 
             } while (false);
-            return trans_result;
+            return transResult;
         }
 
-        #endregion 私有成员函数定义
     }
 }

@@ -1,17 +1,7 @@
 ﻿using BKAssembly;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace BKTrans
 {
@@ -20,7 +10,7 @@ namespace BKTrans
     /// </summary>
     public partial class Settings : Window
     {
-        #region 成员变量
+        [Serializable]
         public class Options
         {
             // Access Token参数
@@ -34,65 +24,58 @@ namespace BKTrans
             public string from { get; set; }
             public string to { get; set; }
         }
-        protected static Options options_;
+        private static Options mOptions;
 
-        protected static string settings_file_path_;
+        private static string mSettingsFilePath;
 
-        #endregion 成员变量
-
-        #region 静态函数
         public static Options LoadSetting()
         {
-            if (options_ == null)
+            if (mOptions == null)
             {
-                if (settings_file_path_ == null)
+                if (mSettingsFilePath == null)
                 {
-                    settings_file_path_ = Path.Combine(Directory.GetCurrentDirectory(), "settings.json");
+                    mSettingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "settings.json");
                 }
                 try
                 {
-                    options_ = BKUtility.JsonDeserialize<Options>(BKUtility.LoadTextFile(settings_file_path_));
+                    mOptions = BKUtility.JsonDeserialize<Options>(BKUtility.LoadTextFile(mSettingsFilePath));
                 }
                 catch
                 {
-                    options_ = new Options();
+                    mOptions = new Options();
                 }
 
             }
-            return options_;
+            return mOptions;
         }
         public static void SaveSettings()
         {
-            BKUtility.SaveTextFile(settings_file_path_, BKUtility.JsonSerialize<Options>(options_));
+            BKUtility.SaveTextFile(mSettingsFilePath, BKUtility.JsonSerialize<Options>(mOptions));
         }
-        #endregion
 
-        #region 公有函数
         public Settings()
         {
             InitializeComponent();
             LoadWindow();
         }
 
-        #endregion 公有函数
 
-        #region 保护函数
         protected void LoadWindow()
         {
             LoadSetting();
-            this.textBox_client_id.Text = options_.client_id;
-            this.textBox_client_secret.Text = options_.client_secret;
-            this.textBox_appid.Text = options_.appid;
-            this.textBox_secretkey.Text = options_.secretkey;
+            this.textBox_client_id.Text = mOptions.client_id;
+            this.textBox_client_secret.Text = mOptions.client_secret;
+            this.textBox_appid.Text = mOptions.appid;
+            this.textBox_secretkey.Text = mOptions.secretkey;
         }
 
-        #region 事件处理
+
         protected void btn_ok_Click(object sender, RoutedEventArgs e)
         {
-            options_.client_id = this.textBox_client_id.Text;
-            options_.client_secret = this.textBox_client_secret.Text;
-            options_.appid = this.textBox_appid.Text;
-            options_.secretkey = this.textBox_secretkey.Text;
+            mOptions.client_id = this.textBox_client_id.Text;
+            mOptions.client_secret = this.textBox_client_secret.Text;
+            mOptions.appid = this.textBox_appid.Text;
+            mOptions.secretkey = this.textBox_secretkey.Text;
             this.Close();
         }
 
@@ -100,8 +83,5 @@ namespace BKTrans
         {
             this.Close();
         }
-        #endregion 事件处理
-
-        #endregion 保护函数
     }
 }

@@ -1,9 +1,7 @@
 ﻿using BKAssembly;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Windows;
@@ -14,21 +12,20 @@ namespace BKTrans
 {
     public partial class MainWindow : Window
     {
-        #region 成员变量定义
 
-        private BKScreenCapture screen_capture_;
+        private BKScreenCapture mScreenCapture;
 
-        private NotifyIcon notify_icon_;
-        private bool notify_close_;
+        private NotifyIcon mNotifyIcon;
+        private bool mNotifyClose;
 
-        private Rectangle capture_rect_;
-        private Rectangle text_wnd_rect_;
+        private Rectangle mCaptureRect;
+        private Rectangle mTextWndRect;
 
-        private FloatTextWindow target_text_window_;
+        private FloatTextWindow mTargetTextWindow;
 
-        private Settings.Options options_;
+        private Settings.Options mOptions;
 
-        // 热键详见：Win32API: RegisterHotKey function
+        // Win32API: RegisterHotKey function
         private enum HotKeyId
         {
             capture = 0xB001,
@@ -41,46 +38,39 @@ namespace BKTrans
             button,
             hotkey
         }
-        CaptureType cap_type;
-        #endregion 成员变量定义
-
-        #region 公有成员函数定义
+        CaptureType mCapType;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            cap_type = CaptureType.button;
-            options_ = Settings.LoadSetting();
+            mCapType = CaptureType.button;
+            mOptions = Settings.LoadSetting();
             RestoreLanguageTypeMap();
 
-            target_text_window_ = new FloatTextWindow();
+            mTargetTextWindow = new FloatTextWindow();
 
             // 设置托盘图标
-            notify_close_ = false;
-            var notify_icon_cms = new ContextMenuStrip();
-            notify_icon_cms.Items.Add(new ToolStripMenuItem("打开", null, new EventHandler(NotifyIcon_Open)));
-            notify_icon_cms.Items.Add(new ToolStripMenuItem("截取", null, new EventHandler(NotifyIcon_Capture)));
-            notify_icon_cms.Items.Add(new ToolStripMenuItem("翻译", null, new EventHandler(NotifyIcon_Trans)));
-            notify_icon_cms.Items.Add("-");
-            notify_icon_cms.Items.Add(new ToolStripMenuItem("隐藏", null, new EventHandler(NotifyIcon_Hide)));
-            notify_icon_cms.Items.Add("-");
-            notify_icon_cms.Items.Add(new ToolStripMenuItem("退出", null, new EventHandler(NotifyIcon_Close)));
-            notify_icon_ = new NotifyIcon
+            mNotifyClose = false;
+            var notifyIconCms = new ContextMenuStrip();
+            notifyIconCms.Items.Add(new ToolStripMenuItem("打开", null, new EventHandler(NotifyIcon_Open)));
+            notifyIconCms.Items.Add(new ToolStripMenuItem("截取", null, new EventHandler(NotifyIcon_Capture)));
+            notifyIconCms.Items.Add(new ToolStripMenuItem("翻译", null, new EventHandler(NotifyIcon_Trans)));
+            notifyIconCms.Items.Add("-");
+            notifyIconCms.Items.Add(new ToolStripMenuItem("隐藏", null, new EventHandler(NotifyIcon_Hide)));
+            notifyIconCms.Items.Add("-");
+            notifyIconCms.Items.Add(new ToolStripMenuItem("退出", null, new EventHandler(NotifyIcon_Close)));
+            mNotifyIcon = new NotifyIcon
             {
                 Visible = true,
                 Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath),
-                ContextMenuStrip = notify_icon_cms
+                ContextMenuStrip = notifyIconCms
             };
-            notify_icon_.Click += new EventHandler(NotifyIcon_Open);
+            mNotifyIcon.Click += new EventHandler(NotifyIcon_Open);
 
             // 关联关闭函数，设置为最小化到托盘
             this.Closing += new CancelEventHandler(Window_Closing);
         }
-
-        #endregion 公有成员函数定义
-
-        #region 保护成员函数定义
 
         protected override void OnSourceInitialized(EventArgs e)
         {
@@ -88,9 +78,9 @@ namespace BKTrans
             base.OnSourceInitialized(e);
             IntPtr handle = new WindowInteropHelper(this).Handle;
             bool is_succeess = false;
-            is_succeess = BKHotKey.Register(handle, (int)HotKeyId.capture, (uint)(BKHotKey.Modifiers.norepeat), (uint)Keys.F2);
-            is_succeess = BKHotKey.Register(handle, (int)HotKeyId.trans, (uint)(BKHotKey.Modifiers.norepeat), (uint)Keys.NumPad0);
-            is_succeess = BKHotKey.Register(handle, (int)HotKeyId.hide, (uint)(BKHotKey.Modifiers.shift | BKHotKey.Modifiers.alt | BKHotKey.Modifiers.norepeat), (uint)Keys.C);
+            is_succeess = BKHotKey.Register(handle, (int)HotKeyId.capture, (uint)BKHotKey.Modifiers.norepeat, (uint)Keys.F2);
+            is_succeess = BKHotKey.Register(handle, (int)HotKeyId.trans, (uint)BKHotKey.Modifiers.norepeat, (uint)Keys.NumPad0);
+            is_succeess = BKHotKey.Register(handle, (int)HotKeyId.hide, (uint)(BKHotKey.Modifiers.shift | BKHotKey.Modifiers.alt | BKHotKey.Modifiers.norepeat), (uint)Keys.Z);
             if (!is_succeess)
             {
                 SetSourceText("热键注册失败");
@@ -102,10 +92,6 @@ namespace BKTrans
             }
 
         }
-
-        #endregion 保护成员函数定义
-
-        #region 私有成员函数定义
 
         private void SetSourceText(string src_text)
         {
@@ -160,18 +146,18 @@ namespace BKTrans
             var w_1 = (double)Screen.PrimaryScreen.Bounds.Width;
             var w_2 = (double)SystemParameters.PrimaryScreenWidth;
             var p = w_2 / w_1;
-            return new Rectangle { X = (int)(capture_rect_.X * p), Y = (int)(capture_rect_.Y * p), Width = (int)(capture_rect_.Width * p), Height = (int)(capture_rect_.Height * p) };
+            return new Rectangle { X = (int)(mCaptureRect.X * p), Y = (int)(mCaptureRect.Y * p), Width = (int)(mCaptureRect.Width * p), Height = (int)(mCaptureRect.Height * p) };
         }
 
         private void RestoreLanguageTypeMap()
         {
-            if (options_.language_type != null && options_.language_type.Length != 0)
+            if (mOptions.language_type != null && mOptions.language_type.Length != 0)
             {
-                comboBox_src_text.SelectedIndex = BKBaiduOCR.LanguageType.FindIndex(type => type == options_.language_type);
+                comboBox_src_text.SelectedIndex = BKBaiduOCR.LanguageType.FindIndex(type => type == mOptions.language_type);
             }
-            if (options_.to != null && options_.to.Length != 0)
+            if (mOptions.to != null && mOptions.to.Length != 0)
             {
-                comboBox_target_text.SelectedIndex = BKBaiduFanyi.LanguageType.FindIndex(type => type == options_.to);
+                comboBox_target_text.SelectedIndex = BKBaiduFanyi.mLanguageType.FindIndex(type => type == mOptions.to);
             }
         }
 
@@ -179,77 +165,77 @@ namespace BKTrans
         {
             this.Dispatcher.Invoke(() =>
             {
-                options_.language_type = BKBaiduOCR.LanguageType[comboBox_src_text.SelectedIndex];
-                options_.from = BKBaiduFanyi.LanguageType[comboBox_src_text.SelectedIndex];
-                options_.to = BKBaiduFanyi.LanguageType[comboBox_target_text.SelectedIndex];
+                mOptions.language_type = BKBaiduOCR.LanguageType[comboBox_src_text.SelectedIndex];
+                mOptions.from = BKBaiduFanyi.mLanguageType[comboBox_src_text.SelectedIndex];
+                mOptions.to = BKBaiduFanyi.mLanguageType[comboBox_target_text.SelectedIndex];
             });
         }
 
-        private void DoCaptureOCR(bool only_trans = false)
+        private void DoCaptureOCR(bool onlyTrans = false)
         {
             DoLanguageTypeMap();
-            if (screen_capture_ == null)
+            if (mScreenCapture == null)
             {
-                screen_capture_ = new BKScreenCapture((cb_data) =>
+                mScreenCapture = new BKScreenCapture((cb_data) =>
                 {
-                    if (cap_type == CaptureType.button)
+                    if (mCapType == CaptureType.button)
                     {
                         ShowWnd();
                     }
-                    var bmp_data = (Bitmap)cb_data.capture_bmp.Clone();
-                    capture_rect_ = cb_data.capture_rect;
-                    text_wnd_rect_ = GetWndRect();
+                    var bmpData = (Bitmap)cb_data.captureBmp.Clone();
+                    mCaptureRect = cb_data.captureRect;
+                    mTextWndRect = GetWndRect();
                     do
                     {
-                        if (bmp_data.Height < 15 || bmp_data.Width < 15)
+                        if (bmpData.Height < 15 || bmpData.Width < 15)
                         {
                             SetSourceText("截取完成，截取最短边要求至少15px...");
                             break;
                         }
-                        else if (bmp_data.Height > 4096 || bmp_data.Width > 4096)
+                        else if (bmpData.Height > 4096 || bmpData.Width > 4096)
                         {
                             SetSourceText("截取完成，截取最长边要求不超过4096px...");
                             break;
                         }
 
                         SetSourceText("截取完成，等待OCR翻译...");
-                        var ocr_request = new BKBaiduOCR(options_.client_id, options_.client_secret);
-                        ocr_request.DoOCR((string ocr_result) =>
+                        var ocrRequest = new BKBaiduOCR(mOptions.client_id, mOptions.client_secret);
+                        ocrRequest.DoOCR((string ocrResult) =>
                         {
-                            string ocr_result_text = "";
-                            using (JsonDocument jdoc_ocr_result = JsonDocument.Parse(ocr_result))
+                            string ocrResultText = "";
+                            using (JsonDocument jdocOcrResult = JsonDocument.Parse(ocrResult))
                             {
-                                var root_element = jdoc_ocr_result.RootElement;
-                                if (!root_element.TryGetProperty("words_result", out JsonElement words_result))
+                                var rootElement = jdocOcrResult.RootElement;
+                                if (!rootElement.TryGetProperty("words_result", out JsonElement wordsResult))
                                 {
-                                    ocr_result_text = ocr_result;
+                                    ocrResultText = ocrResult;
                                 }
                                 else
                                 {
-                                    foreach (JsonElement words_elem in words_result.EnumerateArray())
+                                    foreach (JsonElement words_elem in wordsResult.EnumerateArray())
                                     {
-                                        ocr_result_text += words_elem.GetProperty("words").GetString();
+                                        ocrResultText += words_elem.GetProperty("words").GetString();
                                     }
-                                    ocr_result_text = ocr_result_text.Replace("!", "。");
-                                    ocr_result_text = ocr_result_text.Replace("!?", "。");
-                                    ocr_result_text = ocr_result_text.Replace("~ト", "~");
-                                    ocr_result_text = ocr_result_text.Replace("~?", "~");
+                                    ocrResultText = ocrResultText.Replace("!", "。");
+                                    ocrResultText = ocrResultText.Replace("!?", "。");
+                                    ocrResultText = ocrResultText.Replace("~ト", "~");
+                                    ocrResultText = ocrResultText.Replace("~?", "~");
                                 }
                             }
-                            SetSourceText(ocr_result_text);
+                            SetSourceText(ocrResultText);
                             DoTextTrans();
-                        }, bmp_data, options_.language_type);
+                        }, bmpData, mOptions.language_type);
                     } while (false);
 
                 });
             }
-            if (cap_type == CaptureType.hotkey && !text_wnd_rect_.Size.IsEmpty && only_trans)
+            if (mCapType == CaptureType.hotkey && !mTextWndRect.Size.IsEmpty && onlyTrans)
             {
-                screen_capture_.StartCapture(capture_rect_);
+                mScreenCapture.StartCapture(mCaptureRect);
             }
             else
             {
-                screen_capture_.StartCapture(false);
+                mScreenCapture.StartCapture(false);
             }
         }
 
@@ -257,44 +243,43 @@ namespace BKTrans
         {
             DoLanguageTypeMap();
             SetTargetText("文本翻译中...");
-            var trans_request = new BKBaiduFanyi(options_.appid, options_.secretkey, "");
-            trans_request.DoFanyi((string trans_result) =>
+            var transTequest = new BKBaiduFanyi(mOptions.appid, mOptions.secretkey, "");
+            transTequest.DoFanyi((string transResult) =>
             {
-                string trans_result_text = "";
-                using (JsonDocument jdoc_ocr_result = JsonDocument.Parse(trans_result))
+                string transResultText = "";
+                using (JsonDocument jdocOcrResult = JsonDocument.Parse(transResult))
                 {
                     do
                     {
-                        var root_element = jdoc_ocr_result.RootElement;
+                        var root_element = jdocOcrResult.RootElement;
                         if (!root_element.TryGetProperty("trans_result", out JsonElement trasn_result))
                         {
-                            trans_result_text = trans_result;
+                            transResultText = transResult;
                             break;
                         }
-                        foreach (JsonElement dst_elem in trasn_result.EnumerateArray())
+                        foreach (JsonElement dstElem in trasn_result.EnumerateArray())
                         {
-                            trans_result_text += dst_elem.GetProperty("dst").GetString();
+                            transResultText += dstElem.GetProperty("dst").GetString();
                         }
                     } while (false);
                 }
-                SetTargetText(trans_result_text);
-                if (cap_type == CaptureType.hotkey)
+                SetTargetText(transResultText);
+                if (mCapType == CaptureType.hotkey)
                 {
-                    target_text_window_.SetRect(text_wnd_rect_);
-                    target_text_window_.SetText(trans_result_text);
-                    target_text_window_.ShowWnd();
+                    mTargetTextWindow.SetRect(mTextWndRect);
+                    mTargetTextWindow.SetText(transResultText);
+                    mTargetTextWindow.ShowWnd();
                 }
-            }, GetSourceText(), options_.from, options_.to);
+            }, GetSourceText(), mOptions.from, mOptions.to);
         }
 
-        #region 界面按钮事件处理
         private void Button_Click_Capture(object sender, RoutedEventArgs e)
         {
             HideWnd();
-            target_text_window_.HideWnd();
-            cap_type = CaptureType.button;
+            mTargetTextWindow.HideWnd();
+            mCapType = CaptureType.button;
             // 需要沉睡一小段时间，让窗口完全隐藏
-            Thread.Sleep(170);
+            Thread.Sleep(100);
             DoCaptureOCR();
         }
 
@@ -305,15 +290,13 @@ namespace BKTrans
 
         private void Button_Click_Setting(object sender, RoutedEventArgs e)
         {
-            var settings_window_ = new Settings
+            var settingsWindow = new Settings
             {
                 Owner = this
             };
-            settings_window_.ShowDialog();
+            settingsWindow.ShowDialog();
         }
-        #endregion 界面按钮事件处理
 
-        #region 系统托盘按钮事件处理
         private void NotifyIcon_Open(object sender, EventArgs e)
         {
             do
@@ -340,47 +323,44 @@ namespace BKTrans
 
         private void NotifyIcon_Close(object sender, EventArgs e)
         {
-            notify_icon_.Visible = false;
-            notify_close_ = true;
+            mNotifyIcon.Visible = false;
+            mNotifyClose = true;
             this.Close();
         }
 
         private void NotifyIcon_Capture(object sender, EventArgs e)
         {
-            target_text_window_.HideWnd();
+            mTargetTextWindow.HideWnd();
             // 需要沉睡一小段时间，让窗口完全隐藏
             Thread.Sleep(100);
-            cap_type = CaptureType.hotkey;
+            mCapType = CaptureType.hotkey;
             DoCaptureOCR();
         }
 
         private void NotifyIcon_Trans(object sender, EventArgs e)
         {
-            cap_type = CaptureType.hotkey;
+            mCapType = CaptureType.hotkey;
             DoCaptureOCR(true);
         }
 
         private void NotifyIcon_Hide(object sender, EventArgs e)
         {
             this.Hide();
-            target_text_window_.Hide();
+            mTargetTextWindow.Hide();
         }
 
-        #endregion 系统托盘按钮事件处理
-
-        #region 窗口事件处理
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (notify_close_)
+            if (mNotifyClose)
             {
                 Settings.SaveSettings();
-                target_text_window_.Close();
+                mTargetTextWindow.Close();
                 e.Cancel = false;
             }
             else
             {
                 this.Hide();
-                target_text_window_.Hide();
+                mTargetTextWindow.Hide();
                 e.Cancel = true;
             }
         }
@@ -389,29 +369,24 @@ namespace BKTrans
         {
             if (wParam.ToInt64() == (int)HotKeyId.capture)
             {
-                target_text_window_.HideWnd();
+                mTargetTextWindow.HideWnd();
                 // 需要沉睡一小段时间，让窗口完全隐藏
                 Thread.Sleep(100);
-                cap_type = CaptureType.hotkey;
+                mCapType = CaptureType.hotkey;
                 DoCaptureOCR();
             }
             else if (wParam.ToInt64() == (int)HotKeyId.trans)
             {
-                cap_type = CaptureType.hotkey;
+                mCapType = CaptureType.hotkey;
                 DoCaptureOCR(true);
             }
             else if (wParam.ToInt64() == (int)HotKeyId.hide)
             {
                 this.Hide();
-                target_text_window_.Hide();
+                mTargetTextWindow.Hide();
             }
             return IntPtr.Zero;
         }
-
-        #endregion 窗口事件处理
-
-        #endregion 私成员函数定义
-
 
     }
 }

@@ -12,72 +12,66 @@ namespace BKAssembly
 {
     public class BKUtility
     {
-        #region 成员变量定义
-
-        private static HttpClient http_client_ = new HttpClient();
-        private static readonly object http_client_lock_ = new object();
-
-        #endregion 成员变量定义
-
-        #region 公有成员函数定义
+        private static HttpClient mHttpClient = null;
+        private static readonly object mHttpClientLock = new object();
 
         public static string Bitmap2Base64String(Bitmap bmp)
         {
-            MemoryStream buff_stream = new MemoryStream();
-            bmp.Save(buff_stream, ImageFormat.Bmp);
-            byte[] buff_arr = new byte[buff_stream.Length];
-            buff_stream.Position = 0;
-            buff_stream.Read(buff_arr, 0, (int)buff_stream.Length);
-            buff_stream.Close();
-            return Convert.ToBase64String(buff_arr);
+            MemoryStream buffStream = new MemoryStream();
+            bmp.Save(buffStream, ImageFormat.Bmp);
+            byte[] buffArr = new byte[buffStream.Length];
+            buffStream.Position = 0;
+            buffStream.Read(buffArr, 0, (int)buffStream.Length);
+            buffStream.Close();
+            return Convert.ToBase64String(buffArr);
         }
 
-        public static string CalculMD5(string src_str)
+        public static string CalculMD5(string srcStr)
         {
             MD5 md5 = MD5.Create();
 
-            byte[] byte_src = Encoding.UTF8.GetBytes(src_str);
-            byte[] byte_target = md5.ComputeHash(byte_src);
+            byte[] byteSrc = Encoding.UTF8.GetBytes(srcStr);
+            byte[] byteTarget = md5.ComputeHash(byteSrc);
 
-            StringBuilder src_builder = new StringBuilder();
-            foreach (byte b in byte_target)
+            StringBuilder srcBuilder = new StringBuilder();
+            foreach (byte b in byteTarget)
             {
-                src_builder.Append(b.ToString("x2"));
+                srcBuilder.Append(b.ToString("x2"));
             }
 
-            return src_builder.ToString();
+            return srcBuilder.ToString();
         }
 
-        public static HttpClient GetHttpClient(WebProxy http_proxy = null)
+        public static HttpClient GetHttpClient(WebProxy httpProxy = null)
         {
-            lock (http_client_lock_)
+            lock (mHttpClientLock)
             {
-                if (http_client_ == null)
+                if (mHttpClient == null)
                 {
-                    if (http_proxy != null)
+                    if (httpProxy != null)
                     {
                         var hanlder = new HttpClientHandler()
                         {
-                            Proxy = http_proxy,
+                            Proxy = httpProxy,
                             UseProxy = true
                         };
-                        http_client_ = new(hanlder);
+                        mHttpClient = new(hanlder);
                     }
                     else
                     {
-                        http_client_ = new();
+                        mHttpClient = new();
                     }
                 }
             }
-            return http_client_;
+            return mHttpClient;
         }
 
-        public static string JsonSerialize<T>(T obj, bool ignore_null_values = true, bool write_indented = true)
+        public static string JsonSerialize<T>(T obj, bool ignoreNullValues = true, bool writeIndented = true)
         {
             JsonSerializerOptions options = new()
             {
-                IgnoreNullValues = ignore_null_values,
-                WriteIndented = write_indented
+                IgnoreNullValues = ignoreNullValues,
+                WriteIndented = writeIndented
             };
             return JsonSerializer.Serialize<T>(obj, options);
         }
@@ -87,30 +81,28 @@ namespace BKAssembly
             return JsonSerializer.Deserialize<T>(str);
         }
 
-        public static string LoadTextFile(string file_path)
+        public static string LoadTextFile(string filePath)
         {
-            string return_value = "";
-            if (File.Exists(file_path))
+            string retStr = "";
+            if (File.Exists(filePath))
             {
-                return_value = File.ReadAllText(file_path);
+                retStr = File.ReadAllText(filePath);
             }
-            return return_value;
+            return retStr;
         }
 
-        public static bool SaveTextFile(string file_path, string text)
+        public static bool SaveTextFile(string filePath, string text)
         {
-            bool return_value = true;
+            bool retBool = true;
             try
             {
-                File.WriteAllText(file_path, text);
+                File.WriteAllText(filePath, text);
             }
             catch
             {
-                return_value = false;
+                retBool = false;
             }
-            return return_value;
+            return retBool;
         }
-
-        #endregion 公有成员函数定义
     }
 }

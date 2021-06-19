@@ -3,8 +3,6 @@ using System.Windows;
 
 namespace BKTrans
 {
-
-    #region 公有成员函数定义
     public partial class FloatTextWindow : Window
     {
         public FloatTextWindow()
@@ -49,7 +47,5 @@ namespace BKTrans
             });
         }
     }
-
-    #endregion 私有成员函数定义
 
 }
