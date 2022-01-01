@@ -50,7 +50,7 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
-            <TextBox x:Name="tb_source_text" HorizontalAlignment="Stretch" Margin="3,3,3,3" Grid.Row="1" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Width="auto"/>
+            <TextBox x:Name="tb_source_text" HorizontalAlignment="Stretch" Margin="3,3,3,3" Grid.Row="1" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Width="auto" FontSize="14"/>
 
         </Grid>
         <Grid Grid.Row="1">
@@ -74,7 +74,7 @@
                 <System:String>葡萄牙语</System:String>
                 <System:String>意大利语</System:String>
             </ComboBox>
-            <TextBox x:Name="tb_target_text" HorizontalAlignment="Stretch" Margin="3,3,3,3" Grid.Row="1" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Width="auto"/>
+            <TextBox x:Name="tb_target_text" HorizontalAlignment="Stretch" Margin="3,3,3,3" Grid.Row="1" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Width="auto" FontSize="14"/>
         </Grid>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>

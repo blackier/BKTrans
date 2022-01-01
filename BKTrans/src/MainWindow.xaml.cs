@@ -3,7 +3,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Text.Json;
-using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
@@ -48,8 +47,6 @@ namespace BKTrans
             mOptions = Settings.LoadSetting();
             RestoreLanguageTypeMap();
 
-            mTargetTextWindow = new FloatTextWindow();
-
             // 设置托盘图标
             mNotifyClose = false;
             var notifyIconCms = new ContextMenuStrip();
@@ -70,6 +67,25 @@ namespace BKTrans
 
             // 关联关闭函数，设置为最小化到托盘
             this.Closing += new CancelEventHandler(Window_Closing);
+
+            mTargetTextWindow = new FloatTextWindow((FloatTextWindow.ButtonType btntype) =>
+            {
+                switch (btntype)
+                {
+                    case FloatTextWindow.ButtonType.Capture:
+                        mTargetTextWindow.HideWnd();
+                        mCapType = CaptureType.hotkey;
+                        this.Dispatcher.Invoke(() => DoCaptureOCR());
+                        break;
+                    case FloatTextWindow.ButtonType.Trans:
+                        mCapType = CaptureType.hotkey;
+                        DoCaptureOCR(true);
+                        break;
+                    default:
+                        break;
+                }
+
+            });
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -79,7 +95,7 @@ namespace BKTrans
             IntPtr handle = new WindowInteropHelper(this).Handle;
             bool is_succeess = false;
             is_succeess = BKHotKey.Register(handle, (int)HotKeyId.capture, (uint)BKHotKey.Modifiers.norepeat, (uint)Keys.F2);
-            is_succeess = BKHotKey.Register(handle, (int)HotKeyId.trans, (uint)BKHotKey.Modifiers.norepeat, (uint)Keys.NumPad0);
+            is_succeess = BKHotKey.Register(handle, (int)HotKeyId.trans, (uint)(BKHotKey.Modifiers.shift | BKHotKey.Modifiers.alt | BKHotKey.Modifiers.norepeat), (uint)Keys.X);
             is_succeess = BKHotKey.Register(handle, (int)HotKeyId.hide, (uint)(BKHotKey.Modifiers.shift | BKHotKey.Modifiers.alt | BKHotKey.Modifiers.norepeat), (uint)Keys.Z);
             if (!is_succeess)
             {
@@ -278,9 +294,7 @@ namespace BKTrans
             HideWnd();
             mTargetTextWindow.HideWnd();
             mCapType = CaptureType.button;
-            // 需要沉睡一小段时间，让窗口完全隐藏
-            Thread.Sleep(100);
-            DoCaptureOCR();
+            this.Dispatcher.Invoke(() => DoCaptureOCR());
         }
 
         private void Button_Click_Trans(object sender, RoutedEventArgs e)
@@ -331,10 +345,8 @@ namespace BKTrans
         private void NotifyIcon_Capture(object sender, EventArgs e)
         {
             mTargetTextWindow.HideWnd();
-            // 需要沉睡一小段时间，让窗口完全隐藏
-            Thread.Sleep(100);
             mCapType = CaptureType.hotkey;
-            DoCaptureOCR();
+            this.Dispatcher.Invoke(() => DoCaptureOCR());
         }
 
         private void NotifyIcon_Trans(object sender, EventArgs e)
@@ -370,10 +382,8 @@ namespace BKTrans
             if (wParam.ToInt64() == (int)HotKeyId.capture)
             {
                 mTargetTextWindow.HideWnd();
-                // 需要沉睡一小段时间，让窗口完全隐藏
-                Thread.Sleep(100);
                 mCapType = CaptureType.hotkey;
-                DoCaptureOCR();
+                this.Dispatcher.Invoke(() => DoCaptureOCR());
             }
             else if (wParam.ToInt64() == (int)HotKeyId.trans)
             {

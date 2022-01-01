@@ -6,12 +6,81 @@
         xmlns:local="clr-namespace:BKTrans"
         mc:Ignorable="d"
         Title="BKTextWindow" Height="200" Width="300" AllowsTransparency="True" WindowStyle="None" Background="{x:Null}">
-    <Grid>
+    <Grid Visibility="Visible">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="32"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid x:Name="mGridShowTrans" Grid.RowSpan="2" Visibility="Visible">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Rectangle Stroke="Blue" Grid.RowSpan="2" StrokeDashArray="2"/>
-        <TextBox x:Name="tb_main" Text="" TextWrapping="Wrap" Grid.Row="1" BorderBrush="{x:Null}" Padding="1,1,1,1" Background="#B2FFFFFF" Foreground="Black"/>
+        <TextBox x:Name="tb_main" Text="" TextWrapping="Wrap" Grid.Row="1" BorderBrush="{x:Null}" Padding="1,1,1,1" Background="#B2FFFFFF" Foreground="Black" FontSize="14"/>
+        </Grid>
+
+        <DockPanel Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            
+            <Button x:Name="bt_trans" HorizontalAlignment="Left" Height="20" VerticalAlignment="Bottom" Width="20" BorderBrush="{x:Null}" Foreground="{x:Null}" Click="Button_Click_Trans" DockPanel.Dock="Bottom">
+                <Button.Background>
+                    <ImageBrush ImageSource="/resource/trans.png"/>
+                </Button.Background>
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FFBEE6FD"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF3C7FB1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button x:Name="btn_capture" Content="Button" Width="20" Height="20" DockPanel.Dock="Bottom" HorizontalAlignment="Left" VerticalAlignment="Bottom" BorderBrush="{x:Null}" Click="Button_Click_Capture">
+                <Button.Background>
+                    <ImageBrush ImageSource="/resource/capture.png"/>
+                </Button.Background>
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FFBEE6FD"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF3C7FB1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button x:Name="btn_hide" Content="Button" Width="20" Height="20" DockPanel.Dock="Bottom" HorizontalAlignment="Left" VerticalAlignment="Bottom" BorderBrush="{x:Null}" Click="Button_Click_Hide">
+                <Button.Background>
+                    <ImageBrush ImageSource="/resource/hide.png"/>
+                </Button.Background>
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FFBEE6FD"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF3C7FB1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </DockPanel>
     </Grid>
 </Window>

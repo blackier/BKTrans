@@ -9,7 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="resource\capture.png" />
+    <None Remove="resource\hide.png" />
     <None Remove="resource\setting.png" />
+    <None Remove="resource\trans.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,7 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="resource\capture.png" />
+    <Resource Include="resource\hide.png" />
     <Resource Include="resource\setting.png" />
+    <Resource Include="resource\trans.png" />
   </ItemGroup>
 
   <ItemGroup>

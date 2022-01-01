@@ -1,15 +1,24 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows;
 
 namespace BKTrans
 {
     public partial class FloatTextWindow : Window
     {
-        public FloatTextWindow()
+        public enum ButtonType
+        {
+            Capture,
+            Trans
+        };
+
+        private Action<ButtonType> mfOnButtonClick;
+        public FloatTextWindow(Action<ButtonType> OnButtonClick = null)
         {
             InitializeComponent();
             this.WindowStartupLocation = WindowStartupLocation.Manual;
             this.ShowInTaskbar = false;
+            mfOnButtonClick = OnButtonClick;
         }
         public void SetRect(Rectangle rect)
         {
@@ -17,7 +26,7 @@ namespace BKTrans
             {
                 this.Left = rect.X;
                 this.Top = rect.Y;
-                this.Width = rect.Width;
+                this.Width = rect.Width + 32;
                 this.Height = rect.Height * 2;
             });
 
@@ -45,6 +54,23 @@ namespace BKTrans
             {
                 this.Hide();
             });
+        }
+
+        private void Button_Click_Trans(object sender, RoutedEventArgs e)
+        {
+            if (mfOnButtonClick != null)
+                mfOnButtonClick(ButtonType.Trans);
+        }
+
+        private void Button_Click_Capture(object sender, RoutedEventArgs e)
+        {
+            if (mfOnButtonClick != null)
+                mfOnButtonClick(ButtonType.Capture);
+        }
+
+        private void Button_Click_Hide(object sender, RoutedEventArgs e)
+        {
+            mGridShowTrans.Visibility = mGridShowTrans.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
         }
     }
 
