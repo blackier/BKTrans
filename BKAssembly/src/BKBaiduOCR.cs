@@ -11,18 +11,18 @@ namespace BKAssembly
 {
     public class BKBaiduOCR
     {
-        public static readonly List<string> LanguageType = new()
+        public static readonly Dictionary<string, string> LanguageType = new()
         {
-            "CHN_ENG", /*中英文*/
-            "JAP", /*日语*/
-            "ENG", /*英语*/
-            "KOR", /*韩语*/
-            "FRE", /*法语*/
-            "GER", /*德语*/
-            "RUS", /*俄语*/
-            "SPA", /*西班牙语*/
-            "POR", /*葡萄牙语*/
-            "ITA", /*意大利语*/
+            {"CHN_ENG", "中英文"},
+            {"JAP", "日语"},
+            {"ENG", "英语"},
+            {"KOR", "韩语"},
+            {"FRE", "法语"},
+            {"GER", "德语"},
+            {"RUS", "俄语"},
+            {"SPA", "西班牙语"},
+            {"POR", "葡萄牙语"},
+            {"ITA", "意大利语"}
         };
 
         private readonly string mApiKey;

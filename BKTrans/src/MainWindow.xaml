@@ -9,83 +9,61 @@
         Title="BKTrans" Height="300" Width="400" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="400" MinHeight="300" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterScreen">
     <Grid x:Name="MainGrid" Grid.Column="3">
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="45"/>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="45" />
         </Grid.RowDefinitions>
 
-        <Grid >
+        <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="1*"/>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
-            <Label x:Name="lb_src_text" Content="原文" HorizontalAlignment="Left" Margin="0,3,0,3" VerticalAlignment="Center" Height="25" Width="35"/>
-            <ComboBox x:Name="comboBox_src_text" Width="60" SelectedIndex="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" HorizontalAlignment="Left" Margin="35,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False">
-                <System:String>汉语</System:String>
-                <System:String>日语</System:String>
-                <System:String>英语</System:String>
-                <System:String>韩语</System:String>
-                <System:String>法语</System:String>
-                <System:String>德语</System:String>
-                <System:String>俄语</System:String>
-                <System:String>西班牙语</System:String>
-                <System:String>葡萄牙语</System:String>
-                <System:String>意大利语</System:String>
-            </ComboBox>
+            <Label x:Name="lb_src_text" Content="原文" HorizontalAlignment="Left" Margin="0,3,0,3" VerticalAlignment="Center" Height="25" Width="35" />
+            <ComboBox x:Name="comboBox_src_text" Width="60" SelectedIndex="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" HorizontalAlignment="Left" Margin="35,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" />
             <Button x:Name="bt_setting" HorizontalAlignment="Right" Height="20" VerticalAlignment="Center" Width="20" Margin="0,0,10,0" BorderBrush="{x:Null}" Foreground="{x:Null}" Click="Button_Click_Setting">
                 <Button.Background>
-                    <ImageBrush ImageSource="/resource/setting.png"/>
+                    <ImageBrush ImageSource="/resource/setting.png" />
                 </Button.Background>
                 <Button.Template>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True"/>
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True" />
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="BorderBrush" Value="#FFBEE6FD"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FFBEE6FD" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="BorderBrush" Value="#FF3C7FB1"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF3C7FB1" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Button.Template>
             </Button>
-            <TextBox x:Name="tb_source_text" HorizontalAlignment="Stretch" Margin="3,3,3,3" Grid.Row="1" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Width="auto" FontSize="14"/>
+            <TextBox x:Name="tb_source_text" HorizontalAlignment="Stretch" Margin="3,3,3,3" Grid.Row="1" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Width="auto" FontSize="14" />
 
         </Grid>
         <Grid Grid.Row="1">
             <Grid.Background>
-                <ImageBrush/>
+                <ImageBrush />
             </Grid.Background>
             <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="1*"/>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
-            <Label x:Name="lb_target_text" Content="译文" HorizontalAlignment="Left" Margin="0,3,0,3" VerticalAlignment="Center" Height="25" Width="35"/>
-            <ComboBox x:Name="comboBox_target_text" Width="60" SelectedIndex="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" HorizontalAlignment="Left" Margin="35,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False">
-                <System:String>汉语</System:String>
-                <System:String>日语</System:String>
-                <System:String>英语</System:String>
-                <System:String>韩语</System:String>
-                <System:String>法语</System:String>
-                <System:String>德语</System:String>
-                <System:String>俄语</System:String>
-                <System:String>西班牙语</System:String>
-                <System:String>葡萄牙语</System:String>
-                <System:String>意大利语</System:String>
-            </ComboBox>
-            <TextBox x:Name="tb_target_text" HorizontalAlignment="Stretch" Margin="3,3,3,3" Grid.Row="1" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Width="auto" FontSize="14"/>
+            <Label x:Name="lb_target_text" Content="译文" HorizontalAlignment="Left" Margin="0,3,0,3" VerticalAlignment="Center" Height="25" Width="35" />
+            <ComboBox x:Name="comboBox_target_text" Width="60" SelectedIndex="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" HorizontalAlignment="Left" Margin="35,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" />
+            <TextBox x:Name="tb_target_text" HorizontalAlignment="Stretch" Margin="3,3,3,3" Grid.Row="1" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Width="auto" FontSize="14" />
         </Grid>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            <Button x:Name="btn_capture" Content="截取" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="20" Click="Button_Click_Capture"/>
-            <Button x:Name="btn_trans" Content="翻译" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="20" Click="Button_Click_Trans"/>
+            <Button x:Name="btn_capture" Content="截取" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="20" Click="Button_Click_Capture" />
+            <Button x:Name="btn_trans" Content="翻译" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="20" Click="Button_Click_Trans" />
         </Grid>
     </Grid>
 </Window>

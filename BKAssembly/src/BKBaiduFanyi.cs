@@ -9,18 +9,18 @@ namespace BKAssembly
 {
     public class BKBaiduFanyi
     {
-        public static readonly List<string> mLanguageType = new()
+        public static readonly Dictionary<string, string> LanguageType = new()
         {
-            "zh", /*中文*/
-            "jp", /*日语*/
-            "en", /*英语*/
-            "kor", /*韩语*/
-            "fra", /*法语*/
-            "de", /*德语*/
-            "ru", /*俄语*/
-            "spa", /*西班牙语*/
-            "pt", /*葡萄牙语*/
-            "it", /*意大利语*/
+            {"zh", "中文"},
+            {"jp", "日语"},
+            {"en", "英语"},
+            {"kor","韩语"},
+            {"fra", "法语"},
+            {"de", "德语"},
+            {"ru", "俄语"},
+            {"spa", "西班牙语"},
+            {"pt", "葡萄牙语"},
+            {"it", "意大利语"}
         };
 
         private readonly string mAppId;

@@ -16,44 +16,48 @@ namespace BKTrans
         public FloatTextWindow(Action<ButtonType> OnButtonClick = null)
         {
             InitializeComponent();
-            this.WindowStartupLocation = WindowStartupLocation.Manual;
-            this.ShowInTaskbar = false;
+            WindowStartupLocation = WindowStartupLocation.Manual;
+            ShowInTaskbar = false;
             mfOnButtonClick = OnButtonClick;
+
         }
-        public void SetRect(Rectangle rect)
+
+        public void SetTextRect(Rectangle rect)
         {
-            this.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             {
-                this.Left = rect.X;
-                this.Top = rect.Y;
-                this.Width = rect.Width + 32;
-                this.Height = rect.Height * 2;
+                var w_1 = (double)System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
+                var w_2 = (double)SystemParameters.PrimaryScreenWidth;
+                var p = w_2 / w_1;
+
+                Left = rect.X * p;
+                Top = rect.Y * p;
+                Width = rect.Width * p + 32;
+                Height = (rect.Height * p) * 2;
             });
 
         }
         public void SetText(string t)
         {
-            this.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             {
-                this.tb_main.Text = t;
+                tb_main.Text = t;
             });
 
         }
         public void ShowWnd()
         {
-            this.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             {
-                this.Show();
-                this.Activate();
-                this.Topmost = true;
+                Show();
+                Activate();
+                Topmost = true;
             });
         }
+
         public void HideWnd()
         {
-            this.Dispatcher.Invoke(() =>
-            {
-                this.Hide();
-            });
+            Hide();
         }
 
         private void Button_Click_Trans(object sender, RoutedEventArgs e)
