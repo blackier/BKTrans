@@ -1,27 +1,19 @@
 ﻿using BKAssembly;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
-using System.Linq;
 
 namespace BKTrans
 {
     public partial class MainWindow : Window
     {
-        private NotifyIcon mNotifyIcon;
-        private bool mNotifyClose;
-
-        private Rectangle mCaptureRect;
-
-        private FloatTextWindow mTargetTextWindow;
-
-        private Settings.Options mOptions;
-
         // Win32API: RegisterHotKey function
         private enum HotKeyId
         {
@@ -36,17 +28,36 @@ namespace BKTrans
             hotkey
         }
 
-        private CaptureType mCapType;
+        private NotifyIcon _notifyIcon;
+        private bool _notifyClose;
+
+        private Rectangle _captureRect;
+
+        private FloatTextWindow _targetTextWindow;
+
+        private Settings.Options _options;
+
+        private CaptureType _captureType;
+
+        private BKTransBase _transHandle;
+        private BKSetting _transSetting;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            mCapType = CaptureType.button;
-            mOptions = Settings.LoadSetting();
+            _captureType = CaptureType.button;
+            _options = Settings.LoadSetting();
+            // 设置支持语言列表
+            foreach (var ele in BKTransMap.TransType)
+            {
+                combobox_trans_type.Items.Add(ele.Value);
+            }
+            combobox_trans_type.SelectedItem = BKTransMap.TransType[_options.trans_type];
+            RestoreLanguageTypeMap();
 
             // 设置托盘图标
-            mNotifyClose = false;
+            _notifyClose = false;
             var notifyIconCms = new ContextMenuStrip();
             notifyIconCms.Items.Add(new ToolStripMenuItem("打开", null, new EventHandler(NotifyIcon_Open)));
             notifyIconCms.Items.Add(new ToolStripMenuItem("截取", null, new EventHandler(NotifyIcon_Capture)));
@@ -55,28 +66,28 @@ namespace BKTrans
             notifyIconCms.Items.Add(new ToolStripMenuItem("隐藏", null, new EventHandler(NotifyIcon_Hide)));
             notifyIconCms.Items.Add("-");
             notifyIconCms.Items.Add(new ToolStripMenuItem("退出", null, new EventHandler(NotifyIcon_Close)));
-            mNotifyIcon = new NotifyIcon
+            _notifyIcon = new NotifyIcon
             {
                 Visible = true,
                 Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath),
                 ContextMenuStrip = notifyIconCms
             };
-            mNotifyIcon.Click += new EventHandler(NotifyIcon_Open);
+            _notifyIcon.Click += new EventHandler(NotifyIcon_Open);
 
             // 关联关闭函数，设置为最小化到托盘
             Closing += new CancelEventHandler(Window_Closing);
 
-            mTargetTextWindow = new FloatTextWindow((FloatTextWindow.ButtonType btntype) =>
+            _targetTextWindow = new FloatTextWindow((FloatTextWindow.ButtonType btntype) =>
             {
                 switch (btntype)
                 {
                     case FloatTextWindow.ButtonType.Capture:
-                        mTargetTextWindow.HideWnd();
-                        mCapType = CaptureType.hotkey;
+                        _targetTextWindow.HideWnd();
+                        _captureType = CaptureType.hotkey;
                         Dispatcher.Invoke(() => DoCaptureOCR());
                         break;
                     case FloatTextWindow.ButtonType.Trans:
-                        mCapType = CaptureType.hotkey;
+                        _captureType = CaptureType.hotkey;
                         DoCaptureOCR(true);
                         break;
                     default:
@@ -84,17 +95,6 @@ namespace BKTrans
                 }
 
             });
-
-            // 设置支持语言列表
-            foreach (var lan in BKBaiduOCR.LanguageType)
-            {
-                comboBox_src_text.Items.Add(lan.Value);
-            }
-            foreach (var lan in BKBaiduFanyi.LanguageType)
-            {
-                comboBox_target_text.Items.Add(lan.Value);
-            }
-            RestoreLanguageTypeMap();
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -122,7 +122,7 @@ namespace BKTrans
         {
             Dispatcher.Invoke(() =>
             {
-                tb_source_text.Text = src_text;
+                textbox_source_text.Text = src_text;
             });
         }
 
@@ -130,7 +130,7 @@ namespace BKTrans
         {
             Dispatcher.Invoke(() =>
             {
-                tb_target_text.Text = target_text;
+                textbox_target_text.Text = target_text;
             });
         }
 
@@ -138,7 +138,7 @@ namespace BKTrans
         {
             return Dispatcher.Invoke(() =>
             {
-                return tb_source_text.Text;
+                return textbox_source_text.Text;
             });
         }
 
@@ -146,7 +146,7 @@ namespace BKTrans
         {
             return Dispatcher.Invoke(() =>
             {
-                return tb_target_text.Text;
+                return textbox_target_text.Text;
             });
         }
 
@@ -158,27 +158,80 @@ namespace BKTrans
         private void HideWnd()
         {
             Hide();
-            mTargetTextWindow.HideWnd();
+            _targetTextWindow.HideWnd();
             Thread.Sleep(250);
         }
 
         private void RestoreLanguageTypeMap()
         {
-            if (mOptions.language_type != null && mOptions.language_type.Length != 0)
+            string transType = BKTransMap.TransType.ElementAt(combobox_trans_type.SelectedIndex).Key;
+
+            List<string> ocrlantypes = BKTransMap.GetOCRLanguageTypeName(transType);
+            combobox_src_type.Items.Clear();
+            foreach (var ele in ocrlantypes)
             {
-                comboBox_src_text.SelectedItem = BKBaiduOCR.LanguageType[mOptions.language_type];
+                combobox_src_type.Items.Add(ele);
             }
-            if (mOptions.to != null && mOptions.to.Length != 0)
+
+            List<string> translantypes = BKTransMap.GetTransLanguageTypeName(transType);
+            combobox_target_type.Items.Clear();
+            foreach (var ele in translantypes)
             {
-                comboBox_target_text.SelectedItem = BKBaiduFanyi.LanguageType[mOptions.to];
+                combobox_target_type.Items.Add(ele);
+            }
+
+            string src_type = "";
+            string target_type = "";
+            if (transType == BKTransMap.TransType.ElementAt(0).Key)
+            {
+                src_type = _options.trans_baidu.from;
+                target_type = _options.trans_baidu.to;
+            }
+            else if (transType == BKTransMap.TransType.ElementAt(1).Key)
+            {
+                src_type = _options.trans_caiyun.from;
+                target_type = _options.trans_caiyun.to;
+            }
+
+            if (!string.IsNullOrEmpty(src_type))
+            {
+                combobox_src_type.SelectedItem = BKTransMap.GetOCRLanguageTypeName(transType, src_type);
+            }
+            if (!string.IsNullOrEmpty(target_type))
+            {
+                combobox_target_type.SelectedItem = BKTransMap.GetTransLanguageTypeName(transType, target_type);
             }
         }
 
         private void SaveLanguageTypeMap()
         {
-            mOptions.language_type = BKBaiduOCR.LanguageType.ElementAt(comboBox_src_text.SelectedIndex).Key;
-            mOptions.from = BKBaiduFanyi.LanguageType.ElementAt(comboBox_src_text.SelectedIndex).Key;
-            mOptions.to = BKBaiduFanyi.LanguageType.ElementAt(comboBox_target_text.SelectedIndex).Key;
+            string transType = BKTransMap.TransType.ElementAt(combobox_trans_type.SelectedIndex).Key;
+            _options.trans_type = transType;
+
+            string lantype = "";
+            string src_type = "";
+            string target_type = "";
+            BKTransMap.GetLanguageType(transType, combobox_src_type.SelectedIndex, combobox_target_type.SelectedIndex,
+                ref lantype, ref src_type, ref target_type);
+            _options.ocr_baidu.language_type = lantype;
+
+            if (transType == BKTransMap.TransType.ElementAt(0).Key)
+            {
+                _options.trans_baidu.from = src_type;
+                _options.trans_baidu.to = target_type;
+
+                _transSetting = _options.trans_baidu;
+                _transHandle = new BKTransBaidu();
+            }
+            else if (transType == BKTransMap.TransType.ElementAt(1).Key)
+            {
+                _options.trans_caiyun.from = src_type;
+                _options.trans_caiyun.to = target_type;
+
+                _transSetting = _options.trans_caiyun;
+                _transHandle = new BKTransCaiyun();
+            }
+            Settings.SaveSettings();
         }
 
         private void DoCaptureOCR(bool onlyTrans = false)
@@ -186,15 +239,15 @@ namespace BKTrans
             SaveLanguageTypeMap();
             BKScreenCapture.DataStruct capturedata;
 
-            if (mCapType == CaptureType.hotkey && !mCaptureRect.Size.IsEmpty && onlyTrans)
+            if (_captureType == CaptureType.hotkey && !_captureRect.Size.IsEmpty && onlyTrans)
                 capturedata = new BKScreenCapture().CaptureLastRegion();
             else
                 capturedata = new BKScreenCapture().CaptureRegion();
 
-            if (mCapType == CaptureType.button)
+            if (_captureType == CaptureType.button)
                 ShowWnd();
 
-            mCaptureRect = capturedata.captureRect;
+            _captureRect = capturedata.captureRect;
             do
             {
                 if (capturedata.captureBmp == null)
@@ -213,7 +266,7 @@ namespace BKTrans
                 }
 
                 SetSourceText("截取完成，等待OCR翻译...");
-                var ocrRequest = new BKBaiduOCR(mOptions.client_id, mOptions.client_secret);
+                var ocrRequest = new BKOCRBaidu();
                 ocrRequest.DoOCR((string ocrResult) =>
                 {
                     string ocrResultText = "";
@@ -238,7 +291,7 @@ namespace BKTrans
                     }
                     SetSourceText(ocrResultText);
                     Dispatcher.Invoke(() => DoTextTrans());
-                }, bmpData, mOptions.language_type);
+                }, _options.ocr_baidu, bmpData);
             } while (false);
 
         }
@@ -246,48 +299,29 @@ namespace BKTrans
         private void DoTextTrans()
         {
             SaveLanguageTypeMap();
-            SetTargetText("文本翻译中...");
-            var transTequest = new BKBaiduFanyi(mOptions.appid, mOptions.secretkey, "");
-            transTequest.DoFanyi((string transResult) =>
-            {
-                string transResultText = "";
-                using (JsonDocument jdocOcrResult = JsonDocument.Parse(transResult))
-                {
-                    do
-                    {
-                        var root_element = jdocOcrResult.RootElement;
-                        if (!root_element.TryGetProperty("trans_result", out JsonElement trasn_result))
-                        {
-                            transResultText = transResult;
-                            break;
-                        }
-                        foreach (JsonElement dstElem in trasn_result.EnumerateArray())
-                        {
-                            transResultText += dstElem.GetProperty("dst").GetString();
-                        }
-                    } while (false);
-                }
-                SetTargetText(transResultText);
 
-                mTargetTextWindow.SetTextRect(mCaptureRect);
-                mTargetTextWindow.SetText(transResultText);
-                if (mCapType == CaptureType.hotkey)
-                {
-                    mTargetTextWindow.ShowWnd();
-                }
-            }, GetSourceText(), mOptions.from, mOptions.to);
+            SetTargetText("文本翻译中...");
+            string transResultText = _transHandle.Trans(_transSetting, GetSourceText());
+            SetTargetText(transResultText);
+
+            _targetTextWindow.SetTextRect(_captureRect);
+            _targetTextWindow.SetText(transResultText);
+            if (_captureType == CaptureType.hotkey)
+            {
+                _targetTextWindow.ShowWnd();
+            }
         }
 
         private void Button_Click_Capture(object sender, RoutedEventArgs e)
         {
             HideWnd();
-            mCapType = CaptureType.button;
+            _captureType = CaptureType.button;
             Dispatcher.Invoke(() => DoCaptureOCR());
         }
 
         private void Button_Click_Trans(object sender, RoutedEventArgs e)
         {
-            mCapType = CaptureType.button;
+            _captureType = CaptureType.button;
             Dispatcher.Invoke(() => DoTextTrans());
         }
 
@@ -298,6 +332,11 @@ namespace BKTrans
                 Owner = this
             };
             settingsWindow.ShowDialog();
+        }
+
+        private void combobox_trans_type_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            RestoreLanguageTypeMap();
         }
 
         private void NotifyIcon_Open(object sender, EventArgs e)
@@ -326,14 +365,14 @@ namespace BKTrans
 
         private void NotifyIcon_Close(object sender, EventArgs e)
         {
-            mNotifyIcon.Visible = false;
-            mNotifyClose = true;
+            _notifyIcon.Visible = false;
+            _notifyClose = true;
             Close();
         }
 
         private void NotifyIcon_Capture(object sender, EventArgs e)
         {
-            mTargetTextWindow.HideWnd();
+            _targetTextWindow.HideWnd();
             Dispatcher.Invoke(() => DoCaptureOCR());
         }
 
@@ -345,21 +384,20 @@ namespace BKTrans
         private void NotifyIcon_Hide(object sender, EventArgs e)
         {
             Hide();
-            mTargetTextWindow.Hide();
+            _targetTextWindow.Hide();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (mNotifyClose)
+            if (_notifyClose)
             {
-                Settings.SaveSettings();
-                mTargetTextWindow.Close();
+                _targetTextWindow.Close();
                 e.Cancel = false;
             }
             else
             {
                 Hide();
-                mTargetTextWindow.Hide();
+                _targetTextWindow.Hide();
                 e.Cancel = true;
             }
         }
@@ -368,22 +406,21 @@ namespace BKTrans
         {
             if (wParam.ToInt64() == (int)HotKeyId.capture)
             {
-                mTargetTextWindow.HideWnd();
-                mCapType = CaptureType.hotkey;
+                _targetTextWindow.HideWnd();
+                _captureType = CaptureType.hotkey;
                 Dispatcher.Invoke(() => DoCaptureOCR());
             }
             else if (wParam.ToInt64() == (int)HotKeyId.trans)
             {
-                mCapType = CaptureType.hotkey;
+                _captureType = CaptureType.hotkey;
                 DoCaptureOCR(true);
             }
             else if (wParam.ToInt64() == (int)HotKeyId.hide)
             {
                 Hide();
-                mTargetTextWindow.Hide();
+                _targetTextWindow.Hide();
             }
             return IntPtr.Zero;
         }
-
     }
 }

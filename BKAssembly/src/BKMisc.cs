@@ -7,13 +7,38 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BKAssembly
 {
-    public class BKUtility
+    public class BKMisc
     {
         private static HttpClient mHttpClient = null;
         private static readonly object mHttpClientLock = new object();
+
+        public static HttpClient GetHttpClient(WebProxy httpProxy = null)
+        {
+            lock (mHttpClientLock)
+            {
+                if (mHttpClient == null)
+                {
+                    if (httpProxy != null)
+                    {
+                        var hanlder = new HttpClientHandler()
+                        {
+                            Proxy = httpProxy,
+                            UseProxy = true
+                        };
+                        mHttpClient = new(hanlder);
+                    }
+                    else
+                    {
+                        mHttpClient = new();
+                    }
+                }
+            }
+            return mHttpClient;
+        }
 
         public static string Bitmap2Base64String(Bitmap bmp)
         {
@@ -42,35 +67,11 @@ namespace BKAssembly
             return srcBuilder.ToString();
         }
 
-        public static HttpClient GetHttpClient(WebProxy httpProxy = null)
-        {
-            lock (mHttpClientLock)
-            {
-                if (mHttpClient == null)
-                {
-                    if (httpProxy != null)
-                    {
-                        var hanlder = new HttpClientHandler()
-                        {
-                            Proxy = httpProxy,
-                            UseProxy = true
-                        };
-                        mHttpClient = new(hanlder);
-                    }
-                    else
-                    {
-                        mHttpClient = new();
-                    }
-                }
-            }
-            return mHttpClient;
-        }
-
         public static string JsonSerialize<T>(T obj, bool ignoreNullValues = true, bool writeIndented = true)
         {
             JsonSerializerOptions options = new()
             {
-                IgnoreNullValues = ignoreNullValues,
+                DefaultIgnoreCondition = ignoreNullValues ? JsonIgnoreCondition.WhenWritingDefault : JsonIgnoreCondition.Never,
                 WriteIndented = writeIndented
             };
             return JsonSerializer.Serialize<T>(obj, options);

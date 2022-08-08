@@ -13,16 +13,20 @@ namespace BKTrans
         [Serializable]
         public class Options
         {
-            // Access Token参数
-            public string client_id { get; set; }
-            public string client_secret { get; set; }
-            // 百度ocr参数
-            public string language_type { get; set; }
-            // 百度翻译参数
-            public string appid { get; set; }
-            public string secretkey { get; set; }
-            public string from { get; set; }
-            public string to { get; set; }
+            // 翻译API
+            public string trans_type { get; set; }
+            // ocr参数
+            public BKOCRBaidu.SettingBaiduOCR ocr_baidu { get; set; }
+            // 翻译参数
+            public BKTransBaidu.SettingBaiduTrans trans_baidu { get; set; }
+            public BKTransCaiyun.SettingCaiyunTrans trans_caiyun { get; set; }
+
+            public Options()
+            {
+                ocr_baidu = new();
+                trans_baidu = new();
+                trans_caiyun = new();
+            }
         }
         private static Options mOptions;
 
@@ -32,25 +36,24 @@ namespace BKTrans
         {
             if (mOptions == null)
             {
+                mOptions = new Options();
                 if (mSettingsFilePath == null)
                 {
                     mSettingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "settings.json");
                 }
                 try
                 {
-                    mOptions = BKUtility.JsonDeserialize<Options>(BKUtility.LoadTextFile(mSettingsFilePath));
+                    mOptions = BKMisc.JsonDeserialize<Options>(BKMisc.LoadTextFile(mSettingsFilePath));
                 }
                 catch
                 {
-                    mOptions = new Options();
                 }
-
             }
             return mOptions;
         }
         public static void SaveSettings()
         {
-            BKUtility.SaveTextFile(mSettingsFilePath, BKUtility.JsonSerialize<Options>(mOptions));
+            BKMisc.SaveTextFile(mSettingsFilePath, BKMisc.JsonSerialize<Options>(mOptions));
         }
 
         public Settings()
@@ -59,23 +62,23 @@ namespace BKTrans
             LoadWindow();
         }
 
-
         protected void LoadWindow()
         {
             LoadSetting();
-            this.textBox_client_id.Text = mOptions.client_id;
-            this.textBox_client_secret.Text = mOptions.client_secret;
-            this.textBox_appid.Text = mOptions.appid;
-            this.textBox_secretkey.Text = mOptions.secretkey;
+            this.textBox_client_id.Text = mOptions.ocr_baidu.client_id;
+            this.textBox_client_secret.Text = mOptions.ocr_baidu.client_secret;
+            this.textBox_baidu_appid.Text = mOptions.trans_baidu.appid;
+            this.textBox_baidu_secretkey.Text = mOptions.trans_baidu.secretkey;
+            this.textBox_caiyun_token.Text = mOptions.trans_caiyun.token;
         }
-
 
         protected void btn_ok_Click(object sender, RoutedEventArgs e)
         {
-            mOptions.client_id = this.textBox_client_id.Text;
-            mOptions.client_secret = this.textBox_client_secret.Text;
-            mOptions.appid = this.textBox_appid.Text;
-            mOptions.secretkey = this.textBox_secretkey.Text;
+            mOptions.ocr_baidu.client_id = this.textBox_client_id.Text;
+            mOptions.ocr_baidu.client_secret = this.textBox_client_secret.Text;
+            mOptions.trans_baidu.appid = this.textBox_baidu_appid.Text;
+            mOptions.trans_baidu.secretkey = this.textBox_baidu_secretkey.Text;
+            mOptions.trans_caiyun.token = this.textBox_caiyun_token.Text;
             this.Close();
         }
 

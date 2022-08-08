@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Net.Http;
 using System.Text;
@@ -9,71 +8,61 @@ using System.Web;
 
 namespace BKAssembly
 {
-    public class BKBaiduOCR
+    public class BKOCRBaidu
     {
-        public static readonly Dictionary<string, string> LanguageType = new()
+        public class SettingBaiduOCR
         {
-            {"CHN_ENG", "中英文"},
-            {"JAP", "日语"},
-            {"ENG", "英语"},
-            {"KOR", "韩语"},
-            {"FRE", "法语"},
-            {"GER", "德语"},
-            {"RUS", "俄语"},
-            {"SPA", "西班牙语"},
-            {"POR", "葡萄牙语"},
-            {"ITA", "意大利语"}
-        };
-
-        private readonly string mApiKey;
-        private readonly string mSecretKey;
-
-        private readonly string mAkGrantType;
-        private readonly string mAkOauthUri;
-        private string mAccessToken;
-
-        private readonly string mGeneralBasicUri;
-        private string mLanguageType;
-
-        private Action<string> mOcrResultCallback;
-        private Bitmap mOcrSrcImage;
-
-        public BKBaiduOCR(string apikey, string secretkey)
-        {
-            mApiKey = apikey;
-            mSecretKey = secretkey;
-
-            // 常量，参考：https://ai.baidu.com/ai-doc/REFERENCE/Ck3dwjhhu
-            mAkGrantType = "client_credentials";
-            mAkOauthUri = "https://aip.baidubce.com/oauth/2.0/token";
-
-            // 常量，参考：https://ai.baidu.com/ai-doc/OCR/zk3h7xz52
-            mGeneralBasicUri = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic";
+            public string grant_type { get; set; }
+            public string client_id { get; set; }
+            public string client_secret { get; set; }
+            public string language_type { get; set; }
         }
 
-        public async void DoOCR(Action<string> resultCallback, Bitmap image, string languageType)
+        private SettingBaiduOCR _setting;
+        private string _accessToken;
+        private readonly string _akOauthUri;
+
+        private readonly string _generalBasicUri;
+
+        private Action<string> _ocrResultCallback;
+        private Bitmap _ocrSrcImage;
+
+        public BKOCRBaidu()
         {
-            mOcrResultCallback = resultCallback;
-            mOcrSrcImage = (Bitmap)image.Clone();
-            mLanguageType = languageType;
+            // 常量，参考：https://ai.baidu.com/ai-doc/REFERENCE/Ck3dwjhhu
+            _akOauthUri = "https://aip.baidubce.com/oauth/2.0/token";
+
+            // 常量，参考：https://ai.baidu.com/ai-doc/OCR/zk3h7xz52
+            _generalBasicUri = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic";
+        }
+
+        public async void DoOCR(Action<string> resultCallback, SettingBaiduOCR setting, Bitmap image)
+        {
+            _ocrResultCallback = resultCallback;
+            _ocrSrcImage = (Bitmap)image.Clone();
+            _setting = setting;
+            if (string.IsNullOrEmpty(_setting.grant_type))
+            {
+                _setting.grant_type = "client_credentials";
+            }
             await Task.Run(() =>
             {
                 string result;
                 do
                 {
-                    if (string.IsNullOrEmpty(mApiKey) || string.IsNullOrEmpty(mSecretKey))
+                    if (string.IsNullOrEmpty(_setting.client_id) || string.IsNullOrEmpty(_setting.client_secret))
                     {
                         result = string.Format("{{\"error\":\"{0}\"}}", "api key or secret key is empty.");
                         break;
                     }
-                    if (string.IsNullOrEmpty(mAccessToken) && !GetAccessToken())
+                    if (string.IsNullOrEmpty(_accessToken) && !GetAccessToken())
                     {
                         result = string.Format("{{\"error\":\"{0}\"}}", "access token acquisition failed.");
                         break;
                     }
                     result = GeneralBasic();
                 } while (false);
-                mOcrResultCallback(result);
+                _ocrResultCallback(result);
             });
         }
 
@@ -83,14 +72,14 @@ namespace BKAssembly
             do
             {
                 string contentString = string.Format("grant_type={0}&client_id={1}&client_secret={2}",
-                   mAkGrantType, mApiKey, mSecretKey);
+                   _setting.grant_type, _setting.client_id, _setting.client_secret);
 
-                HttpRequestMessage akReqMsg = new HttpRequestMessage(HttpMethod.Post, mAkOauthUri)
+                HttpRequestMessage akReqMsg = new HttpRequestMessage(HttpMethod.Post, _akOauthUri)
                 {
                     Content = new StringContent(contentString)
                 };
 
-                HttpClient akReq = BKUtility.GetHttpClient();
+                HttpClient akReq = BKMisc.GetHttpClient();
                 HttpResponseMessage akRes = akReq.SendAsync(akReqMsg).Result;
 
                 using (JsonDocument jdocAkResult = JsonDocument.Parse(akRes.Content.ReadAsStringAsync().Result))
@@ -101,8 +90,8 @@ namespace BKAssembly
                     {
                         break;
                     }
-                    mAccessToken = tokenElement.GetString();
-                    if (string.IsNullOrEmpty(mAccessToken))
+                    _accessToken = tokenElement.GetString();
+                    if (string.IsNullOrEmpty(_accessToken))
                     {
                         break;
                     }
@@ -118,14 +107,14 @@ namespace BKAssembly
             do
             {
                 string contentString = string.Format("image={0}&language_type={1}",
-                    HttpUtility.UrlEncode(BKUtility.Bitmap2Base64String(mOcrSrcImage)), mLanguageType);
+                    HttpUtility.UrlEncode(BKMisc.Bitmap2Base64String(_ocrSrcImage)), _setting.language_type);
 
-                HttpRequestMessage ocrReqMsg = new HttpRequestMessage(HttpMethod.Post, mGeneralBasicUri + "?access_token=" + mAccessToken)
+                HttpRequestMessage ocrReqMsg = new HttpRequestMessage(HttpMethod.Post, _generalBasicUri + "?access_token=" + _accessToken)
                 {
                     Content = new StringContent(contentString, Encoding.UTF8, "application/x-www-form-urlencoded")
                 };
 
-                HttpClient ocrReq = BKUtility.GetHttpClient();
+                HttpClient ocrReq = BKMisc.GetHttpClient();
                 HttpResponseMessage ocrRes = ocrReq.SendAsync(ocrReqMsg).Result;
 
                 ocrResult = ocrRes.Content.ReadAsStringAsync().Result;
