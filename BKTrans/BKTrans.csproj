@@ -6,6 +6,7 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <Platforms>x64;x86</Platforms>
+    <ApplicationIcon>BKTrans.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +18,10 @@
 
   <ItemGroup>
     <ApplicationDefinition Include="src/App.xaml"></ApplicationDefinition>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="BKTrans.ico" />
   </ItemGroup>
 
   <ItemGroup>

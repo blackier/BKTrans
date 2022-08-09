@@ -10,7 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="0.8*"/>
             <RowDefinition Height="45"/>
         </Grid.RowDefinitions>
         <GroupBox x:Name="groupBox_OCRSettings" Header="百度OCR" BorderThickness="0,1,0,0" Visibility="Visible">

@@ -22,7 +22,7 @@
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <Rectangle Stroke="Black" Grid.RowSpan="2" StrokeDashArray="5 5" />
-            <TextBox x:Name="tb_main" Text="" TextWrapping="Wrap" Grid.Row="1" BorderBrush="{x:Null}" Padding="1,1,1,1" Background="#B2FFFFFF" Foreground="Black" FontSize="14" />
+            <TextBox x:Name="tb_main" Text="" TextWrapping="Wrap" Grid.Row="1" BorderBrush="{x:Null}" Padding="1,1,1,1" Background="#A6FFFFFF" Foreground="Black" FontSize="14" />
         </Grid>
 
         <DockPanel Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
