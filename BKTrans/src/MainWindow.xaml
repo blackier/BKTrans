@@ -22,7 +22,7 @@
             <Label Content="原文" HorizontalAlignment="Left" Margin="0,3,0,3" VerticalAlignment="Center" Height="25" Width="35" />
             <ComboBox x:Name="combobox_src_type" Width="60" SelectedIndex="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" HorizontalAlignment="Left" Margin="35,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" />
             <ComboBox x:Name="combobox_trans_type" Width="60" SelectedIndex="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" HorizontalAlignment="Right" Margin="0,0,40,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" SelectionChanged="combobox_trans_type_SelectionChanged" />
-            <Button x:Name="btn_setting" HorizontalAlignment="Right" Height="20" VerticalAlignment="Center" Width="20" Margin="0,0,10,0" BorderBrush="{x:Null}" Foreground="{x:Null}" Click="Button_Click_Setting">
+            <Button x:Name="btn_setting" HorizontalAlignment="Right" Height="20" VerticalAlignment="Center" Width="20" Margin="0,0,10,0" BorderBrush="{x:Null}" Foreground="{x:Null}" Click="btn_setting_Click">
                 <Button.Background>
                     <ImageBrush ImageSource="/resource/setting.png" />
                 </Button.Background>
@@ -60,8 +60,8 @@
                 <ColumnDefinition Width="1*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            <Button x:Name="btn_capture" Content="截取" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="20" Click="Button_Click_Capture" />
-            <Button x:Name="btn_trans" Content="翻译" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="20" Click="Button_Click_Trans" />
+            <Button x:Name="btn_capture" Content="截取" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="20" Click="btn_capture_Click" />
+            <Button x:Name="btn_trans" Content="翻译" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="20" Click="btn_trans_Click" />
         </Grid>
     </Grid>
 </Window>

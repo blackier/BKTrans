@@ -5,9 +5,15 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
-    <Platforms>x64;x86</Platforms>
+    <Platforms>x64;x86;AnyCPU</Platforms>
     <ApplicationIcon>BKTrans.ico</ApplicationIcon>
+    <Version>0.1.0</Version>
+    <Copyright>Copyright © 2021-2022 (GPLv3)</Copyright>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="publish\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="resource\capture.png" />

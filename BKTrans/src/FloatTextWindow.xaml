@@ -16,18 +16,18 @@
             <ColumnDefinition Width="32" />
         </Grid.ColumnDefinitions>
 
-        <Grid x:Name="mGridShowTrans" Grid.RowSpan="2" Visibility="Visible">
+        <Grid x:Name="grid_textbox" Grid.RowSpan="2" Visibility="Visible">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*" />
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <Rectangle Stroke="Black" Grid.RowSpan="2" StrokeDashArray="5 5" />
-            <TextBox x:Name="tb_main" Text="" TextWrapping="Wrap" Grid.Row="1" BorderBrush="{x:Null}" Padding="1,1,1,1" Background="#A6FFFFFF" Foreground="Black" FontSize="14" />
+            <TextBox x:Name="textbox_transtext" Text="" TextWrapping="Wrap" Grid.Row="1" BorderBrush="{x:Null}" Padding="1,1,1,1" Background="#A6FFFFFF" Foreground="Black" FontSize="14" />
         </Grid>
 
         <DockPanel Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-            <Button x:Name="bt_trans" HorizontalAlignment="Left" Height="20" VerticalAlignment="Bottom" Width="20" BorderBrush="{x:Null}" Foreground="{x:Null}" Click="Button_Click_Trans" DockPanel.Dock="Bottom">
+            <Button x:Name="btn_trans" HorizontalAlignment="Left" Height="20" VerticalAlignment="Bottom" Width="20" BorderBrush="{x:Null}" Foreground="{x:Null}" DockPanel.Dock="Bottom" Click="btn_trans_Click">
                 <Button.Background>
                     <ImageBrush ImageSource="/resource/trans.png" />
                 </Button.Background>
@@ -45,7 +45,7 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
-            <Button x:Name="btn_capture" Content="Button" Width="20" Height="20" DockPanel.Dock="Bottom" HorizontalAlignment="Left" VerticalAlignment="Bottom" BorderBrush="{x:Null}" Click="Button_Click_Capture">
+            <Button x:Name="btn_capture" Content="Button" Width="20" Height="20" DockPanel.Dock="Bottom" HorizontalAlignment="Left" VerticalAlignment="Bottom" BorderBrush="{x:Null}" Click="btn_capture_Click">
                 <Button.Background>
                     <ImageBrush ImageSource="/resource/capture.png" />
                 </Button.Background>
@@ -63,7 +63,7 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
-            <Button x:Name="btn_hide" Content="Button" Width="20" Height="20" DockPanel.Dock="Bottom" HorizontalAlignment="Left" VerticalAlignment="Bottom" BorderBrush="{x:Null}" Click="Button_Click_Hide">
+            <Button x:Name="btn_hide" Content="Button" Width="20" Height="20" DockPanel.Dock="Bottom" HorizontalAlignment="Left" VerticalAlignment="Bottom" BorderBrush="{x:Null}" Click="btn_hide_Click">
                 <Button.Background>
                     <ImageBrush ImageSource="/resource/hide.png" />
                 </Button.Background>

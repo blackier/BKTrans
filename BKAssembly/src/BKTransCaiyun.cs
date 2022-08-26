@@ -18,6 +18,14 @@ namespace BKAssembly
             public string request_id { get; set; }
             public string from { get; set; }
             public string to { get; set; }
+
+            public SettingCaiyunTrans()
+            {
+                token = "";
+                request_id = "";
+                from = "ja";
+                to = "zh";
+            }
         }
 
         private string _translateUri;
@@ -36,7 +44,7 @@ namespace BKAssembly
             {
                 if (string.IsNullOrEmpty(setting.token))
                 {
-                    result = string.Format("{{\"error\":\"{0}\"}}", "toekn is empty.");
+                    result = "token is empty.";
                     break;
                 }
                 if (string.IsNullOrEmpty(setting.request_id))

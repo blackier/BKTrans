@@ -23,37 +23,38 @@ namespace BKTrans
 
             public Options()
             {
+                trans_type = "baidu";
                 ocr_baidu = new();
                 trans_baidu = new();
                 trans_caiyun = new();
             }
         }
-        private static Options mOptions;
+        private static Options _options;
 
-        private static string mSettingsFilePath;
+        private static string _settingsFilePath;
 
         public static Options LoadSetting()
         {
-            if (mOptions == null)
+            if (_options == null)
             {
-                mOptions = new Options();
-                if (mSettingsFilePath == null)
+                _options = new Options();
+                if (_settingsFilePath == null)
                 {
-                    mSettingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "settings.json");
+                    _settingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "settings.json");
                 }
                 try
                 {
-                    mOptions = BKMisc.JsonDeserialize<Options>(BKMisc.LoadTextFile(mSettingsFilePath));
+                    _options = BKMisc.JsonDeserialize<Options>(BKMisc.LoadTextFile(_settingsFilePath));
                 }
                 catch
                 {
                 }
             }
-            return mOptions;
+            return _options;
         }
         public static void SaveSettings()
         {
-            BKMisc.SaveTextFile(mSettingsFilePath, BKMisc.JsonSerialize<Options>(mOptions));
+            BKMisc.SaveTextFile(_settingsFilePath, BKMisc.JsonSerialize<Options>(_options));
         }
 
         public Settings()
@@ -65,20 +66,20 @@ namespace BKTrans
         protected void LoadWindow()
         {
             LoadSetting();
-            this.textBox_client_id.Text = mOptions.ocr_baidu.client_id;
-            this.textBox_client_secret.Text = mOptions.ocr_baidu.client_secret;
-            this.textBox_baidu_appid.Text = mOptions.trans_baidu.appid;
-            this.textBox_baidu_secretkey.Text = mOptions.trans_baidu.secretkey;
-            this.textBox_caiyun_token.Text = mOptions.trans_caiyun.token;
+            this.textbox_client_id.Text = _options.ocr_baidu.client_id;
+            this.textbox_client_secret.Text = _options.ocr_baidu.client_secret;
+            this.textbox_baidu_appid.Text = _options.trans_baidu.appid;
+            this.textbox_baidu_secretkey.Text = _options.trans_baidu.secretkey;
+            this.textbox_caiyun_token.Text = _options.trans_caiyun.token;
         }
 
         protected void btn_ok_Click(object sender, RoutedEventArgs e)
         {
-            mOptions.ocr_baidu.client_id = this.textBox_client_id.Text;
-            mOptions.ocr_baidu.client_secret = this.textBox_client_secret.Text;
-            mOptions.trans_baidu.appid = this.textBox_baidu_appid.Text;
-            mOptions.trans_baidu.secretkey = this.textBox_baidu_secretkey.Text;
-            mOptions.trans_caiyun.token = this.textBox_caiyun_token.Text;
+            _options.ocr_baidu.client_id = this.textbox_client_id.Text;
+            _options.ocr_baidu.client_secret = this.textbox_client_secret.Text;
+            _options.trans_baidu.appid = this.textbox_baidu_appid.Text;
+            _options.trans_baidu.secretkey = this.textbox_baidu_secretkey.Text;
+            _options.trans_caiyun.token = this.textbox_caiyun_token.Text;
             this.Close();
         }
 

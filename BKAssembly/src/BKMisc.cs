@@ -13,14 +13,14 @@ namespace BKAssembly
 {
     public class BKMisc
     {
-        private static HttpClient mHttpClient = null;
-        private static readonly object mHttpClientLock = new object();
+        private static HttpClient _httpClient = null;
+        private static readonly object _httpClientLock = new object();
 
         public static HttpClient GetHttpClient(WebProxy httpProxy = null)
         {
-            lock (mHttpClientLock)
+            lock (_httpClientLock)
             {
-                if (mHttpClient == null)
+                if (_httpClient == null)
                 {
                     if (httpProxy != null)
                     {
@@ -29,15 +29,15 @@ namespace BKAssembly
                             Proxy = httpProxy,
                             UseProxy = true
                         };
-                        mHttpClient = new(hanlder);
+                        _httpClient = new(hanlder);
                     }
                     else
                     {
-                        mHttpClient = new();
+                        _httpClient = new();
                     }
                 }
             }
-            return mHttpClient;
+            return _httpClient;
         }
 
         public static string Bitmap2Base64String(Bitmap bmp)

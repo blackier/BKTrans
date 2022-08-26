@@ -18,6 +18,15 @@ namespace BKAssembly
             public string salt { get; set; }
             public string from { get; set; }
             public string to { get; set; }
+
+            public SettingBaiduTrans()
+            {
+                appid = "";
+                secretkey = "";
+                salt = "";
+                from = "jp";
+                to = "zh";
+            }
         }
 
         private readonly string _translateUri;

@@ -22,12 +22,6 @@ namespace BKTrans
             hide = 0xB003
         }
 
-        private enum CaptureType
-        {
-            button,
-            hotkey
-        }
-
         private NotifyIcon _notifyIcon;
         private bool _notifyClose;
 
@@ -37,8 +31,9 @@ namespace BKTrans
 
         private Settings.Options _options;
 
-        private CaptureType _captureType;
+        private bool _showFloatWindow;
 
+        private BKOCRBaidu _ocrBaidu;
         private BKTransBase _transHandle;
         private BKSetting _transSetting;
 
@@ -46,7 +41,7 @@ namespace BKTrans
         {
             InitializeComponent();
 
-            _captureType = CaptureType.button;
+            _showFloatWindow = false;
             _options = Settings.LoadSetting();
             // 设置支持语言列表
             foreach (var ele in BKTransMap.TransType)
@@ -83,11 +78,11 @@ namespace BKTrans
                 {
                     case FloatTextWindow.ButtonType.Capture:
                         _targetTextWindow.HideWnd();
-                        _captureType = CaptureType.hotkey;
+                        _showFloatWindow = true;
                         Dispatcher.Invoke(() => DoCaptureOCR());
                         break;
                     case FloatTextWindow.ButtonType.Trans:
-                        _captureType = CaptureType.hotkey;
+                        _showFloatWindow = true;
                         DoCaptureOCR(true);
                         break;
                     default:
@@ -239,12 +234,12 @@ namespace BKTrans
             SaveLanguageTypeMap();
             BKScreenCapture.DataStruct capturedata;
 
-            if (_captureType == CaptureType.hotkey && !_captureRect.Size.IsEmpty && onlyTrans)
+            if (_showFloatWindow && !_captureRect.Size.IsEmpty && onlyTrans)
                 capturedata = new BKScreenCapture().CaptureLastRegion();
             else
                 capturedata = new BKScreenCapture().CaptureRegion();
 
-            if (_captureType == CaptureType.button)
+            if (!_showFloatWindow)
                 ShowWnd();
 
             _captureRect = capturedata.captureRect;
@@ -266,34 +261,41 @@ namespace BKTrans
                 }
 
                 SetSourceText("截取完成，等待OCR翻译...");
-                var ocrRequest = new BKOCRBaidu();
-                ocrRequest.DoOCR((string ocrResult) =>
-                {
-                    string ocrResultText = "";
-                    using (JsonDocument jdocOcrResult = JsonDocument.Parse(ocrResult))
-                    {
-                        var rootElement = jdocOcrResult.RootElement;
-                        if (!rootElement.TryGetProperty("words_result", out JsonElement wordsResult))
-                        {
-                            ocrResultText = ocrResult;
-                        }
-                        else
-                        {
-                            foreach (JsonElement words_elem in wordsResult.EnumerateArray())
-                            {
-                                ocrResultText += words_elem.GetProperty("words").GetString();
-                            }
-                            ocrResultText = ocrResultText.Replace("!", "。");
-                            ocrResultText = ocrResultText.Replace("!?", "。");
-                            ocrResultText = ocrResultText.Replace("~ト", "~");
-                            ocrResultText = ocrResultText.Replace("~?", "~");
-                        }
-                    }
-                    SetSourceText(ocrResultText);
-                    Dispatcher.Invoke(() => DoTextTrans());
-                }, _options.ocr_baidu, bmpData);
-            } while (false);
 
+                if (_ocrBaidu == null)
+                    _ocrBaidu = new BKOCRBaidu();
+
+                string ocrResultText = "";
+                string ocrResult = _ocrBaidu.OCR(_options.ocr_baidu, bmpData);
+                try
+                {
+                    JsonDocument jdocOcrResult = JsonDocument.Parse(ocrResult);
+                    var rootElement = jdocOcrResult.RootElement;
+                    if (!rootElement.TryGetProperty("words_result", out JsonElement wordsResult))
+                    {
+                        ocrResultText = ocrResult;
+                    }
+                    else
+                    {
+                        foreach (JsonElement words_elem in wordsResult.EnumerateArray())
+                            ocrResultText += words_elem.GetProperty("words").GetString();
+                    }
+                }
+                catch
+                {
+                    ocrResultText = ocrResult;
+                    SetSourceText(ocrResultText);
+                    if (_showFloatWindow)
+                    {
+                        _targetTextWindow.SetText("OCR翻译失败，打开程序界面查看原因。");
+                        _targetTextWindow.SetTextRect(_captureRect);
+                        _targetTextWindow.ShowWnd();
+                    }
+                    break;
+                }
+                SetSourceText(ocrResultText);
+                Dispatcher.Invoke(() => DoTextTrans());
+            } while (false);
         }
 
         private void DoTextTrans()
@@ -306,37 +308,10 @@ namespace BKTrans
 
             _targetTextWindow.SetTextRect(_captureRect);
             _targetTextWindow.SetText(transResultText);
-            if (_captureType == CaptureType.hotkey)
+            if (_showFloatWindow)
             {
                 _targetTextWindow.ShowWnd();
             }
-        }
-
-        private void Button_Click_Capture(object sender, RoutedEventArgs e)
-        {
-            HideWnd();
-            _captureType = CaptureType.button;
-            Dispatcher.Invoke(() => DoCaptureOCR());
-        }
-
-        private void Button_Click_Trans(object sender, RoutedEventArgs e)
-        {
-            _captureType = CaptureType.button;
-            Dispatcher.Invoke(() => DoTextTrans());
-        }
-
-        private void Button_Click_Setting(object sender, RoutedEventArgs e)
-        {
-            var settingsWindow = new Settings
-            {
-                Owner = this
-            };
-            settingsWindow.ShowDialog();
-        }
-
-        private void combobox_trans_type_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            RestoreLanguageTypeMap();
         }
 
         private void NotifyIcon_Open(object sender, EventArgs e)
@@ -373,11 +348,13 @@ namespace BKTrans
         private void NotifyIcon_Capture(object sender, EventArgs e)
         {
             _targetTextWindow.HideWnd();
+            _showFloatWindow = true;
             Dispatcher.Invoke(() => DoCaptureOCR());
         }
 
         private void NotifyIcon_Trans(object sender, EventArgs e)
         {
+            _showFloatWindow = true;
             DoCaptureOCR(true);
         }
 
@@ -407,13 +384,13 @@ namespace BKTrans
             if (wParam.ToInt64() == (int)HotKeyId.capture)
             {
                 _targetTextWindow.HideWnd();
-                _captureType = CaptureType.hotkey;
+                _showFloatWindow = true;
                 Dispatcher.Invoke(() => DoCaptureOCR());
             }
             else if (wParam.ToInt64() == (int)HotKeyId.trans)
             {
-                _captureType = CaptureType.hotkey;
-                DoCaptureOCR(true);
+                _showFloatWindow = true;
+                Dispatcher.Invoke(() => DoCaptureOCR(true));
             }
             else if (wParam.ToInt64() == (int)HotKeyId.hide)
             {
@@ -421,6 +398,33 @@ namespace BKTrans
                 _targetTextWindow.Hide();
             }
             return IntPtr.Zero;
+        }
+
+        private void combobox_trans_type_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            RestoreLanguageTypeMap();
+        }
+
+        private void btn_setting_Click(object sender, RoutedEventArgs e)
+        {
+            var settingsWindow = new Settings
+            {
+                Owner = this
+            };
+            settingsWindow.ShowDialog();
+        }
+
+        private void btn_capture_Click(object sender, RoutedEventArgs e)
+        {
+            HideWnd();
+            _showFloatWindow = false;
+            Dispatcher.Invoke(() => DoCaptureOCR());
+        }
+
+        private void btn_trans_Click(object sender, RoutedEventArgs e)
+        {
+            _showFloatWindow = false;
+            Dispatcher.Invoke(() => DoTextTrans());
         }
     }
 }

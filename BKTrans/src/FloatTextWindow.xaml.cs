@@ -12,14 +12,13 @@ namespace BKTrans
             Trans
         };
 
-        private Action<ButtonType> mfOnButtonClick;
+        private Action<ButtonType> _onButtonClick;
         public FloatTextWindow(Action<ButtonType> OnButtonClick = null)
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.Manual;
             ShowInTaskbar = false;
-            mfOnButtonClick = OnButtonClick;
-
+            _onButtonClick = OnButtonClick;
         }
 
         public void SetTextRect(Rectangle rect)
@@ -41,7 +40,7 @@ namespace BKTrans
         {
             Dispatcher.Invoke(() =>
             {
-                tb_main.Text = t;
+                textbox_transtext.Text = t;
             });
 
         }
@@ -60,21 +59,21 @@ namespace BKTrans
             Hide();
         }
 
-        private void Button_Click_Trans(object sender, RoutedEventArgs e)
+        private void btn_capture_Click(object sender, RoutedEventArgs e)
         {
-            if (mfOnButtonClick != null)
-                mfOnButtonClick(ButtonType.Trans);
+            if (_onButtonClick != null)
+                _onButtonClick(ButtonType.Capture);
         }
 
-        private void Button_Click_Capture(object sender, RoutedEventArgs e)
+        private void btn_trans_Click(object sender, RoutedEventArgs e)
         {
-            if (mfOnButtonClick != null)
-                mfOnButtonClick(ButtonType.Capture);
+            if (_onButtonClick != null)
+                _onButtonClick(ButtonType.Trans);
         }
 
-        private void Button_Click_Hide(object sender, RoutedEventArgs e)
+        private void btn_hide_Click(object sender, RoutedEventArgs e)
         {
-            mGridShowTrans.Visibility = mGridShowTrans.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+            grid_textbox.Visibility = grid_textbox.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
         }
     }
 

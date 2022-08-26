@@ -16,6 +16,14 @@ namespace BKAssembly
             public string client_id { get; set; }
             public string client_secret { get; set; }
             public string language_type { get; set; }
+
+            public SettingBaiduOCR()
+            {
+                grant_type = "";
+                client_id = "";
+                client_secret = "";
+                language_type = "";
+            }
         }
 
         private SettingBaiduOCR _setting;
@@ -24,7 +32,6 @@ namespace BKAssembly
 
         private readonly string _generalBasicUri;
 
-        private Action<string> _ocrResultCallback;
         private Bitmap _ocrSrcImage;
 
         public BKOCRBaidu()
@@ -36,34 +43,32 @@ namespace BKAssembly
             _generalBasicUri = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic";
         }
 
-        public async void DoOCR(Action<string> resultCallback, SettingBaiduOCR setting, Bitmap image)
+        public string OCR(SettingBaiduOCR setting, Bitmap image)
         {
-            _ocrResultCallback = resultCallback;
             _ocrSrcImage = (Bitmap)image.Clone();
             _setting = setting;
-            if (string.IsNullOrEmpty(_setting.grant_type))
+            string result = "";
+            do
             {
-                _setting.grant_type = "client_credentials";
-            }
-            await Task.Run(() =>
-            {
-                string result;
-                do
+                if (string.IsNullOrEmpty(_setting.grant_type))
                 {
-                    if (string.IsNullOrEmpty(_setting.client_id) || string.IsNullOrEmpty(_setting.client_secret))
-                    {
-                        result = string.Format("{{\"error\":\"{0}\"}}", "api key or secret key is empty.");
-                        break;
-                    }
-                    if (string.IsNullOrEmpty(_accessToken) && !GetAccessToken())
-                    {
-                        result = string.Format("{{\"error\":\"{0}\"}}", "access token acquisition failed.");
-                        break;
-                    }
-                    result = GeneralBasic();
-                } while (false);
-                _ocrResultCallback(result);
-            });
+                    _setting.grant_type = "client_credentials";
+                }
+
+                if (string.IsNullOrEmpty(_setting.client_id) || string.IsNullOrEmpty(_setting.client_secret))
+                {
+                    result = "api key or secret key is empty.";
+                    break;
+                }
+                if (string.IsNullOrEmpty(_accessToken) && !GetAccessToken())
+                {
+                    result = "access token acquisition failed.";
+                    break;
+                }
+
+                result = GeneralBasic();
+            } while (false);
+            return result;
         }
 
         private bool GetAccessToken()

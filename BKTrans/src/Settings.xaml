@@ -5,16 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BKTrans"
         mc:Ignorable="d"
-        Title="Settings" Height="300" Width="400" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterScreen" MinHeight="300" MinWidth="400">
-    <Grid x:Name="Grid_SettingsMain">
+        Title="Settings" Height="300" Width="400" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterOwner" MinHeight="300" MinWidth="400">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="0.8*"/>
             <RowDefinition Height="45"/>
         </Grid.RowDefinitions>
-        <GroupBox x:Name="groupBox_OCRSettings" Header="百度OCR" BorderThickness="0,1,0,0" Visibility="Visible">
-            <Grid x:Name="Grid_OCRSettings">
+        <GroupBox Header="百度OCR" BorderThickness="0,1,0,0" Visibility="Visible">
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="5"/>
                     <RowDefinition Height="25"/>
@@ -29,12 +29,12 @@
                 </Grid.ColumnDefinitions>
                 <Label x:Name="label_client_id" Content="client__id:" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
                 <Label x:Name="label_client_secret" Content="client__secret:" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
-                <TextBox x:Name="textBox_client_id" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
-                <TextBox x:Name="textBox_client_secret" Text="" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                <TextBox x:Name="textbox_client_id" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                <TextBox x:Name="textbox_client_secret" Text="" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="groupBox_TransBaiduSettings" Header="百度翻译" Grid.Row="1" BorderThickness="0,1,0,0">
-            <Grid x:Name="Grid_TransBaiduFanyiSettings">
+        <GroupBox Header="百度翻译" Grid.Row="1" BorderThickness="0,1,0,0">
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="5"/>
                     <RowDefinition Height="25"/>
@@ -49,12 +49,12 @@
                 </Grid.ColumnDefinitions>
                 <Label x:Name="label_baidu_appid" Content="appid:" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
                 <Label x:Name="label_baidu_secretkey" Content="secretkey:" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
-                <TextBox x:Name="textBox_baidu_appid" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
-                <TextBox x:Name="textBox_baidu_secretkey" Text="" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                <TextBox x:Name="textbox_baidu_appid" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                <TextBox x:Name="textbox_baidu_secretkey" Text="" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="groupBox_TransCaiyunSettings" Header="彩云小译" Grid.Row="2" BorderThickness="0,1,0,0">
-            <Grid x:Name="Grid_TransCaiyunSettings">
+        <GroupBox Header="彩云小译" Grid.Row="2" BorderThickness="0,1,0,0">
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="5"/>
                     <RowDefinition Height="25"/>
@@ -68,7 +68,7 @@
                     <ColumnDefinition Width="15"/>
                 </Grid.ColumnDefinitions>
                 <Label x:Name="label_caiyun_token" Content="token:" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
-                <TextBox x:Name="textBox_caiyun_token" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                <TextBox x:Name="textbox_caiyun_token" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
             </Grid>
         </GroupBox>
         <Grid Grid.Row="3">
