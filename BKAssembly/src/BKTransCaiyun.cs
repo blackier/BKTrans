@@ -79,7 +79,7 @@ namespace BKAssembly
                     if (!root_element.TryGetProperty("target", out JsonElement trasn_result))
                         break;
 
-                    result = trasn_result.GetString();
+                    result = trasn_result.ToString();
                 }
 
             } while (false);

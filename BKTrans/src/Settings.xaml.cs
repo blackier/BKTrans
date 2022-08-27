@@ -21,12 +21,23 @@ namespace BKTrans
             public BKTransBaidu.SettingBaiduTrans trans_baidu { get; set; }
             public BKTransCaiyun.SettingCaiyunTrans trans_caiyun { get; set; }
 
+            // 截图翻译事件间隔
+            public int auto_captrue_trans_interval { get; set; }
+            public int auto_captrue_trans_countdown { get; set; }
+            public bool auto_captrue_trans_open { get; set; }
+            public float auto_captrue_trans_similarity { get; set; }
+
             public Options()
             {
                 trans_type = "baidu";
                 ocr_baidu = new();
                 trans_baidu = new();
                 trans_caiyun = new();
+
+                auto_captrue_trans_interval = 150;
+                auto_captrue_trans_countdown = 2;
+                auto_captrue_trans_open = false;
+                auto_captrue_trans_similarity = 0.95f;
             }
         }
         private static Options _options;
@@ -80,6 +91,8 @@ namespace BKTrans
             _options.trans_baidu.appid = this.textbox_baidu_appid.Text;
             _options.trans_baidu.secretkey = this.textbox_baidu_secretkey.Text;
             _options.trans_caiyun.token = this.textbox_caiyun_token.Text;
+
+            SaveSettings();
             this.Close();
         }
 

@@ -26,7 +26,6 @@ namespace BKAssembly
             screenshot.CaptureCursor = false;
 
             Bitmap canvas = screenshot.CaptureFullscreen();
-
             using (RegionCaptureForm form = new RegionCaptureForm(RegionCaptureMode.Default, new RegionCaptureOptions(), canvas))
             {
                 form.ShowDialog();
@@ -40,7 +39,7 @@ namespace BKAssembly
                 Rectangle screenRectangle = CaptureHelpers.GetScreenBounds();
                 result.captureRect = Rectangle.Intersect(regionArea, new Rectangle(0, 0, screenRectangle.Width, screenRectangle.Height));
             }
-
+            canvas.Dispose();
             return result;
         }
 
@@ -50,8 +49,9 @@ namespace BKAssembly
 
             if (RegionCaptureForm.LastRegionFillPath != null)
             {
-                Screenshot screenshot = new Screenshot();
-                result.captureBmp = RegionCaptureTasks.ApplyRegionPathToImage(screenshot.CaptureFullscreen(), RegionCaptureForm.LastRegionFillPath, out result.captureRect);
+                var screenshot = new Screenshot().CaptureFullscreen();
+                result.captureBmp = RegionCaptureTasks.ApplyRegionPathToImage(screenshot, RegionCaptureForm.LastRegionFillPath, out result.captureRect);
+                screenshot.Dispose();
             }
             else
             {
