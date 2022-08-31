@@ -62,7 +62,7 @@ namespace BKAssembly
                     Content = new StringContent(contentString, Encoding.UTF8, "application/x-www-form-urlencoded")
                 };
 
-                HttpClient transReq = BKMisc.GetHttpClient();
+                HttpClient transReq = BKHttpClient.DefaultHttpClient();
                 HttpResponseMessage ocrRes = transReq.SendAsync(transReqMsg).Result;
 
                 result = ocrRes.Content.ReadAsStringAsync().Result;
@@ -76,7 +76,7 @@ namespace BKAssembly
                         break;
 
                     foreach (JsonElement dstElem in trasn_result.EnumerateArray())
-                        transResultText += dstElem.GetProperty("dst").GetString();
+                        transResultText += dstElem.GetProperty("dst").ToString();
 
                     result = transResultText;
                 }

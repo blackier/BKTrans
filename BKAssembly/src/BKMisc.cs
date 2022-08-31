@@ -4,9 +4,9 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.Intrinsics.X86;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -14,33 +14,6 @@ namespace BKAssembly
 {
     public class BKMisc
     {
-        private static HttpClient _httpClient = null;
-        private static readonly object _httpClientLock = new object();
-
-        public static HttpClient GetHttpClient(WebProxy httpProxy = null)
-        {
-            lock (_httpClientLock)
-            {
-                if (_httpClient == null)
-                {
-                    if (httpProxy != null)
-                    {
-                        var hanlder = new HttpClientHandler()
-                        {
-                            Proxy = httpProxy,
-                            UseProxy = true
-                        };
-                        _httpClient = new(hanlder);
-                    }
-                    else
-                    {
-                        _httpClient = new();
-                    }
-                }
-            }
-            return _httpClient;
-        }
-
         public static string Bitmap2Base64String(Bitmap bmp)
         {
             MemoryStream buffStream = new MemoryStream();
@@ -118,12 +91,13 @@ namespace BKAssembly
             return srcBuilder.ToString();
         }
 
-        public static string JsonSerialize<T>(T obj, bool ignoreNullValues = true, bool writeIndented = true)
+        public static string JsonSerialize<T>(T obj, bool ignoreNullValues = true, bool writeIndented = true, JavaScriptEncoder charsetEncoder = null)
         {
             JsonSerializerOptions options = new()
             {
                 DefaultIgnoreCondition = ignoreNullValues ? JsonIgnoreCondition.WhenWritingDefault : JsonIgnoreCondition.Never,
-                WriteIndented = writeIndented
+                WriteIndented = writeIndented,
+                Encoder = charsetEncoder
             };
             return JsonSerializer.Serialize<T>(obj, options);
         }

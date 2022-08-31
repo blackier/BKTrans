@@ -84,7 +84,7 @@ namespace BKAssembly
                     Content = new StringContent(contentString)
                 };
 
-                HttpClient akReq = BKMisc.GetHttpClient();
+                HttpClient akReq = BKHttpClient.DefaultHttpClient();
                 HttpResponseMessage akRes = akReq.SendAsync(akReqMsg).Result;
 
                 using (JsonDocument jdocAkResult = JsonDocument.Parse(akRes.Content.ReadAsStringAsync().Result))
@@ -119,7 +119,7 @@ namespace BKAssembly
                     Content = new StringContent(contentString, Encoding.UTF8, "application/x-www-form-urlencoded")
                 };
 
-                HttpClient ocrReq = BKMisc.GetHttpClient();
+                HttpClient ocrReq = BKHttpClient.DefaultHttpClient();
                 HttpResponseMessage ocrRes = ocrReq.SendAsync(ocrReqMsg).Result;
 
                 ocrResult = ocrRes.Content.ReadAsStringAsync().Result;

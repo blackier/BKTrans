@@ -9,69 +9,111 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="0.8*"/>
             <RowDefinition Height="45"/>
         </Grid.RowDefinitions>
-        <GroupBox Header="百度OCR" BorderThickness="0,1,0,0" Visibility="Visible">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="5"/>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="1*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="15"/>
-                    <ColumnDefinition Width="85"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="15"/>
-                </Grid.ColumnDefinitions>
-                <Label x:Name="label_client_id" Content="client__id:" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
-                <Label x:Name="label_client_secret" Content="client__secret:" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
-                <TextBox x:Name="textbox_client_id" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
-                <TextBox x:Name="textbox_client_secret" Text="" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
-            </Grid>
-        </GroupBox>
-        <GroupBox Header="百度翻译" Grid.Row="1" BorderThickness="0,1,0,0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="5"/>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="1*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="15"/>
-                    <ColumnDefinition Width="85"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="15"/>
-                </Grid.ColumnDefinitions>
-                <Label x:Name="label_baidu_appid" Content="appid:" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
-                <Label x:Name="label_baidu_secretkey" Content="secretkey:" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
-                <TextBox x:Name="textbox_baidu_appid" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
-                <TextBox x:Name="textbox_baidu_secretkey" Text="" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
-            </Grid>
-        </GroupBox>
-        <GroupBox Header="彩云小译" Grid.Row="2" BorderThickness="0,1,0,0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="5"/>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="1*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="15"/>
-                    <ColumnDefinition Width="85"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="15"/>
-                </Grid.ColumnDefinitions>
-                <Label x:Name="label_caiyun_token" Content="token:" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
-                <TextBox x:Name="textbox_caiyun_token" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
-            </Grid>
-        </GroupBox>
-        <Grid Grid.Row="3">
+        <TabControl Grid.Row="0">
+            <TabItem Header="API" Width="70">
+                <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                    <Grid >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="0.8*"/>
+                        </Grid.RowDefinitions>
+                        <GroupBox Header="百度OCR" BorderThickness="0,1,0,0" Visibility="Visible">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="5"/>
+                                    <RowDefinition Height="25"/>
+                                    <RowDefinition Height="25"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="85"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="15"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="client__id:" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
+                                <Label Content="client__secret:" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
+                                <TextBox x:Name="textbox_baiduocr_client_id" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                                <TextBox x:Name="textbox_baiduocr_client_secret" Text="" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="百度翻译" Grid.Row="1" BorderThickness="0,1,0,0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="5"/>
+                                    <RowDefinition Height="25"/>
+                                    <RowDefinition Height="25"/>
+                                    <RowDefinition Height="25"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="85"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="15"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="appid:" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
+                                <Label Content="secretkey:" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
+                                <Label Content="salt:" Grid.Row="3" Grid.Column="1" VerticalContentAlignment="Center"/>
+                                <TextBox x:Name="textbox_baiduapi_appid" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                                <TextBox x:Name="textbox_baiduapi_secretkey" Text="" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                                <TextBox x:Name="textbox_baiduapi_salt" Text="" Grid.Row="3" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="彩云小译" Grid.Row="2" BorderThickness="0,1,0,0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="5"/>
+                                    <RowDefinition Height="25"/>
+                                    <RowDefinition Height="25"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="85"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="15"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="token:" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
+                                <Label Content="request_id:" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
+                                <TextBox x:Name="textbox_caiyunapi_token" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                                <TextBox x:Name="textbox_caiyunapi_request_id" Text="" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="OCR替换" Width="70">
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="15"/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox x:Name="combox_ocr_replace" Grid.Column="0" HorizontalAlignment="Left" Margin="8,0,0,0" VerticalAlignment="Center" Width="90" SelectionChanged="combox_ocr_replace_SelectionChanged"/>
+                        <TextBox x:Name="textbox_ocr_replace_new" Grid.Column="1"  HorizontalAlignment="Left" Margin="8,0,0,0" VerticalAlignment="Center" Width="90"/>
+                        <Button x:Name="btn_ocr_replace_new" Grid.Column="2" Content="添加" Width="35" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Click="btn_ocr_replace_new_Click"/>
+                        <Button x:Name="btn_ocr_replace_delete" Grid.Column="2" Content="删除" Width="35" HorizontalAlignment="Left" Margin="55,0,0,0" VerticalAlignment="Center" Click="btn_ocr_replace_delete_Click"/>
+                    </Grid>
+                    <DataGrid x:Name="datagrid_ocr_replace" AutoGenerateColumns="False" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HeadersVisibility="Column" VerticalGridLinesBrush="LightGray" HorizontalGridLinesBrush="LightGray" Background="White">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="源文本" Binding="{Binding replace_src}" Width="1*" />
+                            <DataGridTextColumn Header="替换文本" Binding="{Binding replace_dst}" Width="1*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
@@ -82,6 +124,5 @@
             <Button x:Name="btn_cancle" Content="取消" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="20" Click="btn_cancle_Click"/>
             <Button x:Name="btn_ok" Content="确定" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Height="20" Click="btn_ok_Click"/>
         </Grid>
-        
     </Grid>
 </Window>

@@ -22,6 +22,7 @@
             <Label Content="原文" HorizontalAlignment="Left" Margin="0,3,0,3" VerticalAlignment="Center" Height="25" Width="35" />
             <ComboBox x:Name="combobox_src_type" Width="60" SelectedIndex="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" HorizontalAlignment="Left" Margin="35,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" />
             <ComboBox x:Name="combobox_trans_type" Width="60" SelectedIndex="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" HorizontalAlignment="Right" Margin="0,0,40,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" SelectionChanged="combobox_trans_type_SelectionChanged" />
+            <ComboBox x:Name="combobox_ocr_replace" Width="70" SelectedIndex="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Height="20" HorizontalAlignment="Right" Margin="0,0,110,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" SelectionChanged="combobox_ocr_replace_SelectionChanged" />
             <Button x:Name="btn_setting" HorizontalAlignment="Right" Height="20" VerticalAlignment="Center" Width="20" Margin="0,0,10,0" BorderBrush="{x:Null}" Foreground="{x:Null}" Click="btn_setting_Click">
                 <Button.Background>
                     <ImageBrush ImageSource="/resource/setting.png" />

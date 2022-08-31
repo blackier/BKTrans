@@ -1,9 +1,7 @@
 ﻿using BKAssembly;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -43,7 +41,8 @@ namespace BKTrans
         private int _autoCaptrueTransCountdown;
         private bool _autoCaptrueTransStart;
 
-        int cou11nt = 0;
+        private bool _combox_updating = false;
+        private string _ocr_replace_splite_string = "\n+++===+++===+++\n";
         public MainWindow()
         {
             InitializeComponent();
@@ -60,13 +59,17 @@ namespace BKTrans
                 _autoCaptrueTransTimer.Start();
 
             // 设置支持语言列表
-            foreach (var ele in BKTransMap.TransType)
-            {
-                combobox_trans_type.Items.Add(ele.Value);
-            }
+            _combox_updating = true;
+            combobox_trans_type.ItemsSource = BKTransMap.TransType.Values.ToList();
             combobox_trans_type.SelectedItem = BKTransMap.TransType[_options.trans_type];
+            _combox_updating = false;
             RestoreLanguageTypeMap();
 
+            // 设置OCR文本替换
+            _combox_updating = true;
+            combobox_ocr_replace.ItemsSource = _options.ocr_replace.Keys.ToList();
+            combobox_ocr_replace.SelectedItem = _options.ocr_replace_select;
+            _combox_updating = false;
             // 设置托盘图标
             _notifyClose = false;
             var notifyIconCms = new ContextMenuStrip();
@@ -86,7 +89,7 @@ namespace BKTrans
                 Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath),
                 ContextMenuStrip = notifyIconCms
             };
-            _notifyIcon.Click += new EventHandler(NotifyIcon_Open);
+            _notifyIcon.Click += new EventHandler(NotifyIcon_Click);
 
             // 关联关闭函数，设置为最小化到托盘
             Closing += new CancelEventHandler(Window_Closing);
@@ -148,10 +151,12 @@ namespace BKTrans
 
         private string GetSourceText()
         {
-            return Dispatcher.Invoke(() =>
+            string text = Dispatcher.Invoke(() =>
             {
                 return textbox_source_text.Text;
             });
+            text = text.Split(_ocr_replace_splite_string)[0];
+            return text;
         }
 
         private string GetTargetText()
@@ -178,19 +183,8 @@ namespace BKTrans
         {
             string transType = BKTransMap.TransType.ElementAt(combobox_trans_type.SelectedIndex).Key;
 
-            List<string> ocrlantypes = BKTransMap.GetOCRLanguageTypeName(transType);
-            combobox_src_type.Items.Clear();
-            foreach (var ele in ocrlantypes)
-            {
-                combobox_src_type.Items.Add(ele);
-            }
-
-            List<string> translantypes = BKTransMap.GetTransLanguageTypeName(transType);
-            combobox_target_type.Items.Clear();
-            foreach (var ele in translantypes)
-            {
-                combobox_target_type.Items.Add(ele);
-            }
+            combobox_src_type.ItemsSource = BKTransMap.GetOCRLanguageTypeName(transType);
+            combobox_target_type.ItemsSource = BKTransMap.GetTransLanguageTypeName(transType);
 
             string src_type = "";
             string target_type = "";
@@ -256,10 +250,12 @@ namespace BKTrans
             else
                 capturedata = new BKScreenCapture().CaptureRegion();
 
+            _captureRect = capturedata.captureRect;
+            _floatTextWindow.SetTextRect(_captureRect);
             if (showMainWindow)
                 ShowWnd();
-
-            _captureRect = capturedata.captureRect;
+            if (showFloatWindow)
+                _floatTextWindow.ShowWnd();
             do
             {
                 if (capturedata.captureBmp == null)
@@ -311,49 +307,61 @@ namespace BKTrans
                     }
                     break;
                 }
+                if (string.IsNullOrEmpty(ocrResultText))
+                {
+                    SetSourceText("");
+                    SetTargetText("");
+                    break;
+                }
+                if (_options.ocr_replace[_options.ocr_replace_select].Count > 0)
+                {
+                    string replacetext = (string)ocrResultText.Clone();
+                    foreach (var replacemap in _options.ocr_replace[_options.ocr_replace_select])
+                        replacetext = replacetext.Replace(replacemap.replace_src, replacemap.replace_dst);
+
+                    ocrResultText = replacetext + _ocr_replace_splite_string + ocrResultText;
+                }
                 SetSourceText(ocrResultText);
-                Dispatcher.Invoke(() => DoTextTrans(showFloatWindow));
+
+                Dispatcher.Invoke(() => DoTextTrans());
             } while (false);
         }
 
-        private async void DoTextTrans(bool showFloatWindow = false)
+        private async void DoTextTrans()
         {
             SaveLanguageTypeMap();
 
-            SetTargetText("文本翻译中...");
-            string transResultText = await Task.Run(() => _transHandle.Trans(_transSetting, GetSourceText()));
-            SetTargetText(transResultText);
+            string srctext = GetSourceText();
+            if (string.IsNullOrEmpty(srctext))
+                return;
 
-            _floatTextWindow.SetTextRect(_captureRect);
+            SetTargetText("文本翻译中...");
+            string transResultText = await Task.Run(() => _transHandle.Trans(_transSetting, srctext));
+
+            SetTargetText(transResultText);
             _floatTextWindow.SetText(transResultText);
-            if (showFloatWindow)
-            {
-                _floatTextWindow.ShowWnd();
-            }
         }
 
+        private void NotifyIcon_Click(object sender, EventArgs e)
+        {
+            if (e.GetType().Name == "MouseEventArgs")
+            {
+                if (((MouseEventArgs)e).Button != MouseButtons.Left)
+                    return;
+            }
+            if (WindowState == WindowState.Minimized)
+            {
+                WindowState = WindowState.Normal;
+            }
+            if (!IsVisible)
+            {
+                Show();
+            }
+            Activate();
+        }
         private void NotifyIcon_Open(object sender, EventArgs e)
         {
-            do
-            {
-                if (e.GetType().Name == "MouseEventArgs")
-                {
-                    var mouse_event_args = (MouseEventArgs)e;
-                    if (mouse_event_args.Button != MouseButtons.Left)
-                    {
-                        break;
-                    }
-                }
-                if (WindowState == WindowState.Minimized)
-                {
-                    WindowState = WindowState.Normal;
-                }
-                if (!IsVisible)
-                {
-                    Show();
-                }
-                Activate();
-            } while (false);
+            _floatTextWindow.ShowWnd();
         }
 
         private void NotifyIcon_Close(object sender, EventArgs e)
@@ -446,8 +454,6 @@ namespace BKTrans
                 float similarity = BKMisc.BitmapDHashCompare(newcaptruebmp, _captureBmp);
                 if (similarity < _options.auto_captrue_trans_similarity)
                 {
-                    newcaptruebmp.Save("p1_" + cou11nt.ToString(), ImageFormat.Bmp);
-                    _captureBmp.Save("p2_" + cou11nt.ToString(), ImageFormat.Bmp);
                     _captureBmp = newcaptruebmp;
                     _autoCaptrueTransStart = true;
                     break;
@@ -468,6 +474,8 @@ namespace BKTrans
 
         private void combobox_trans_type_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            if (_combox_updating)
+                return;
             RestoreLanguageTypeMap();
         }
 
@@ -478,17 +486,30 @@ namespace BKTrans
                 Owner = this
             };
             settingsWindow.ShowDialog();
+
+            _combox_updating = true;
+            combobox_ocr_replace.ItemsSource = _options.ocr_replace.Keys.ToList();
+            combobox_ocr_replace.SelectedItem = _options.ocr_replace_select;
+            _combox_updating = false;
         }
 
         private void btn_capture_Click(object sender, RoutedEventArgs e)
         {
+            bool floatwindowVisible = _floatTextWindow.IsVisible;
             HideWnd();
-            Dispatcher.Invoke(() => DoCaptureOCR());
+            Dispatcher.Invoke(() => DoCaptureOCR(false, floatwindowVisible));
         }
 
         private void btn_trans_Click(object sender, RoutedEventArgs e)
         {
             Dispatcher.Invoke(() => DoTextTrans());
+        }
+
+        private void combobox_ocr_replace_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (_combox_updating)
+                return;
+            _options.ocr_replace_select = (string)combobox_ocr_replace.SelectedItem;
         }
     }
 }

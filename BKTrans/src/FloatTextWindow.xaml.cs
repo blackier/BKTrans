@@ -16,7 +16,6 @@ namespace BKTrans
         public FloatTextWindow(Action<ButtonType> OnButtonClick = null)
         {
             InitializeComponent();
-            WindowStartupLocation = WindowStartupLocation.Manual;
             ShowInTaskbar = false;
             _onButtonClick = OnButtonClick;
         }
@@ -48,15 +47,15 @@ namespace BKTrans
         {
             Dispatcher.Invoke(() =>
             {
+                Topmost = true;
                 Show();
                 Activate();
-                Topmost = true;
             });
         }
 
         public void HideWnd()
         {
-            Hide();
+            Dispatcher.Invoke(() => Hide());
         }
 
         private void btn_capture_Click(object sender, RoutedEventArgs e)

@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BKAssembly
@@ -49,7 +50,7 @@ namespace BKAssembly
                 }
                 if (string.IsNullOrEmpty(setting.request_id))
                 {
-                    setting.request_id = "BKTrans";
+                    setting.request_id = string.Format("{0}", (new Random()).Next(100000, 999999));
                 }
 
                 // 请求
@@ -67,7 +68,7 @@ namespace BKAssembly
                         }
                 };
 
-                HttpClient transReq = BKMisc.GetHttpClient();
+                HttpClient transReq = BKHttpClient.DefaultHttpClient();
                 HttpResponseMessage ocrRes = transReq.SendAsync(transReqMsg).Result;
 
                 result = ocrRes.Content.ReadAsStringAsync().Result;
