@@ -39,7 +39,7 @@ namespace BKAssembly
                 Rectangle screenRectangle = CaptureHelpers.GetScreenBounds();
                 result.captureRect = Rectangle.Intersect(regionArea, new Rectangle(0, 0, screenRectangle.Width, screenRectangle.Height));
             }
-            canvas.Dispose();
+            canvas?.Dispose();
             return result;
         }
 
@@ -51,7 +51,7 @@ namespace BKAssembly
             {
                 var screenshot = new Screenshot().CaptureFullscreen();
                 result.captureBmp = RegionCaptureTasks.ApplyRegionPathToImage(screenshot, RegionCaptureForm.LastRegionFillPath, out result.captureRect);
-                screenshot.Dispose();
+                screenshot?.Dispose();
             }
             else
             {

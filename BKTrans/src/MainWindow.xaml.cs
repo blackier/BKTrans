@@ -47,6 +47,11 @@ namespace BKTrans
         {
             InitializeComponent();
 
+            // 异常处理
+            Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+
             _options = Settings.LoadSetting();
 
             // 自动截图翻译
@@ -100,16 +105,51 @@ namespace BKTrans
                 {
                     case FloatTextWindow.ButtonType.Capture:
                         _floatTextWindow.HideWnd();
-                        Dispatcher.Invoke(() => DoCaptureOCR(false, true, false));
+                        Dispatcher.InvokeAsync(() => DoCaptureOCR(false, true, false));
                         break;
                     case FloatTextWindow.ButtonType.Trans:
-                        DoCaptureOCR(true, true, false);
+                        Dispatcher.InvokeAsync(() => DoCaptureOCR(true, true, false));
                         break;
                     default:
                         break;
                 }
 
             });
+        }
+
+        private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            ExceptionHandler("TaskScheduler_UnobservedTaskException", e.Exception);
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            ExceptionHandler("CurrentDomain_UnhandledException", e.ExceptionObject as Exception);
+        }
+
+        private void Dispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            ExceptionHandler("Dispatcher_UnhandledException", e.Exception);
+            e.Handled = true;
+        }
+
+        private void ExceptionHandler(string exception_type, Exception e)
+        {
+            string error_msg = "";
+            do
+            {
+                if (exception_type != null)
+                    error_msg += exception_type + ": ";
+                if (e == null)
+                    break;
+                error_msg += e.Message + "\n";
+                error_msg += e.StackTrace + "\n\n";
+                if (e.InnerException == null)
+                    break;
+                error_msg += e.InnerException.Message + "\n";
+                error_msg += e.InnerException.StackTrace + "\n\n";
+            } while (false);
+            SetTargetText(error_msg);
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -261,7 +301,7 @@ namespace BKTrans
                 if (capturedata.captureBmp == null)
                     break;
 
-                var bmpData = (Bitmap)capturedata.captureBmp.Clone();
+                var bmpData = capturedata.captureBmp;
                 if (bmpData.Height < 15 || bmpData.Width < 15)
                 {
                     SetSourceText("截取完成，截取最短边要求至少15px...");
@@ -273,6 +313,7 @@ namespace BKTrans
                     break;
                 }
 
+                _captureBmp?.Dispose();
                 _captureBmp = bmpData;
                 SetSourceText("截取完成，等待OCR翻译...");
 
@@ -317,7 +358,8 @@ namespace BKTrans
                 {
                     string replacetext = (string)ocrResultText.Clone();
                     foreach (var replacemap in _options.ocr_replace[_options.ocr_replace_select])
-                        replacetext = replacetext.Replace(replacemap.replace_src, replacemap.replace_dst);
+                        if (!string.IsNullOrEmpty(replacemap.replace_src))
+                            replacetext = replacetext.Replace(replacemap.replace_src, replacemap.replace_dst);
 
                     ocrResultText = replacetext + _ocr_replace_splite_string + ocrResultText;
                 }
@@ -374,7 +416,7 @@ namespace BKTrans
         private void NotifyIcon_Capture(object sender, EventArgs e)
         {
             _floatTextWindow.HideWnd();
-            Dispatcher.Invoke(() => DoCaptureOCR(false, true, false));
+            Dispatcher.InvokeAsync(() => DoCaptureOCR(false, true, false));
         }
 
         private void NotifyIcon_Trans(object sender, EventArgs e)
@@ -425,11 +467,11 @@ namespace BKTrans
             if (wParam.ToInt64() == (int)HotKeyId.capture)
             {
                 _floatTextWindow.HideWnd();
-                Dispatcher.Invoke(() => DoCaptureOCR(false, true, false));
+                Dispatcher.InvokeAsync(() => DoCaptureOCR(false, true, false));
             }
             else if (wParam.ToInt64() == (int)HotKeyId.trans)
             {
-                Dispatcher.Invoke(() => DoCaptureOCR(true, true, false));
+                Dispatcher.InvokeAsync(() => DoCaptureOCR(true, true, false));
             }
             else if (wParam.ToInt64() == (int)HotKeyId.hide)
             {
@@ -446,26 +488,35 @@ namespace BKTrans
                     break;
                 if (_captureBmp == null)
                     break;
+
+                if (_autoCaptrueTransStart)
+                {
+                    // 倒数
+                    _autoCaptrueTransCountdown--;
+                    if (_autoCaptrueTransCountdown > 0)
+                        return;
+                    // 再次对比
+                }
+
                 var newcaptruebmp = new BKScreenCapture().CaptureLastRegion().captureBmp;
                 if (newcaptruebmp == null)
                     break;
 
-
                 float similarity = BKMisc.BitmapDHashCompare(newcaptruebmp, _captureBmp);
                 if (similarity < _options.auto_captrue_trans_similarity)
                 {
+                    // 发生变化
+                    _captureBmp?.Dispose();
                     _captureBmp = newcaptruebmp;
                     _autoCaptrueTransStart = true;
                     break;
                 }
+                newcaptruebmp.Dispose();
 
-                _autoCaptrueTransCountdown--;
-                if (_autoCaptrueTransCountdown > 0)
-                    return;
                 if (_autoCaptrueTransStart)
                 {
-                    Dispatcher.Invoke(() => DoCaptureOCR(true, true, false));
                     _autoCaptrueTransStart = false;
+                    Dispatcher.InvokeAsync(() => DoCaptureOCR(true, true, false));
                 }
             } while (false);
 
@@ -497,12 +548,12 @@ namespace BKTrans
         {
             bool floatwindowVisible = _floatTextWindow.IsVisible;
             HideWnd();
-            Dispatcher.Invoke(() => DoCaptureOCR(false, floatwindowVisible));
+            Dispatcher.InvokeAsync(() => DoCaptureOCR(false, floatwindowVisible));
         }
 
         private void btn_trans_Click(object sender, RoutedEventArgs e)
         {
-            Dispatcher.Invoke(() => DoTextTrans());
+            Dispatcher.InvokeAsync(() => DoTextTrans());
         }
 
         private void combobox_ocr_replace_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)

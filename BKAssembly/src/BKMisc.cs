@@ -2,8 +2,6 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Net;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -25,7 +23,11 @@ namespace BKAssembly
         {
             Bitmap img = new Bitmap(width, height);
             Graphics g = Graphics.FromImage(img);
-            g.Clear(Color.White);
+
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+
             g.DrawImage(bmp, 0, 0, width, height);
 
             return img;
