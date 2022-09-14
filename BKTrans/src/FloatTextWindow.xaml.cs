@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BKAssembly;
+using System;
 using System.Drawing;
 using System.Windows;
 
@@ -10,7 +11,8 @@ namespace BKTrans
         {
             Capture,
             Trans,
-            AutoTrans
+            AutoTrans,
+            GragMove
         };
 
 
@@ -22,20 +24,23 @@ namespace BKTrans
             _onButtonClick = OnButtonClick;
         }
 
-        public void SetTextRect(Rectangle rect)
+        public void SetTextRect(RectangleF rect)
         {
             Dispatcher.Invoke(() =>
             {
-                var w_1 = (double)System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
-                var w_2 = (double)SystemParameters.PrimaryScreenWidth;
-                var p = w_2 / w_1;
-
-                Left = rect.X * p;
-                Top = rect.Y * p;
-                Width = rect.Width * p + 32;
-                Height = (rect.Height * p) * 2;
+                var p = BKMisc.ScreenScaling();
+                Left = rect.X / p;
+                Top = rect.Y / p;
+                Width = rect.Width / p + 40;
+                Height = (rect.Height / p) * 2;
             });
 
+        }
+
+        public RectangleF GetTextRect()
+        {
+            var p = BKMisc.ScreenScaling();
+            return new RectangleF((float)(Left * p), (float)(Top * p), (float)((Width - 40) * p), (float)((Height / 2 * p)));
         }
         public void SetText(string t)
         {
@@ -53,6 +58,7 @@ namespace BKTrans
                 checkbox_autotrans.IsChecked = start;
             });
         }
+
         public void ShowWnd()
         {
             Dispatcher.Invoke(() =>
@@ -90,6 +96,21 @@ namespace BKTrans
             checkbox_autotrans.IsChecked = !checkbox_autotrans.IsChecked;
             if (_onButtonClick != null)
                 _onButtonClick(ButtonType.AutoTrans, checkbox_autotrans.IsChecked);
+        }
+
+        private void btn_drag_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            bool? autotrans_checked = checkbox_autotrans.IsChecked;
+            if (_onButtonClick != null)
+                _onButtonClick(ButtonType.AutoTrans, false);
+
+            DragMove();
+
+            if (_onButtonClick != null)
+            {
+                _onButtonClick(ButtonType.GragMove, null);
+                _onButtonClick(ButtonType.AutoTrans, autotrans_checked);
+            }
         }
     }
 

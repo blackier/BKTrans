@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -26,7 +27,7 @@ namespace BKTrans
         private NotifyIcon _notifyIcon;
         private bool _notifyClose;
 
-        private Rectangle _captureRect;
+        private RectangleF _captureRect;
         private Bitmap _captureBmp;
 
         private FloatTextWindow _floatTextWindow;
@@ -45,6 +46,8 @@ namespace BKTrans
         private string _ocrReplaceSpliteString = "\n+++===+++===+++\n";
 
         private string _tsmenuitemAutotransName = "tsmenuitem_autotrans";
+
+        static int iss = 0;
         public MainWindow()
         {
             InitializeComponent();
@@ -314,12 +317,13 @@ namespace BKTrans
             BKScreenCapture.DataStruct capturedata;
 
             if (captrueLast)
-                capturedata = new BKScreenCapture().CaptureLastRegion();
+               capturedata = new BKScreenCapture().CaptureCustomRegion(_floatTextWindow.GetTextRect());
             else
                 capturedata = new BKScreenCapture().CaptureRegion();
 
             _captureRect = capturedata.captureRect;
             _floatTextWindow.SetTextRect(_captureRect);
+
             if (showMainWindow)
                 ShowWnd();
             if (showFloatWindow)
@@ -516,14 +520,20 @@ namespace BKTrans
                     // 再次对比
                 }
 
-                var newcaptruebmp = new BKScreenCapture().CaptureLastRegion().captureBmp;
+                var t = new BKScreenCapture().CaptureCustomRegion(_floatTextWindow.GetTextRect());
+                var newcaptruebmp = t.captureBmp;
                 if (newcaptruebmp == null)
                     break;
-
+ 
                 float similarity = BKMisc.BitmapDHashCompare(newcaptruebmp, _captureBmp);
+
+                iss++;
                 if (similarity < _options.auto_captrue_trans_similarity)
                 {
                     // 发生变化
+                    //newcaptruebmp.Save(string.Format("{0}_{1}_1.png", iss, similarity), ImageFormat.Png);
+                    //_captureBmp.Save(string.Format("{0}_{1}_2.png", iss, similarity), ImageFormat.Png);
+
                     _captureBmp?.Dispose();
                     _captureBmp = newcaptruebmp;
                     _autoCaptrueTransStart = true;
@@ -532,10 +542,8 @@ namespace BKTrans
                 newcaptruebmp.Dispose();
 
                 if (_autoCaptrueTransStart)
-                {
-                    _autoCaptrueTransStart = false;
                     Dispatcher.InvokeAsync(() => DoCaptureOCR(true, true, false));
-                }
+                _autoCaptrueTransStart = false;
             } while (false);
 
             _autoCaptrueTransCountdown = _options.auto_captrue_trans_countdown;

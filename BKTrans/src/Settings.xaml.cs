@@ -57,7 +57,7 @@ namespace BKTrans
                 trans_caiyun = new();
 
                 auto_captrue_trans_interval = 150;
-                auto_captrue_trans_countdown = 3;
+                auto_captrue_trans_countdown = 5;
                 auto_captrue_trans_open = false;
                 auto_captrue_trans_similarity = 0.95f;
 

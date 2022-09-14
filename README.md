@@ -92,7 +92,7 @@ BKTrans的所有设置都会保存在exe所在目录的`setting.json`文件里�
   "auto_captrue_trans_interval": 150,
   // 自动翻译发现截图区域发生改变后，
   // 再次截图对比的倒数
-  "auto_captrue_trans_countdown": 3,
+  "auto_captrue_trans_countdown": 5,
   // 自动翻译是否开启
   "auto_captrue_trans_open": true,
   // 自动翻译截图区域相似度，

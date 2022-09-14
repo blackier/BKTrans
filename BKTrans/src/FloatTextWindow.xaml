@@ -41,10 +41,15 @@
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <Rectangle Stroke="Black" Grid.RowSpan="2" StrokeDashArray="5 5" />
-            <TextBox x:Name="textbox_transtext" Text="" TextWrapping="Wrap" Grid.Row="1" BorderBrush="{x:Null}" Padding="1,1,1,1" Background="#A6FFFFFF" Foreground="Black" FontSize="14" />
+            <TextBox x:Name="textbox_transtext" TextWrapping="Wrap" Grid.Row="1" BorderBrush="{x:Null}" Padding="1,1,1,1" Background="#A6FFFFFF" FontSize="16" FontWeight="Bold" />
         </Grid>
 
         <WrapPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Bottom">
+            <Button x:Name="btn_drag" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" PreviewMouseLeftButtonDown="btn_drag_PreviewMouseLeftButtonDown">
+                <Button.Background>
+                    <ImageBrush ImageSource="/resource/drag.png" />
+                </Button.Background>
+            </Button>
             <Button x:Name="btn_hide" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" Click="btn_hide_Click">
                 <Button.Background>
                     <ImageBrush ImageSource="/resource/hide.png" />

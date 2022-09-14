@@ -7,6 +7,8 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Windows;
+using System.Windows.Media;
 
 namespace BKAssembly
 {
@@ -131,6 +133,15 @@ namespace BKAssembly
                 retBool = false;
             }
             return retBool;
+        }
+
+        public static double ScreenScaling()
+        {
+            Matrix m =
+PresentationSource.FromVisual(Application.Current.MainWindow).CompositionTarget.TransformToDevice;
+            //double dx = m.M11;
+            //double dy = m.M22;
+            return m.M11;
         }
     }
 }

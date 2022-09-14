@@ -10,7 +10,7 @@ namespace BKAssembly
         public struct DataStruct
         {
             public Bitmap captureBmp;
-            public Rectangle captureRect;
+            public RectangleF captureRect;
         }
 
         public BKScreenCapture()
@@ -35,28 +35,40 @@ namespace BKAssembly
 
             if (RegionCaptureForm.LastRegionFillPath != null)
             {
-                Rectangle regionArea = Rectangle.Round(RegionCaptureForm.LastRegionFillPath.GetBounds());
                 Rectangle screenRectangle = CaptureHelpers.GetScreenBounds();
-                result.captureRect = Rectangle.Intersect(regionArea, new Rectangle(0, 0, screenRectangle.Width, screenRectangle.Height));
+                result.captureRect = RectangleF.Intersect(RegionCaptureForm.LastRegionFillPath.GetBounds(), new RectangleF(0, 0, screenRectangle.Width, screenRectangle.Height));
             }
             canvas?.Dispose();
             return result;
         }
 
-        public DataStruct CaptureLastRegion()
+        //public DataStruct CaptureLastRegion()
+        //{
+        //    DataStruct result = new DataStruct();
+
+        //    if (RegionCaptureForm.LastRegionFillPath != null)
+        //    {
+        //        var screenshot = new Screenshot().CaptureFullscreen();
+        //        result.captureBmp = RegionCaptureTasks.ApplyRegionPathToImage(screenshot, RegionCaptureForm.LastRegionFillPath, out Rectangle captureRect);
+        //        result.captureRect = captureRect;
+        //        screenshot?.Dispose();
+        //    }
+        //    else
+        //    {
+        //        result = CaptureRegion();
+        //    }
+
+        //    return result;
+        //}
+
+        public DataStruct CaptureCustomRegion(RectangleF captureRect)
         {
             DataStruct result = new DataStruct();
-
-            if (RegionCaptureForm.LastRegionFillPath != null)
-            {
-                var screenshot = new Screenshot().CaptureFullscreen();
-                result.captureBmp = RegionCaptureTasks.ApplyRegionPathToImage(screenshot, RegionCaptureForm.LastRegionFillPath, out result.captureRect);
-                screenshot?.Dispose();
-            }
-            else
-            {
+            result.captureRect = captureRect;
+            if (captureRect.IsEmpty)
                 result = CaptureRegion();
-            }
+            else
+                result.captureBmp = new Screenshot().CaptureRectangle(Rectangle.Round(captureRect));
 
             return result;
         }
