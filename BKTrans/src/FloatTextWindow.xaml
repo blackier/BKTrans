@@ -6,6 +6,25 @@
         xmlns:local="clr-namespace:BKTrans"
         mc:Ignorable="d"
         Title="BKTextWindow" Height="200" Width="300" AllowsTransparency="True" WindowStyle="None" Background="{x:Null}">
+    <Window.Resources>
+        <ControlTemplate x:Key="ctrltemplate_pic_btn" TargetType="{x:Type Button}">
+            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True" />
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="border" Property="BorderBrush" Value="#FFBEE6FD" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="border" Property="BorderBrush" Value="#FF3C7FB1" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <Style x:Key="style_pic_btn" TargetType="{x:Type Button}">
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="BorderBrush" Value="{x:Null}" />
+            <Setter Property="Foreground" Value="{x:Null}" />
+        </Style>
+    </Window.Resources>
     <Grid Visibility="Visible">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
@@ -13,7 +32,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="32" />
+            <ColumnDefinition Width="40" />
         </Grid.ColumnDefinitions>
 
         <Grid x:Name="grid_textbox" Grid.RowSpan="2" Visibility="Visible">
@@ -25,62 +44,51 @@
             <TextBox x:Name="textbox_transtext" Text="" TextWrapping="Wrap" Grid.Row="1" BorderBrush="{x:Null}" Padding="1,1,1,1" Background="#A6FFFFFF" Foreground="Black" FontSize="14" />
         </Grid>
 
-        <DockPanel Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-
-            <Button x:Name="btn_trans" HorizontalAlignment="Left" Height="20" VerticalAlignment="Bottom" Width="20" BorderBrush="{x:Null}" Foreground="{x:Null}" DockPanel.Dock="Bottom" Click="btn_trans_Click">
-                <Button.Background>
-                    <ImageBrush ImageSource="/resource/trans.png" />
-                </Button.Background>
-                <Button.Template>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True" />
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="BorderBrush" Value="#FFBEE6FD" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="BorderBrush" Value="#FF3C7FB1" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-            <Button x:Name="btn_capture" Content="Button" Width="20" Height="20" DockPanel.Dock="Bottom" HorizontalAlignment="Left" VerticalAlignment="Bottom" BorderBrush="{x:Null}" Click="btn_capture_Click">
-                <Button.Background>
-                    <ImageBrush ImageSource="/resource/capture.png" />
-                </Button.Background>
-                <Button.Template>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True" />
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="BorderBrush" Value="#FFBEE6FD" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="BorderBrush" Value="#FF3C7FB1" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-            <Button x:Name="btn_hide" Content="Button" Width="20" Height="20" DockPanel.Dock="Bottom" HorizontalAlignment="Left" VerticalAlignment="Bottom" BorderBrush="{x:Null}" Click="btn_hide_Click">
+        <WrapPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Bottom">
+            <Button x:Name="btn_hide" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" Click="btn_hide_Click">
                 <Button.Background>
                     <ImageBrush ImageSource="/resource/hide.png" />
                 </Button.Background>
-                <Button.Template>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True" />
+            </Button>
+            <Button x:Name="btn_capture" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" Click="btn_capture_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/resource/capture.png" />
+                </Button.Background>
+            </Button>
+            <Button x:Name="btn_trans" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" Click="btn_trans_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/resource/trans.png" />
+                </Button.Background>
+            </Button>
+            <CheckBox x:Name="checkbox_autotrans" Width="20" Height="20" Click="checkbox_autotrans_Click">
+                <CheckBox.Template>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <Grid>
+                            <Button x:Name="btn_autotrans" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/resource/auto_trans.png" />
+                                </Button.Background>
+                            </Button>
+                        </Grid>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="BorderBrush" Value="#FFBEE6FD" />
+                            <Trigger Property="IsChecked" Value="true">
+                                <Setter TargetName="btn_autotrans" Property="Background">
+                                    <Setter.Value>
+                                        <ImageBrush ImageSource="/resource/auto_trans_check.png"/>
+                                    </Setter.Value>
+                                </Setter>
                             </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="BorderBrush" Value="#FF3C7FB1" />
+                            <Trigger Property="IsChecked" Value="false">
+                                <Setter TargetName="btn_autotrans" Property="Background">
+                                    <Setter.Value>
+                                        <ImageBrush ImageSource="/resource/auto_trans.png"/>
+                                    </Setter.Value>
+                                </Setter>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
-                </Button.Template>
-            </Button>
-        </DockPanel>
+                </CheckBox.Template>
+            </CheckBox>
+        </WrapPanel>
     </Grid>
 </Window>

@@ -9,11 +9,13 @@ namespace BKTrans
         public enum ButtonType
         {
             Capture,
-            Trans
+            Trans,
+            AutoTrans
         };
 
-        private Action<ButtonType> _onButtonClick;
-        public FloatTextWindow(Action<ButtonType> OnButtonClick = null)
+
+        private Action<ButtonType, object> _onButtonClick;
+        public FloatTextWindow(Action<ButtonType, object> OnButtonClick = null)
         {
             InitializeComponent();
             ShowInTaskbar = false;
@@ -43,6 +45,14 @@ namespace BKTrans
             });
 
         }
+
+        public void SetAutoTransStatus(bool start)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                checkbox_autotrans.IsChecked = start;
+            });
+        }
         public void ShowWnd()
         {
             Dispatcher.Invoke(() =>
@@ -61,18 +71,25 @@ namespace BKTrans
         private void btn_capture_Click(object sender, RoutedEventArgs e)
         {
             if (_onButtonClick != null)
-                _onButtonClick(ButtonType.Capture);
+                _onButtonClick(ButtonType.Capture, null);
         }
 
         private void btn_trans_Click(object sender, RoutedEventArgs e)
         {
             if (_onButtonClick != null)
-                _onButtonClick(ButtonType.Trans);
+                _onButtonClick(ButtonType.Trans, null);
         }
 
         private void btn_hide_Click(object sender, RoutedEventArgs e)
         {
             grid_textbox.Visibility = grid_textbox.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+        }
+
+        private void checkbox_autotrans_Click(object sender, RoutedEventArgs e)
+        {
+            checkbox_autotrans.IsChecked = !checkbox_autotrans.IsChecked;
+            if (_onButtonClick != null)
+                _onButtonClick(ButtonType.AutoTrans, checkbox_autotrans.IsChecked);
         }
     }
 

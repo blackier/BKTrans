@@ -20,6 +20,8 @@
     <None Remove="resource\hide.png" />
     <None Remove="resource\setting.png" />
     <None Remove="resource\trans.png" />
+    <None Remove="resource\auto_trans.png" />
+    <None Remove="resource\auto_trans_check.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,6 +37,8 @@
     <Resource Include="resource\hide.png" />
     <Resource Include="resource\setting.png" />
     <Resource Include="resource\trans.png" />
+    <Resource Include="resource\auto_trans.png" />
+    <Resource Include="resource\auto_trans_check.png" />
   </ItemGroup>
 
   <ItemGroup>

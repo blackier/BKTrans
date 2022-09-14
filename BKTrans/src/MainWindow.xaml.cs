@@ -41,8 +41,10 @@ namespace BKTrans
         private int _autoCaptrueTransCountdown;
         private bool _autoCaptrueTransStart;
 
-        private bool _combox_updating = false;
-        private string _ocr_replace_splite_string = "\n+++===+++===+++\n";
+        private bool _comboxUpdating = false;
+        private string _ocrReplaceSpliteString = "\n+++===+++===+++\n";
+
+        private string _tsmenuitemAutotransName = "tsmenuitem_autotrans";
         public MainWindow()
         {
             InitializeComponent();
@@ -64,17 +66,18 @@ namespace BKTrans
                 _autoCaptrueTransTimer.Start();
 
             // 设置支持语言列表
-            _combox_updating = true;
+            _comboxUpdating = true;
             combobox_trans_type.ItemsSource = BKTransMap.TransType.Values.ToList();
             combobox_trans_type.SelectedItem = BKTransMap.TransType[_options.trans_type];
-            _combox_updating = false;
+            _comboxUpdating = false;
             RestoreLanguageTypeMap();
 
             // 设置OCR文本替换
-            _combox_updating = true;
+            _comboxUpdating = true;
             combobox_ocr_replace.ItemsSource = _options.ocr_replace.Keys.ToList();
             combobox_ocr_replace.SelectedItem = _options.ocr_replace_select;
-            _combox_updating = false;
+            _comboxUpdating = false;
+
             // 设置托盘图标
             _notifyClose = false;
             var notifyIconCms = new ContextMenuStrip();
@@ -85,7 +88,10 @@ namespace BKTrans
             notifyIconCms.Items.Add(new ToolStripMenuItem("隐藏", null, new EventHandler(NotifyIcon_Hide)));
             notifyIconCms.Items.Add("-");
             notifyIconCms.Items.Add(new ToolStripMenuItem("自动翻译", null, new EventHandler(NotifyIcon_AutoCaptrueTrans))
-            { Checked = _options.auto_captrue_trans_open });
+            {
+                Checked = _options.auto_captrue_trans_open,
+                Name = _tsmenuitemAutotransName
+            });
             notifyIconCms.Items.Add("-");
             notifyIconCms.Items.Add(new ToolStripMenuItem("退出", null, new EventHandler(NotifyIcon_Close)));
             _notifyIcon = new NotifyIcon
@@ -99,7 +105,8 @@ namespace BKTrans
             // 关联关闭函数，设置为最小化到托盘
             Closing += new CancelEventHandler(Window_Closing);
 
-            _floatTextWindow = new FloatTextWindow((FloatTextWindow.ButtonType btntype) =>
+            // 翻译浮窗设置
+            _floatTextWindow = new FloatTextWindow((FloatTextWindow.ButtonType btntype, object arg) =>
             {
                 switch (btntype)
                 {
@@ -110,11 +117,15 @@ namespace BKTrans
                     case FloatTextWindow.ButtonType.Trans:
                         Dispatcher.InvokeAsync(() => DoCaptureOCR(true, true, false));
                         break;
+                    case FloatTextWindow.ButtonType.AutoTrans:
+                        Dispatcher.InvokeAsync(() => AutoTransSetting((bool)arg));
+                        break;
                     default:
                         break;
                 }
 
             });
+            _floatTextWindow.SetAutoTransStatus(_options.auto_captrue_trans_open);
         }
 
         private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
@@ -195,7 +206,7 @@ namespace BKTrans
             {
                 return textbox_source_text.Text;
             });
-            text = text.Split(_ocr_replace_splite_string)[0];
+            text = text.Split(_ocrReplaceSpliteString)[0];
             return text;
         }
 
@@ -247,6 +258,23 @@ namespace BKTrans
             {
                 combobox_target_type.SelectedItem = BKTransMap.GetTransLanguageTypeName(transType, target_type);
             }
+        }
+
+        private void AutoTransSetting(bool start)
+        {
+            if (start)
+            {
+                _autoCaptrueTransTimer.Start();
+                _options.auto_captrue_trans_open = true;
+            }
+            else
+            {
+                _autoCaptrueTransTimer.Stop();
+                _options.auto_captrue_trans_open = false;
+            }
+            _floatTextWindow.SetAutoTransStatus(_options.auto_captrue_trans_open);
+            if (_notifyIcon.ContextMenuStrip.Items[_tsmenuitemAutotransName] != null)
+                (_notifyIcon.ContextMenuStrip.Items[_tsmenuitemAutotransName] as ToolStripMenuItem).Checked = _options.auto_captrue_trans_open;
         }
 
         private void SaveLanguageTypeMap()
@@ -361,7 +389,7 @@ namespace BKTrans
                         if (!string.IsNullOrEmpty(replacemap.replace_src))
                             replacetext = replacetext.Replace(replacemap.replace_src, replacemap.replace_dst);
 
-                    ocrResultText = replacetext + _ocr_replace_splite_string + ocrResultText;
+                    ocrResultText = replacetext + _ocrReplaceSpliteString + ocrResultText;
                 }
                 SetSourceText(ocrResultText);
 
@@ -432,18 +460,8 @@ namespace BKTrans
         private void NotifyIcon_AutoCaptrueTrans(object sender, EventArgs e)
         {
             var obj = (ToolStripMenuItem)sender;
-            if (obj.Checked)
-            {
-                obj.Checked = false;
-                _autoCaptrueTransTimer.Stop();
-                _options.auto_captrue_trans_open = false;
-            }
-            else
-            {
-                obj.Checked = true;
-                _autoCaptrueTransTimer.Start();
-                _options.auto_captrue_trans_open = true;
-            }
+            obj.Checked = !obj.Checked;
+            Dispatcher.InvokeAsync(() => AutoTransSetting(obj.Checked));
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -525,7 +543,7 @@ namespace BKTrans
 
         private void combobox_trans_type_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if (_combox_updating)
+            if (_comboxUpdating)
                 return;
             RestoreLanguageTypeMap();
         }
@@ -538,10 +556,10 @@ namespace BKTrans
             };
             settingsWindow.ShowDialog();
 
-            _combox_updating = true;
+            _comboxUpdating = true;
             combobox_ocr_replace.ItemsSource = _options.ocr_replace.Keys.ToList();
             combobox_ocr_replace.SelectedItem = _options.ocr_replace_select;
-            _combox_updating = false;
+            _comboxUpdating = false;
         }
 
         private void btn_capture_Click(object sender, RoutedEventArgs e)
@@ -558,7 +576,7 @@ namespace BKTrans
 
         private void combobox_ocr_replace_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if (_combox_updating)
+            if (_comboxUpdating)
                 return;
             _options.ocr_replace_select = (string)combobox_ocr_replace.SelectedItem;
         }
