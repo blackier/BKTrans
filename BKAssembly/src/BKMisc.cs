@@ -23,14 +23,17 @@ namespace BKAssembly
 
         public static Bitmap BitmapResize(Bitmap bmp, int width, int height)
         {
-            Bitmap img = new Bitmap(width, height);
-            Graphics g = Graphics.FromImage(img);
+            Bitmap img = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            img.SetResolution(bmp.HorizontalResolution, bmp.VerticalResolution);
 
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            using (Graphics g = Graphics.FromImage(img))
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
 
-            g.DrawImage(bmp, 0, 0, width, height);
+                g.DrawImage(bmp, 0, 0, width, height);
+            }
 
             return img;
         }

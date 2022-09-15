@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Text.Json;
@@ -11,6 +12,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Threading;
+using static BKAssembly.BKOCRMicrosoft;
 
 namespace BKTrans
 {
@@ -34,7 +36,8 @@ namespace BKTrans
 
         private Settings.Options _options;
 
-        private BKOCRBaidu _ocrBaidu;
+        private BKOCRBase _ocrHandle;
+        private BKSetting _ocrSetting;
         private BKTransBase _transHandle;
         private BKSetting _transSetting;
 
@@ -70,8 +73,8 @@ namespace BKTrans
 
             // 设置支持语言列表
             _comboxUpdating = true;
-            combobox_trans_type.ItemsSource = BKTransMap.TransType.Values.ToList();
-            combobox_trans_type.SelectedItem = BKTransMap.TransType[_options.trans_type];
+            combobox_trans_type.ItemsSource = BKTransMap.TransType;
+            combobox_trans_type.SelectedItem = _options.trans_type;
             _comboxUpdating = false;
             RestoreLanguageTypeMap();
 
@@ -80,6 +83,9 @@ namespace BKTrans
             combobox_ocr_replace.ItemsSource = _options.ocr_replace.Keys.ToList();
             combobox_ocr_replace.SelectedItem = _options.ocr_replace_select;
             _comboxUpdating = false;
+
+            // 本地ocr
+            checkbox_local_ocr.IsChecked = _options.ocr_microsoft_open;
 
             // 设置托盘图标
             _notifyClose = false;
@@ -235,19 +241,19 @@ namespace BKTrans
 
         private void RestoreLanguageTypeMap()
         {
-            string transType = BKTransMap.TransType.ElementAt(combobox_trans_type.SelectedIndex).Key;
+            string transType = BKTransMap.TransType[combobox_trans_type.SelectedIndex];
 
             combobox_src_type.ItemsSource = BKTransMap.GetOCRLanguageTypeName(transType);
             combobox_target_type.ItemsSource = BKTransMap.GetTransLanguageTypeName(transType);
 
             string src_type = "";
             string target_type = "";
-            if (transType == BKTransMap.TransType.ElementAt(0).Key)
+            if (transType == BKTransMap.TransType[0])
             {
                 src_type = _options.trans_baidu.from;
                 target_type = _options.trans_baidu.to;
             }
-            else if (transType == BKTransMap.TransType.ElementAt(1).Key)
+            else if (transType == BKTransMap.TransType[1])
             {
                 src_type = _options.trans_caiyun.from;
                 target_type = _options.trans_caiyun.to;
@@ -259,7 +265,7 @@ namespace BKTrans
             }
             if (!string.IsNullOrEmpty(target_type))
             {
-                combobox_target_type.SelectedItem = BKTransMap.GetTransLanguageTypeName(transType, target_type);
+                combobox_target_type.SelectedItem = target_type;
             }
         }
 
@@ -282,7 +288,7 @@ namespace BKTrans
 
         private void SaveLanguageTypeMap()
         {
-            string transType = BKTransMap.TransType.ElementAt(combobox_trans_type.SelectedIndex).Key;
+            string transType = BKTransMap.TransType[combobox_trans_type.SelectedIndex];
             _options.trans_type = transType;
 
             string lantype = "";
@@ -290,9 +296,9 @@ namespace BKTrans
             string target_type = "";
             BKTransMap.GetLanguageType(transType, combobox_src_type.SelectedIndex, combobox_target_type.SelectedIndex,
                 ref lantype, ref src_type, ref target_type);
-            _options.ocr_baidu.language_type = lantype;
 
-            if (transType == BKTransMap.TransType.ElementAt(0).Key)
+            // 文本翻译
+            if (transType == BKTransMap.TransType[0])
             {
                 _options.trans_baidu.from = src_type;
                 _options.trans_baidu.to = target_type;
@@ -300,7 +306,7 @@ namespace BKTrans
                 _transSetting = _options.trans_baidu;
                 _transHandle = new BKTransBaidu();
             }
-            else if (transType == BKTransMap.TransType.ElementAt(1).Key)
+            else if (transType == BKTransMap.TransType[1])
             {
                 _options.trans_caiyun.from = src_type;
                 _options.trans_caiyun.to = target_type;
@@ -308,6 +314,23 @@ namespace BKTrans
                 _transSetting = _options.trans_caiyun;
                 _transHandle = new BKTransCaiyun();
             }
+
+            // ocr翻译
+            _options.ocr_baidu.language_type = lantype;
+            if (_options.ocr_microsoft_open)
+            {
+                _ocrSetting = new SettingMiscrosoftOCR()
+                {
+                    language_tag = BKTransMap.TransMapBaidu2Microsoft[lantype]
+                };
+                _ocrHandle = new BKOCRMicrosoft();
+            }
+            else
+            {
+                _ocrSetting = _options.ocr_baidu;
+                _ocrHandle = new BKOCRBaidu();
+            }
+
             Settings.SaveSettings();
         }
 
@@ -317,7 +340,7 @@ namespace BKTrans
             BKScreenCapture.DataStruct capturedata;
 
             if (captrueLast)
-               capturedata = new BKScreenCapture().CaptureCustomRegion(_floatTextWindow.GetTextRect());
+                capturedata = new BKScreenCapture().CaptureCustomRegion(_floatTextWindow.GetTextRect());
             else
                 capturedata = new BKScreenCapture().CaptureRegion();
 
@@ -349,24 +372,12 @@ namespace BKTrans
                 _captureBmp = bmpData;
                 SetSourceText("截取完成，等待OCR翻译...");
 
-                if (_ocrBaidu == null)
-                    _ocrBaidu = new BKOCRBaidu();
-
                 string ocrResultText = "";
-                string ocrResult = await Task.Run(() => _ocrBaidu.OCR(_options.ocr_baidu, bmpData));
+                string ocrResult = "";
+                _ = await Task.Run(() => _ocrHandle.OCR(_ocrSetting, bmpData, out ocrResult));
                 try
                 {
-                    JsonDocument jdocOcrResult = JsonDocument.Parse(ocrResult);
-                    var rootElement = jdocOcrResult.RootElement;
-                    if (!rootElement.TryGetProperty("words_result", out JsonElement wordsResult))
-                    {
-                        ocrResultText = ocrResult;
-                    }
-                    else
-                    {
-                        foreach (JsonElement words_elem in wordsResult.EnumerateArray())
-                            ocrResultText += words_elem.GetProperty("words").GetString();
-                    }
+                    ocrResultText = _ocrHandle.ParseResult(ocrResult);
                 }
                 catch
                 {
@@ -524,7 +535,7 @@ namespace BKTrans
                 var newcaptruebmp = t.captureBmp;
                 if (newcaptruebmp == null)
                     break;
- 
+
                 float similarity = BKMisc.BitmapDHashCompare(newcaptruebmp, _captureBmp);
 
                 iss++;
@@ -587,6 +598,11 @@ namespace BKTrans
             if (_comboxUpdating)
                 return;
             _options.ocr_replace_select = (string)combobox_ocr_replace.SelectedItem;
+        }
+
+        private void checkbox_local_ocr_Click(object sender, RoutedEventArgs e)
+        {
+            _options.ocr_microsoft_open = checkbox_local_ocr.IsChecked ?? false ? true : false;
         }
     }
 }

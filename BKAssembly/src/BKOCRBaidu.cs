@@ -5,12 +5,13 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
+using Windows.Media.Ocr;
 
 namespace BKAssembly
 {
-    public class BKOCRBaidu
+    public class BKOCRBaidu : BKOCRBase
     {
-        public class SettingBaiduOCR
+        public class SettingBaiduOCR : BKSetting
         {
             public string grant_type { get; set; }
             public string client_id { get; set; }
@@ -43,11 +44,10 @@ namespace BKAssembly
             _generalBasicUri = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic";
         }
 
-        public string OCR(SettingBaiduOCR setting, Bitmap image)
+        public override bool OCR(BKSetting setting, Bitmap image, out string result)
         {
             _ocrSrcImage = (Bitmap)image.Clone();
-            _setting = setting;
-            string result = "";
+            _setting = (SettingBaiduOCR)setting;
             do
             {
                 if (string.IsNullOrEmpty(_setting.grant_type))
@@ -68,7 +68,24 @@ namespace BKAssembly
 
                 result = GeneralBasic();
             } while (false);
-            return result;
+            return true;
+        }
+
+        public override string ParseResult(string result)
+        {
+            string ocrResultText = "";
+            JsonDocument jdocOcrResult = JsonDocument.Parse(result);
+            var rootElement = jdocOcrResult.RootElement;
+            if (!rootElement.TryGetProperty("words_result", out JsonElement wordsResult))
+            {
+                ocrResultText = result;
+            }
+            else
+            {
+                foreach (JsonElement words_elem in wordsResult.EnumerateArray())
+                    ocrResultText += words_elem.GetProperty("words").GetString();
+            }
+            return ocrResultText;
         }
 
         private bool GetAccessToken()

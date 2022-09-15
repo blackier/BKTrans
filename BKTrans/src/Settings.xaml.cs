@@ -6,8 +6,6 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using System.Windows;
-using System.Windows.Documents;
-using static BKTrans.Settings;
 
 namespace BKTrans
 {
@@ -35,6 +33,7 @@ namespace BKTrans
             public string trans_type { get; set; }
             // ocr参数
             public BKOCRBaidu.SettingBaiduOCR ocr_baidu { get; set; }
+            public bool ocr_microsoft_open { get; set; }
             // 翻译参数
             public BKTransBaidu.SettingBaiduTrans trans_baidu { get; set; }
             public BKTransCaiyun.SettingCaiyunTrans trans_caiyun { get; set; }
@@ -55,6 +54,7 @@ namespace BKTrans
                 ocr_baidu = new();
                 trans_baidu = new();
                 trans_caiyun = new();
+                ocr_microsoft_open = false;
 
                 auto_captrue_trans_interval = 150;
                 auto_captrue_trans_countdown = 5;

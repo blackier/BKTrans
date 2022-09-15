@@ -41,6 +41,7 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
+            <CheckBox x:Name="checkbox_local_ocr" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="105,0,0,0" Padding="0,0,0,0" IsChecked="False" Content="本地OCR" Click="checkbox_local_ocr_Click" />
             <TextBox x:Name="textbox_source_text" HorizontalAlignment="Stretch" Margin="3,3,3,3" Grid.Row="1" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Width="auto" FontSize="14" />
 
         </Grid>

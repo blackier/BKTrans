@@ -8,42 +8,7 @@ namespace BKAssembly
 {
     public class BKTransMap
     {
-        public static readonly Dictionary<string, string> OCRBaiduLanguageType = new()
-        {
-            {"CHN_ENG", "中英文"},
-            {"JAP", "日语"},
-            {"ENG", "英语"},
-            {"KOR", "韩语"},
-            {"FRE", "法语"},
-            {"GER", "德语"},
-            {"RUS", "俄语"},
-            {"SPA", "西班牙语"},
-            {"POR", "葡萄牙语"},
-            {"ITA", "意大利语"},
-        };
-
-        public static readonly Dictionary<string, string> TransBaiduLanguageType = new()
-        {
-            {"zh", "中文"},
-            {"jp", "日语"},
-            {"en", "英语"},
-            {"kor","韩语"},
-            {"fra", "法语"},
-            {"de", "德语"},
-            {"ru", "俄语"},
-            {"spa", "西班牙语"},
-            {"pt", "葡萄牙语"},
-            {"it", "意大利语"},
-        };
-
-        public static readonly Dictionary<string, string> TransCaiyunLanguageType = new()
-        {
-            {"zh", "中文"},
-            {"ja", "日语"},
-            {"en", "英语"},
-        };
-
-        public static Dictionary<string, string> TransMapBaidu2Baidu = new() {
+        public readonly static Dictionary<string, string> TransMapBaidu2Baidu = new() {
             {"CHN_ENG", "zh"},
             {"JAP", "jp"},
             {"ENG", "en"},
@@ -56,26 +21,39 @@ namespace BKAssembly
             {"ITA", "it"},
         };
 
-        public static Dictionary<string, string> TransMapBaidu2Caiyun = new() {
+        public readonly static Dictionary<string, string> TransMapBaidu2Caiyun = new() {
             {"CHN_ENG", "zh"},
             {"JAP", "ja"},
             {"ENG", "en"},
         };
 
-        public static Dictionary<string, string> TransType = new() {
-            {"baidu", "百度" },
-            {"caiyun", "彩云" },
+        public readonly static Dictionary<string, string> TransMapBaidu2Microsoft = new() {
+            {"CHN_ENG", "zh-cn"},
+            {"JAP", "ja"},
+            {"ENG", "en-us"},
+            {"KOR", "ko"},
+            {"FRE", "fr"},
+            {"GER", "de"},
+            {"RUS", "ru"},
+            {"SPA", "es"},
+            {"POR", "pt"},
+            {"ITA", "it"},
+        };
+
+        public readonly static List<string> TransType = new() {
+            "baidu",
+            "caiyun",
         };
 
         public static void GetLanguageType(string transType, int ocrLanTypeIndex, int transLanTypeIndex, ref string ocrLanTye, ref string transLantypeFrom, ref string transLanTypeTo)
         {
-            if (transType == TransType.ElementAt(0).Key)
+            if (transType == TransType[0])
             {
                 ocrLanTye = TransMapBaidu2Baidu.ElementAt(ocrLanTypeIndex).Key;
                 transLantypeFrom = TransMapBaidu2Baidu.ElementAt(ocrLanTypeIndex).Value;
                 transLanTypeTo = TransMapBaidu2Baidu.ElementAt(transLanTypeIndex).Value;
             }
-            else if (transType == TransType.ElementAt(1).Key)
+            else if (transType == TransType[1])
             {
                 ocrLanTye = TransMapBaidu2Caiyun.ElementAt(ocrLanTypeIndex).Key;
                 transLantypeFrom = TransMapBaidu2Caiyun.ElementAt(ocrLanTypeIndex).Value;
@@ -87,18 +65,18 @@ namespace BKAssembly
         {
             List<string> lantype = new List<string>();
 
-            if (transType == TransType.ElementAt(0).Key)
+            if (transType == TransType[0])
             {
                 foreach (var ele in TransMapBaidu2Baidu)
                 {
-                    lantype.Add(OCRBaiduLanguageType[ele.Key]);
+                    lantype.Add(ele.Key);
                 }
             }
-            else if (transType == TransType.ElementAt(1).Key)
+            else if (transType == TransType[1])
             {
                 foreach (var ele in TransMapBaidu2Caiyun)
                 {
-                    lantype.Add(OCRBaiduLanguageType[ele.Key]);
+                    lantype.Add(ele.Key);
                 }
             }
 
@@ -109,23 +87,23 @@ namespace BKAssembly
         {
             string typename = "";
 
-            if (transType == TransType.ElementAt(0).Key)
+            if (transType == TransType[0])
             {
                 foreach (var ele in TransMapBaidu2Baidu)
                 {
                     if (ele.Value == mapValue)
                     {
-                        typename = OCRBaiduLanguageType[ele.Key];
+                        typename = ele.Key;
                     }
                 }
             }
-            else if (transType == TransType.ElementAt(1).Key)
+            else if (transType == TransType[1])
             {
                 foreach (var ele in TransMapBaidu2Caiyun)
                 {
                     if (ele.Value == mapValue)
                     {
-                        typename = OCRBaiduLanguageType[ele.Key];
+                        typename = ele.Key;
                     }
                 }
             }
@@ -137,37 +115,22 @@ namespace BKAssembly
         {
             List<string> lantype = new List<string>();
 
-            if (transType == TransType.ElementAt(0).Key)
+            if (transType == TransType[0])
             {
                 foreach (var ele in TransMapBaidu2Baidu)
                 {
-                    lantype.Add(TransBaiduLanguageType[ele.Value]);
+                    lantype.Add(ele.Value);
                 }
             }
-            else if (transType == TransType.ElementAt(1).Key)
+            else if (transType == TransType[1])
             {
                 foreach (var ele in TransMapBaidu2Caiyun)
                 {
-                    lantype.Add(TransCaiyunLanguageType[ele.Value]);
+                    lantype.Add(ele.Value);
                 }
             }
             return lantype;
         }
 
-        public static string GetTransLanguageTypeName(string transType, string mapValue)
-        {
-            string typename = "";
-
-            if (transType == TransType.ElementAt(0).Key)
-            {
-                typename = TransBaiduLanguageType[mapValue];
-            }
-            else if (transType == TransType.ElementAt(1).Key)
-            {
-                typename = TransCaiyunLanguageType[mapValue];
-            }
-
-            return typename;
-        }
     }
 }
