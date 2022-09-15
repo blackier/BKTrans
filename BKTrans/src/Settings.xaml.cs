@@ -59,7 +59,7 @@ namespace BKTrans
                 auto_captrue_trans_interval = 150;
                 auto_captrue_trans_countdown = 5;
                 auto_captrue_trans_open = false;
-                auto_captrue_trans_similarity = 0.95f;
+                auto_captrue_trans_similarity = 0.9f;
 
                 ocr_replace_select = "";
                 ocr_replace = new() { { "", new() } };
@@ -123,6 +123,11 @@ namespace BKTrans
             datagrid_ocr_replace.ItemsSource = _options.ocr_replace[_options.ocr_replace_select];
 
             textbox_ocr_replace_new.IsEnabled = false;
+
+            // 自动翻译
+            textbox_auto_captrue_trans_interval.Text = _options.auto_captrue_trans_interval.ToString();
+            textbox_auto_captrue_trans_countdown.Text = _options.auto_captrue_trans_countdown.ToString();
+            textbox_auto_captrue_trans_similarity.Text = _options.auto_captrue_trans_similarity.ToString();
         }
 
         protected void btn_ok_Click(object sender, RoutedEventArgs e)
@@ -134,6 +139,13 @@ namespace BKTrans
             _options.trans_baidu.salt = textbox_baiduapi_salt.Text;
             _options.trans_caiyun.token = textbox_caiyunapi_token.Text;
             _options.trans_caiyun.request_id = textbox_caiyunapi_request_id.Text;
+
+            if (int.TryParse(textbox_auto_captrue_trans_interval.Text, out int auto_captrue_trans_interval))
+                _options.auto_captrue_trans_interval = auto_captrue_trans_interval;
+            if (int.TryParse(textbox_auto_captrue_trans_countdown.Text, out int auto_captrue_trans_countdown))
+                _options.auto_captrue_trans_countdown = auto_captrue_trans_countdown;
+            if (float.TryParse(textbox_auto_captrue_trans_similarity.Text, out float auto_captrue_trans_similarity))
+                _options.auto_captrue_trans_similarity = auto_captrue_trans_similarity;
 
             SaveSettings();
             Close();
@@ -203,6 +215,47 @@ namespace BKTrans
                 return;
             _options.ocr_replace_select = (string)combox_ocr_replace.SelectedItem;
             datagrid_ocr_replace.ItemsSource = _options.ocr_replace[_options.ocr_replace_select];
+        }
+
+        private void textbox_auto_captrue_trans_interval_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            if (e.Delta == 0)
+                return;
+            int unit = 10;
+            if (e.Delta < 0)
+                unit = -unit;
+            int interval = int.Parse(textbox_auto_captrue_trans_interval.Text);
+            if (interval + unit < 100)
+                return;
+            textbox_auto_captrue_trans_interval.Text = (interval + unit).ToString();
+        }
+
+        private void textbox_auto_captrue_trans_countdown_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            if (e.Delta == 0)
+                return;
+            int unit = 1;
+            if (e.Delta < 0)
+                unit = -unit;
+            int interval = int.Parse(textbox_auto_captrue_trans_countdown.Text);
+            if (interval + unit < 0)
+                return;
+            textbox_auto_captrue_trans_countdown.Text = (interval + unit).ToString();
+        }
+
+        private void textbox_auto_captrue_trans_similarity_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            if (e.Delta == 0)
+                return;
+            float unit = 0.01f;
+            if (e.Delta < 0)
+                unit = -unit;
+            float interval = float.Parse(textbox_auto_captrue_trans_similarity.Text);
+            if (interval + unit > 1)
+                return;
+            if (interval + unit < 0.5f)
+                return;
+            textbox_auto_captrue_trans_similarity.Text = (interval + unit).ToString("0.00");
         }
     }
 }

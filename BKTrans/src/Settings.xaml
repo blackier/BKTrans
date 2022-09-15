@@ -112,6 +112,32 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
+            <TabItem Header="自动翻译" Width="70">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="115"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="15"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Content="采样间隔(ms)：" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
+                    <TextBox x:Name="textbox_auto_captrue_trans_interval" IsReadOnly="True" Text="" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2" MouseWheel="textbox_auto_captrue_trans_interval_MouseWheel"/>
+
+                    <Label Content="采样倒数：" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
+                    <TextBox x:Name="textbox_auto_captrue_trans_countdown" IsReadOnly="True" Text="" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2" MouseWheel="textbox_auto_captrue_trans_countdown_MouseWheel"/>
+
+                    <Label Content="相似度临界值：" Grid.Row="3" Grid.Column="1" VerticalContentAlignment="Center"/>
+                    <TextBox x:Name="textbox_auto_captrue_trans_similarity" IsReadOnly="True" Text="" Grid.Row="3" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2" MouseWheel="textbox_auto_captrue_trans_similarity_MouseWheel"/>
+                </Grid>
+            </TabItem>
         </TabControl>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>

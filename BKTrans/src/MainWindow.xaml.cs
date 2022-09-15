@@ -2,10 +2,8 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -50,7 +48,7 @@ namespace BKTrans
 
         private string _tsmenuitemAutotransName = "tsmenuitem_autotrans";
 
-        static int iss = 0;
+        static int _autoCaptrueTransDebugNum = 0;
         public MainWindow()
         {
             InitializeComponent();
@@ -536,14 +534,14 @@ namespace BKTrans
                 if (newcaptruebmp == null)
                     break;
 
-                float similarity = BKMisc.BitmapDHashCompare(newcaptruebmp, _captureBmp);
+                float similarity = BKMisc.BitmapDHashCompare(newcaptruebmp, (Bitmap)_captureBmp.Clone());
 
-                iss++;
+                _autoCaptrueTransDebugNum++;
                 if (similarity < _options.auto_captrue_trans_similarity)
                 {
                     // 发生变化
-                    //newcaptruebmp.Save(string.Format("{0}_{1}_1.png", iss, similarity), ImageFormat.Png);
-                    //_captureBmp.Save(string.Format("{0}_{1}_2.png", iss, similarity), ImageFormat.Png);
+                    //newcaptruebmp.Save($"{_autoCaptrueTransDebugNum}_{similarity}_1.png", ImageFormat.Png);
+                    //_captureBmp.Save($"{_autoCaptrueTransDebugNum}_{similarity}_2.png", ImageFormat.Png);
 
                     _captureBmp?.Dispose();
                     _captureBmp = newcaptruebmp;

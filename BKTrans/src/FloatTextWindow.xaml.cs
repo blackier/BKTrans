@@ -31,7 +31,7 @@ namespace BKTrans
                 var p = BKMisc.ScreenScaling();
                 Left = rect.X / p;
                 Top = rect.Y / p;
-                Width = rect.Width / p + 40;
+                Width = rect.Width / p + gridcolumn_btn.Width.Value;
                 Height = (rect.Height / p) * 2;
             });
 
@@ -40,7 +40,7 @@ namespace BKTrans
         public RectangleF GetTextRect()
         {
             var p = BKMisc.ScreenScaling();
-            return new RectangleF((float)(Left * p), (float)(Top * p), (float)((Width - 40) * p), (float)((Height / 2 * p)));
+            return new RectangleF((float)(Left * p), (float)(Top * p), (float)((Width - gridcolumn_btn.Width.Value) * p), (float)((Height / 2 * p)));
         }
         public void SetText(string t)
         {
