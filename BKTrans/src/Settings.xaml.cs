@@ -37,6 +37,7 @@ namespace BKTrans
             // 翻译参数
             public BKTransBaidu.SettingBaiduTrans trans_baidu { get; set; }
             public BKTransCaiyun.SettingCaiyunTrans trans_caiyun { get; set; }
+            public bool trans_both { get; set; }
 
             // 截图翻译事件间隔
             public int auto_captrue_trans_interval { get; set; }
@@ -55,6 +56,7 @@ namespace BKTrans
                 trans_baidu = new();
                 trans_caiyun = new();
                 ocr_microsoft_open = false;
+                trans_both = false;
 
                 auto_captrue_trans_interval = 150;
                 auto_captrue_trans_countdown = 5;

@@ -2,7 +2,6 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,7 +43,7 @@ namespace BKTrans
         private bool _autoCaptrueTransStart;
 
         private bool _comboxUpdating = false;
-        private string _ocrReplaceSpliteString = "\n+++===+++===+++\n";
+        private string _textSpliteString = "\n+++===+++===+++\n";
 
         private string _tsmenuitemAutotransName = "tsmenuitem_autotrans";
 
@@ -84,6 +83,9 @@ namespace BKTrans
 
             // 本地ocr
             checkbox_local_ocr.IsChecked = _options.ocr_microsoft_open;
+
+            // 双翻译
+            checkbox_both_trans.IsChecked = _options.trans_both;
 
             // 设置托盘图标
             _notifyClose = false;
@@ -213,7 +215,7 @@ namespace BKTrans
             {
                 return textbox_source_text.Text;
             });
-            text = text.Split(_ocrReplaceSpliteString)[0];
+            text = text.Split(_textSpliteString)[0];
             return text;
         }
 
@@ -292,20 +294,28 @@ namespace BKTrans
             string lantype = "";
             string src_type = "";
             string target_type = "";
-            BKTransMap.GetLanguageType(transType, combobox_src_type.SelectedIndex, combobox_target_type.SelectedIndex,
-                ref lantype, ref src_type, ref target_type);
 
             // 文本翻译
             if (transType == BKTransMap.TransType[0])
             {
+                BKTransMap.GetLanguageType(BKTransMap.TransType[0], combobox_src_type.SelectedIndex, combobox_target_type.SelectedIndex,
+                    ref lantype, ref src_type, ref target_type);
+
                 _options.trans_baidu.from = src_type;
                 _options.trans_baidu.to = target_type;
 
                 _transSetting = _options.trans_baidu;
                 _transHandle = new BKTransBaidu();
             }
-            else if (transType == BKTransMap.TransType[1])
+
+            if (_options.trans_both)
+                transType = BKTransMap.TransType[1];
+
+            if (transType == BKTransMap.TransType[1])
             {
+                BKTransMap.GetLanguageType(BKTransMap.TransType[1], combobox_src_type.SelectedIndex, combobox_target_type.SelectedIndex,
+                    ref lantype, ref src_type, ref target_type);
+
                 _options.trans_caiyun.from = src_type;
                 _options.trans_caiyun.to = target_type;
 
@@ -402,7 +412,7 @@ namespace BKTrans
                         if (!string.IsNullOrEmpty(replacemap.replace_src))
                             replacetext = replacetext.Replace(replacemap.replace_src, replacemap.replace_dst);
 
-                    ocrResultText = replacetext + _ocrReplaceSpliteString + ocrResultText;
+                    ocrResultText = replacetext + _textSpliteString + ocrResultText;
                 }
                 SetSourceText(ocrResultText);
 
@@ -419,7 +429,27 @@ namespace BKTrans
                 return;
 
             SetTargetText("文本翻译中...");
-            string transResultText = await Task.Run(() => _transHandle.Trans(_transSetting, srctext));
+
+            string transResultText = "";
+            if (_options.trans_both)
+            {
+                var transtasks = Task.WhenAll(new[] {
+                    Task.Run(() => new BKTransBaidu().Trans(_options.trans_baidu, srctext))
+                    , Task.Run(() => new BKTransCaiyun().Trans(_options.trans_caiyun, srctext)) });
+                await Task.Run(() => transtasks.Wait());
+                foreach (var result in transtasks.Result)
+                {
+                    transResultText += result;
+                    transResultText += _textSpliteString;
+                }
+                if (!string.IsNullOrEmpty(transResultText))
+                    transResultText = transResultText.Remove(transResultText.Length - _textSpliteString.Length);
+            }
+            else
+            {
+                transResultText = await Task.Run(() => _transHandle.Trans(_transSetting, srctext));
+            }
+
 
             SetTargetText(transResultText);
             _floatTextWindow.SetText(transResultText);
@@ -601,6 +631,11 @@ namespace BKTrans
         private void checkbox_local_ocr_Click(object sender, RoutedEventArgs e)
         {
             _options.ocr_microsoft_open = checkbox_local_ocr.IsChecked ?? false ? true : false;
+        }
+
+        private void checkbox_both_trans_Click(object sender, RoutedEventArgs e)
+        {
+            _options.trans_both = (checkbox_both_trans.IsChecked ?? false) ? true : false;
         }
     }
 }

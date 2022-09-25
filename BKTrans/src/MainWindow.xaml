@@ -52,6 +52,7 @@
             </Grid.RowDefinitions>
             <Label Content="译文" HorizontalAlignment="Left" Margin="0,3,0,3" VerticalAlignment="Center" Height="25" Width="35" />
             <ComboBox x:Name="combobox_target_type" Width="60" SelectedIndex="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" HorizontalAlignment="Left" Margin="35,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" />
+            <CheckBox x:Name="checkbox_both_trans" Content="双翻译" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="105,0,0,0" Padding="0,0,0,0" IsChecked="False" Click="checkbox_both_trans_Click" />
             <TextBox x:Name="textbox_target_text" HorizontalAlignment="Stretch" Margin="3,3,3,3" Grid.Row="1" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Width="auto" FontSize="14" />
         </Grid>
         <Grid Grid.Row="2">
