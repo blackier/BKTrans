@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows10.0.18362.0</TargetFramework>
+    <TargetFramework>net7.0-windows10.0.18362.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
-    <Platforms>x64;x86;AnyCPU</Platforms>
+    <Platforms>x64;x86</Platforms>
     <ApplicationIcon>BKTrans.ico</ApplicationIcon>
     <Version>0.1.0</Version>
     <Copyright>Copyright © 2021-2022 (GPLv3)</Copyright>
