@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace BKAssembly
+namespace BKTrans.Misc
 {
     public class BKHotKey
     {

@@ -8,7 +8,7 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BKAssembly
+namespace BKTrans.Misc
 {
     public class BKTransCaiyun : BKTransBase
     {

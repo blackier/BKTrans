@@ -11,7 +11,7 @@ using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 using Windows.Storage.Streams;
 
-namespace BKAssembly
+namespace BKTrans.Misc
 {
     public class BKOCRMicrosoft : BKOCRBase
     {

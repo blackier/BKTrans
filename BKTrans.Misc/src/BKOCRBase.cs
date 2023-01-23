@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BKAssembly
+namespace BKTrans.Misc
 {
     public abstract class BKOCRBase
     {

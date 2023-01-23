@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace BKAssembly
+namespace BKTrans.Misc
 {
     public class BKTransBaidu : BKTransBase
     {

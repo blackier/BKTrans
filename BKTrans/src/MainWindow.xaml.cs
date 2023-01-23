@@ -1,4 +1,4 @@
-﻿using BKAssembly;
+﻿using BKTrans.Misc;
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Threading;
-using static BKAssembly.BKOCRMicrosoft;
+using static BKTrans.Misc.BKOCRMicrosoft;
 
 namespace BKTrans
 {

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BKTrans", "BKTrans\BKTrans.csproj", "{9C58088B-64B4-42AF-9F8C-4A647D3F6C10}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BKAssembly", "BKAssembly\BKAssembly.csproj", "{11549DFB-48C9-435B-A028-ED2A3E0D16AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BKTrans.Misc", "BKTrans.Misc\BKTrans.Misc.csproj", "{11549DFB-48C9-435B-A028-ED2A3E0D16AC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DBDB0DAA-B3AE-4CC4-A8C2-20550B7F32E3} = {DBDB0DAA-B3AE-4CC4-A8C2-20550B7F32E3}
 	EndProjectSection

@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BKAssembly
+namespace BKTrans.Misc
 {
     public class BKHttpClient
     {

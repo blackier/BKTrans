@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BKAssembly\BKAssembly.csproj" />
+    <ProjectReference Include="..\BKTrans.Misc\BKTrans.Misc.csproj" />
   </ItemGroup>
 
   <ItemGroup>

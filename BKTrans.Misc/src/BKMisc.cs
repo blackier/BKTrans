@@ -10,7 +10,7 @@ using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Media;
 
-namespace BKAssembly
+namespace BKTrans.Misc
 {
     public class BKMisc
     {

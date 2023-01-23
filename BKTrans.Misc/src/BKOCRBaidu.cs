@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Windows.Media.Ocr;
 
-namespace BKAssembly
+namespace BKTrans.Misc
 {
     public class BKOCRBaidu : BKOCRBase
     {
