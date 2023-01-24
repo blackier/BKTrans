@@ -23,6 +23,7 @@
     <None Remove="resource\auto_trans.png" />
     <None Remove="resource\auto_trans_check.png" />
     <None Remove="resource\drag.png" />
+    <None Remove="resource\undo.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +42,7 @@
     <Resource Include="resource\auto_trans.png" />
     <Resource Include="resource\auto_trans_check.png" />
     <Resource Include="resource\drag.png" />
+    <Resource Include="resource\undo.png" />
   </ItemGroup>
 
   <ItemGroup>

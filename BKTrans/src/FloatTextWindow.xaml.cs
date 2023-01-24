@@ -1,5 +1,6 @@
 ﻿using BKTrans.Misc;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows;
 
@@ -15,13 +16,22 @@ namespace BKTrans
             GragMove
         };
 
-
+        private Stack<RectangleF> _historyRect;
         private Action<ButtonType, object> _onButtonClick;
         public FloatTextWindow(Action<ButtonType, object> OnButtonClick = null)
         {
             InitializeComponent();
             ShowInTaskbar = false;
             _onButtonClick = OnButtonClick;
+            _historyRect = new();
+        }
+
+        private void AddHistoryRect()
+        {
+            var currentRect = new RectangleF((float)Left, (float)Top, (float)Width, (float)Height);
+            if (_historyRect.Count > 0 && currentRect == _historyRect.Peek())
+                return;
+            _historyRect.Push(currentRect);
         }
 
         public void SetTextRect(RectangleF rect)
@@ -33,8 +43,8 @@ namespace BKTrans
                 Top = rect.Y / p;
                 Width = rect.Width / p + gridcolumn_btn.Width.Value;
                 Height = (rect.Height / p) * 2;
+                AddHistoryRect();
             });
-
         }
 
         public RectangleF GetTextRect()
@@ -105,11 +115,28 @@ namespace BKTrans
                 _onButtonClick(ButtonType.AutoTrans, false);
 
             DragMove();
+            AddHistoryRect();
 
             if (_onButtonClick != null)
             {
                 _onButtonClick(ButtonType.GragMove, null);
                 _onButtonClick(ButtonType.AutoTrans, autotrans_checked);
+            }
+        }
+
+        private void btn_undo_Click(object sender, RoutedEventArgs e)
+        {
+            if (_historyRect.Count > 0)
+            {
+                RectangleF pre_rect;
+                // 丢弃当前位置
+                if (_historyRect.Count > 1)
+                    _historyRect.Pop();
+                pre_rect = _historyRect.Peek();
+                Top = pre_rect.Top;
+                Left = pre_rect.Left;
+                Width = pre_rect.Width;
+                Height = pre_rect.Height;
             }
         }
     }

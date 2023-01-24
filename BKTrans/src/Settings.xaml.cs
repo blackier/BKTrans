@@ -188,6 +188,9 @@ namespace BKTrans
 
         private void btn_ocr_replace_delete_Click(object sender, RoutedEventArgs e)
         {
+            if (MessageBox.Show("确定删除？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No)
+                return;
+
             if (!_options.ocr_replace.ContainsKey((string)combox_ocr_replace.SelectedItem))
                 return;
             // 删除旧的
