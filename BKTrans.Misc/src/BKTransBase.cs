@@ -8,6 +8,7 @@ namespace BKTrans.Misc
 {
     public abstract class BKTransBase
     {
+        public abstract List<string> GetLangType();
         public abstract string Trans(BKSetting setting, string srcText);
     }
 }

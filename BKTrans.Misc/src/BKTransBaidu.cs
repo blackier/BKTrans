@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -10,6 +11,20 @@ namespace BKTrans.Misc
 {
     public class BKTransBaidu : BKTransBase
     {
+        private readonly static Dictionary<string, string> LangMap = new()
+        {
+            {"zh-cn", "zh"},
+            {"ja", "jp"},
+            {"en-us", "en"},
+            {"ko", "kor"},
+            {"fr", "fra"},
+            {"de", "de"},
+            {"ru", "ru"},
+            {"es", "spa"},
+            {"pt", "pt"},
+            {"it", "it"},
+        };
+
         [Serializable]
         public class SettingBaiduTrans : BKSetting
         {
@@ -24,8 +39,8 @@ namespace BKTrans.Misc
                 appid = "";
                 secretkey = "";
                 salt = "";
-                from = "jp";
-                to = "zh";
+                from = "ja";
+                to = "zh-cn";
             }
         }
 
@@ -35,6 +50,11 @@ namespace BKTrans.Misc
         {
             // 常量，参考：http://api.fanyi.baidu.com/doc/21
             _translateUri = "https://fanyi-api.baidu.com/api/trans/vip/translate";
+        }
+
+        public override List<string> GetLangType()
+        {
+            return LangMap.Keys.ToList();
         }
 
         public override string Trans(BKSetting setting_, string srcText)
@@ -54,7 +74,7 @@ namespace BKTrans.Misc
                 }
                 // 发起请求
                 string contentString = string.Format("q={0}&from={1}&to={2}&appid={3}&salt={4}&sign={5}",
-                                HttpUtility.UrlEncode(srcText), setting.from, setting.to, setting.appid, setting.salt,
+                                HttpUtility.UrlEncode(srcText), LangMap[setting.from], LangMap[setting.to], setting.appid, setting.salt,
                                 BKMisc.CalculMD5(setting.appid + srcText + setting.salt + setting.secretkey));
 
                 HttpRequestMessage transReqMsg = new HttpRequestMessage(HttpMethod.Post, _translateUri)

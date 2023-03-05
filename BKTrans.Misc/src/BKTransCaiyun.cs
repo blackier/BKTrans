@@ -12,6 +12,13 @@ namespace BKTrans.Misc
 {
     public class BKTransCaiyun : BKTransBase
     {
+        private readonly static Dictionary<string, string> LangMap = new()
+        {
+            {"zh-cn", "zh"},
+            {"ja", "ja"},
+            {"en-us", "en"},
+        };
+
         [Serializable]
         public class SettingCaiyunTrans : BKSetting
         {
@@ -25,7 +32,7 @@ namespace BKTrans.Misc
                 token = "";
                 request_id = "";
                 from = "ja";
-                to = "zh";
+                to = "zh-cn";
             }
         }
 
@@ -35,6 +42,11 @@ namespace BKTrans.Misc
         {
             // https://docs.caiyunapp.com/blog/2018/09/03/lingocloud-api/
             _translateUri = "http://api.interpreter.caiyunai.com/v1/translator";
+        }
+
+        public override List<string> GetLangType()
+        {
+            return LangMap.Keys.ToList();
         }
 
         public override string Trans(BKSetting setting_, string srcText)
@@ -56,7 +68,7 @@ namespace BKTrans.Misc
                 // 请求
                 JsonObject jobjContent = new();
                 jobjContent.Add("source", srcText);
-                jobjContent.Add("trans_type", string.Format("{0}2{1}", setting.from, setting.to));
+                jobjContent.Add("trans_type", string.Format("{0}2{1}", LangMap[setting.from], LangMap[setting.to]));
                 jobjContent.Add("request_id", setting.request_id);
                 jobjContent.Add("detect", true);
 

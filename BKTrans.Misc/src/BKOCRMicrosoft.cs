@@ -15,6 +15,20 @@ namespace BKTrans.Misc
 {
     public class BKOCRMicrosoft : BKOCRBase
     {
+        private readonly static Dictionary<string, string> LangMap = new()
+        {
+            {"zh-cn", "zh-cn"},
+            {"ja", "ja"},
+            {"en-us", "en-us"},
+            {"ko", "ko"},
+            {"fr", "fr"},
+            {"de", "de"},
+            {"ru", "ru"},
+            {"es", "es"},
+            {"pt", "pt"},
+            {"it", "it"},
+        };
+
         public class SettingMiscrosoftOCR : BKSetting
         {
             public string language_tag { get; set; }
@@ -29,11 +43,17 @@ namespace BKTrans.Misc
         {
 
         }
+
+        public override List<string> GetLangType()
+        {
+            return LangMap.Keys.ToList();
+        }
+
         public override bool OCR(BKSetting setting_, Bitmap image, out string result)
         {
             bool success = false;
             result = "";
-            string lanTag = (setting_ as SettingMiscrosoftOCR).language_tag;
+            string lanTag = LangMap[(setting_ as SettingMiscrosoftOCR).language_tag];
             do
             {
                 Language language = new Language(lanTag);

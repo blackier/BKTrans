@@ -128,16 +128,29 @@ namespace BKTrans
         {
             if (_historyRect.Count > 0)
             {
-                RectangleF pre_rect;
+                RectangleF preRect;
                 // 丢弃当前位置
                 if (_historyRect.Count > 1)
                     _historyRect.Pop();
-                pre_rect = _historyRect.Peek();
-                Top = pre_rect.Top;
-                Left = pre_rect.Left;
-                Width = pre_rect.Width;
-                Height = pre_rect.Height;
+                preRect = _historyRect.Peek();
+                Top = preRect.Top;
+                Left = preRect.Left;
+                Width = preRect.Width;
+                Height = preRect.Height;
             }
+        }
+
+        private void btn_drag_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            if (e.Delta == 0)
+                return;
+            double unit = 1;
+            if (e.Delta < 0)
+                unit = -unit;
+            double fontSize = textbox_transtext.FontSize;
+            if (fontSize + unit < 12)
+                return;
+            textbox_transtext.FontSize = fontSize + unit;
         }
     }
 

@@ -50,7 +50,7 @@
                     <ImageBrush ImageSource="/resource/undo.png" />
                 </Button.Background>
             </Button>
-            <Button x:Name="btn_drag" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" PreviewMouseLeftButtonDown="btn_drag_PreviewMouseLeftButtonDown">
+            <Button x:Name="btn_drag" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" PreviewMouseLeftButtonDown="btn_drag_PreviewMouseLeftButtonDown" MouseWheel="btn_drag_MouseWheel">
                 <Button.Background>
                     <ImageBrush ImageSource="/resource/drag.png" />
                 </Button.Background>

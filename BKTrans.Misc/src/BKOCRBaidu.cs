@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -11,6 +13,20 @@ namespace BKTrans.Misc
 {
     public class BKOCRBaidu : BKOCRBase
     {
+        private readonly static Dictionary<string, string> LangMap = new()
+        {
+            {"zh-cn", "CHN_ENG"},
+            {"ja", "JAP"},
+            {"en-us", "ENG"},
+            {"ko", "KOR"},
+            {"fr", "FRE"},
+            {"de", "GER"},
+            {"ru", "RUS"},
+            {"es", "SPA"},
+            {"pt", "POR"},
+            {"it", "ITA"},
+        };
+
         public class SettingBaiduOCR : BKSetting
         {
             public string grant_type { get; set; }
@@ -42,6 +58,11 @@ namespace BKTrans.Misc
 
             // 常量，参考：https://ai.baidu.com/ai-doc/OCR/zk3h7xz52
             _generalBasicUri = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic";
+        }
+
+        public override List<string> GetLangType()
+        {
+            return LangMap.Keys.ToList();
         }
 
         public override bool OCR(BKSetting setting, Bitmap image, out string result)
@@ -129,7 +150,7 @@ namespace BKTrans.Misc
             do
             {
                 string contentString = string.Format("image={0}&language_type={1}",
-                    HttpUtility.UrlEncode(BKMisc.Bitmap2Base64String(_ocrSrcImage)), _setting.language_type);
+                    HttpUtility.UrlEncode(BKMisc.Bitmap2Base64String(_ocrSrcImage)), LangMap[_setting.language_type]);
 
                 HttpRequestMessage ocrReqMsg = new HttpRequestMessage(HttpMethod.Post, _generalBasicUri + "?access_token=" + _accessToken)
                 {

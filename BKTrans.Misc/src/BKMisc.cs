@@ -140,8 +140,7 @@ namespace BKTrans.Misc
 
         public static double ScreenScaling()
         {
-            Matrix m =
-PresentationSource.FromVisual(Application.Current.MainWindow).CompositionTarget.TransformToDevice;
+            Matrix m = PresentationSource.FromVisual(Application.Current.MainWindow).CompositionTarget.TransformToDevice;
             //double dx = m.M11;
             //double dy = m.M22;
             return m.M11;
