@@ -88,30 +88,8 @@ namespace BKTrans
             combobox_ocr_replace.SelectedItem = _options.ocr_replace_select;
             _comboxUpdating = false;
 
-            // 设置托盘图标
-            _notifyClose = false;
-            var notifyIconCms = new ContextMenuStrip();
-            notifyIconCms.Items.Add(new ToolStripMenuItem("打开", null, new EventHandler(NotifyIcon_Open)));
-            notifyIconCms.Items.Add(new ToolStripMenuItem("截取", null, new EventHandler(NotifyIcon_Capture)));
-            notifyIconCms.Items.Add(new ToolStripMenuItem("翻译", null, new EventHandler(NotifyIcon_Trans)));
-            notifyIconCms.Items.Add("-");
-            notifyIconCms.Items.Add(new ToolStripMenuItem("隐藏", null, new EventHandler(NotifyIcon_Hide)));
-            notifyIconCms.Items.Add("-");
-            notifyIconCms.Items.Add(new ToolStripMenuItem("自动翻译", null, new EventHandler(NotifyIcon_AutoCaptrueTrans))
-            {
-                Checked = _options.auto_captrue_trans_open,
-                Name = _tsmenuitemAutotransName
-            });
-            notifyIconCms.Items.Add("-");
-            notifyIconCms.Items.Add(new ToolStripMenuItem("退出", null, new EventHandler(NotifyIcon_Close)));
-            _notifyIcon = new NotifyIcon
-            {
-                Visible = true,
-                Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath),
-                ContextMenuStrip = notifyIconCms
-            };
-            _notifyIcon.Click += new EventHandler(NotifyIcon_Click);
-
+            // 加载时才需要处理的内容
+            Loaded += new RoutedEventHandler(Window_RoutedEventHandler);
             // 关联关闭函数，设置为最小化到托盘
             Closing += new CancelEventHandler(Window_Closing);
 
@@ -136,6 +114,21 @@ namespace BKTrans
 
             });
             _floatTextWindow.SetAutoTransStatus(_options.auto_captrue_trans_open);
+        }
+
+        public void BringToForeground()
+        {
+            if (WindowState == WindowState.Minimized || Visibility == Visibility.Hidden)
+            {
+                Show();
+                WindowState = WindowState.Normal;
+            }
+
+            // According to some sources these steps gurantee that an app will be brought to foreground.
+            Activate();
+            Topmost = true;
+            Topmost = false;
+            Focus();
         }
 
         private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
@@ -518,6 +511,33 @@ namespace BKTrans
             var obj = (ToolStripMenuItem)sender;
             obj.Checked = !obj.Checked;
             Dispatcher.InvokeAsync(() => AutoTransSetting(obj.Checked));
+        }
+
+        private void Window_RoutedEventHandler(object sender, RoutedEventArgs e)
+        {
+            // 设置托盘图标
+            _notifyClose = false;
+            var notifyIconCms = new ContextMenuStrip();
+            notifyIconCms.Items.Add(new ToolStripMenuItem("打开", null, new EventHandler(NotifyIcon_Open)));
+            notifyIconCms.Items.Add(new ToolStripMenuItem("截取", null, new EventHandler(NotifyIcon_Capture)));
+            notifyIconCms.Items.Add(new ToolStripMenuItem("翻译", null, new EventHandler(NotifyIcon_Trans)));
+            notifyIconCms.Items.Add("-");
+            notifyIconCms.Items.Add(new ToolStripMenuItem("隐藏", null, new EventHandler(NotifyIcon_Hide)));
+            notifyIconCms.Items.Add("-");
+            notifyIconCms.Items.Add(new ToolStripMenuItem("自动翻译", null, new EventHandler(NotifyIcon_AutoCaptrueTrans))
+            {
+                Checked = _options.auto_captrue_trans_open,
+                Name = _tsmenuitemAutotransName
+            });
+            notifyIconCms.Items.Add("-");
+            notifyIconCms.Items.Add(new ToolStripMenuItem("退出", null, new EventHandler(NotifyIcon_Close)));
+            _notifyIcon = new NotifyIcon
+            {
+                Visible = true,
+                Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath),
+                ContextMenuStrip = notifyIconCms
+            };
+            _notifyIcon.Click += new EventHandler(NotifyIcon_Click);
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
