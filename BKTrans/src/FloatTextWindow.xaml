@@ -25,7 +25,7 @@
             <Setter Property="Foreground" Value="{x:Null}" />
         </Style>
     </Window.Resources>
-    <Grid Visibility="Visible">
+    <Grid Visibility="Visible" Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
             <RowDefinition Height="1*" />

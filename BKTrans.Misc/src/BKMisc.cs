@@ -145,5 +145,10 @@ namespace BKTrans.Misc
             //double dy = m.M22;
             return m.M11;
         }
+
+        public static TimeSpan TimeNow()
+        {
+            return DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+        }
     }
 }

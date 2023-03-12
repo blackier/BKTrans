@@ -2,7 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Forms;
+using System.Windows.Interop;
+using System.Windows.Threading;
 
 namespace BKTrans
 {
@@ -24,6 +29,8 @@ namespace BKTrans
             ShowInTaskbar = false;
             _onButtonClick = OnButtonClick;
             _historyRect = new();
+
+            Loaded += new RoutedEventHandler(Window_Loaded);
         }
 
         private void AddHistoryRect()
@@ -84,6 +91,36 @@ namespace BKTrans
             Dispatcher.Invoke(() => Hide());
         }
 
+        #region 事件处理
+
+        #region 窗体事件
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // 设置拖拽
+            AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(grid_textbox);
+            adornerLayer.Add(new BKDragAdorner(grid_textbox, (RectangleF change) =>
+            {
+                //Left += change.X;
+                //Top += change.Y;
+                //Width += change.Width;
+                //Height += change.Height;
+
+                var p = 1;
+                var Position = new Rectangle((int)(Left * p + change.X), (int)(Top * p + change.Y), (int)(Width * p + change.Width), (int)(Height * p + change.Height));
+
+                WindowInteropHelper wih = new(this);
+                IntPtr hWnd = wih.Handle;
+                if (!Position.IsEmpty)
+                {
+                    _ = BKWindowsAPI.MoveWindow(hWnd, Position.Left, Position.Top, Position.Width, Position.Height, false);
+                }
+                //AddHistoryRect();
+            }));
+
+        }
+        #endregion 窗体事件
+
+        #region 控件事件
         private void btn_capture_Click(object sender, RoutedEventArgs e)
         {
             if (_onButtonClick != null)
@@ -99,6 +136,13 @@ namespace BKTrans
         private void btn_hide_Click(object sender, RoutedEventArgs e)
         {
             grid_textbox.Visibility = grid_textbox.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+
+            AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(grid_textbox);
+            Adorner[] adorners = adornerLayer.GetAdorners(grid_textbox);
+            for (int i = adorners.Length - 1; i >= 0; i--)
+            {
+                adorners[i].Visibility = grid_textbox.Visibility;
+            }
         }
 
         private void checkbox_autotrans_Click(object sender, RoutedEventArgs e)
@@ -152,6 +196,8 @@ namespace BKTrans
                 return;
             textbox_transtext.FontSize = fontSize + unit;
         }
+        #endregion 控件事件
+        #endregion 事件处理
     }
 
 }

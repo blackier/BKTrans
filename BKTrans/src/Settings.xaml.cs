@@ -153,6 +153,7 @@ namespace BKTrans
             Close();
         }
 
+        #region 事件处理
         protected void btn_cancle_Click(object sender, RoutedEventArgs e)
         {
             Close();
@@ -262,5 +263,6 @@ namespace BKTrans
                 return;
             textbox_auto_captrue_trans_similarity.Text = (interval + unit).ToString("0.00");
         }
+        #endregion 事件处理
     }
 }

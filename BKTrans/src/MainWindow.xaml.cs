@@ -461,6 +461,26 @@ namespace BKTrans
             _floatTextWindow.SetText(transResultText);
         }
 
+        #region 事件处理
+        public IntPtr HotKey_Hook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (wParam.ToInt64() == (int)HotKeyId.capture)
+            {
+                _floatTextWindow.HideWnd();
+                Dispatcher.InvokeAsync(() => DoCaptureOCR(false, true, false));
+            }
+            else if (wParam.ToInt64() == (int)HotKeyId.trans)
+            {
+                Dispatcher.InvokeAsync(() => DoCaptureOCR(true, true, false));
+            }
+            else if (wParam.ToInt64() == (int)HotKeyId.hide)
+            {
+                _floatTextWindow.Hide();
+            }
+            return IntPtr.Zero;
+        }
+
+        #region 托盘事件
         private void NotifyIcon_Click(object sender, EventArgs e)
         {
             if (e.GetType().Name == "MouseEventArgs")
@@ -512,7 +532,9 @@ namespace BKTrans
             obj.Checked = !obj.Checked;
             Dispatcher.InvokeAsync(() => AutoTransSetting(obj.Checked));
         }
+        #endregion
 
+        #region 窗体事件
         private void Window_RoutedEventHandler(object sender, RoutedEventArgs e)
         {
             // 设置托盘图标
@@ -555,25 +577,9 @@ namespace BKTrans
             }
             Settings.SaveSettings();
         }
+        #endregion 窗体事件
 
-        public IntPtr HotKey_Hook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            if (wParam.ToInt64() == (int)HotKeyId.capture)
-            {
-                _floatTextWindow.HideWnd();
-                Dispatcher.InvokeAsync(() => DoCaptureOCR(false, true, false));
-            }
-            else if (wParam.ToInt64() == (int)HotKeyId.trans)
-            {
-                Dispatcher.InvokeAsync(() => DoCaptureOCR(true, true, false));
-            }
-            else if (wParam.ToInt64() == (int)HotKeyId.hide)
-            {
-                _floatTextWindow.Hide();
-            }
-            return IntPtr.Zero;
-        }
-
+        #region 控件事件
         private void _catprueTransTimer_Tick(object sender, EventArgs e)
         {
             do
@@ -673,5 +679,7 @@ namespace BKTrans
             _options.trans_both = (checkbox_both_trans.IsChecked ?? false) ? true : false;
             RestoreLanguageTypeMap();
         }
+        #endregion 用户控件
+        #endregion 事件处理
     }
 }
