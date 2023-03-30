@@ -13,16 +13,21 @@ namespace BKTrans.Misc
         private static HttpClient _defaultHttpClient = null;
         private static readonly object _defaultHttpClientLock = new object();
 
-        public static HttpClient DefaultHttpClient(HttpClientHandler handler = null, TimeSpan timeout = new())
+        public static HttpClient DefaultHttpClient(TimeSpan timeout = new())
         {
             lock (_defaultHttpClientLock)
             {
                 if (_defaultHttpClient == null)
                 {
-                    if (handler != null)
-                        _defaultHttpClient = new(handler);
-                    else
-                        _defaultHttpClient = new();
+                    SocketsHttpHandler handler = new SocketsHttpHandler()
+                    {
+                        EnableMultipleHttp2Connections = true
+                    };
+
+                    _defaultHttpClient = new(handler)
+                    {
+                        DefaultRequestVersion = HttpVersion.Version20
+                    };
 
                     if (timeout != TimeSpan.Zero)
                         _defaultHttpClient.Timeout = timeout;
