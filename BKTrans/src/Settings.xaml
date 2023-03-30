@@ -19,6 +19,7 @@
                             <RowDefinition Height="1*"/>
                             <RowDefinition Height="1*"/>
                             <RowDefinition Height="0.8*"/>
+                            <RowDefinition Height="0.6*"/>
                         </Grid.RowDefinitions>
                         <GroupBox Header="百度OCR" BorderThickness="0,1,0,0" Visibility="Visible">
                             <Grid>
@@ -81,6 +82,23 @@
                                 <Label Content="request_id:" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
                                 <TextBox x:Name="textbox_caiyunapi_token" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
                                 <TextBox x:Name="textbox_caiyunapi_request_id" Text="" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="Google翻译" Grid.Row="3" BorderThickness="0,1,0,0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="5"/>
+                                    <RowDefinition Height="25"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="85"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="15"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="api__key:" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
+                                <TextBox x:Name="textbox_google_api_key" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
                             </Grid>
                         </GroupBox>
                     </Grid>

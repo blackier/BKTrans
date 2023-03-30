@@ -26,16 +26,15 @@ namespace BKTrans.Misc
         };
 
         [Serializable]
-        public class SettingBaiduTrans : BKSetting
+        public class SettingBaiduTrans : BKTransSetting
         {
             public string appid { get; set; }
             public string secretkey { get; set; }
             public string salt { get; set; }
-            public string from { get; set; }
-            public string to { get; set; }
 
             public SettingBaiduTrans()
             {
+                name = "baidu";
                 appid = "";
                 secretkey = "";
                 salt = "";

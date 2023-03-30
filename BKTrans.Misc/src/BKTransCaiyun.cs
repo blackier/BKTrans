@@ -20,15 +20,14 @@ namespace BKTrans.Misc
         };
 
         [Serializable]
-        public class SettingCaiyunTrans : BKSetting
+        public class SettingCaiyunTrans : BKTransSetting
         {
             public string token { get; set; }
             public string request_id { get; set; }
-            public string from { get; set; }
-            public string to { get; set; }
 
             public SettingCaiyunTrans()
             {
+                name = "caiyun";
                 token = "";
                 request_id = "";
                 from = "ja";

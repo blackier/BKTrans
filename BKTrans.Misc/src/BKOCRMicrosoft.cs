@@ -29,13 +29,12 @@ namespace BKTrans.Misc
             {"it", "it"},
         };
 
-        public class SettingMiscrosoftOCR : BKSetting
+        public class SettingMiscrosoftOCR : BKOCRSetting
         {
-            public string language_tag { get; set; }
-
             public SettingMiscrosoftOCR()
             {
-                language_tag = "";
+                name = "microsoft";
+                language = "";
             }
         }
 
@@ -53,7 +52,7 @@ namespace BKTrans.Misc
         {
             bool success = false;
             result = "";
-            string lanTag = LangMap[(setting_ as SettingMiscrosoftOCR).language_tag];
+            string lanTag = LangMap[(setting_ as SettingMiscrosoftOCR).language];
             do
             {
                 Language language = new Language(lanTag);

@@ -31,17 +31,18 @@ namespace BKTrans.Misc
 
         public readonly static List<string> TransType = new()
         {
+            "google",
             "baidu",
             "caiyun",
         };
 
         public static BKOCRBase CreateBKOCRClient(string ocrType)
         {
-            if (ocrType == OCRType[0])
+            if (ocrType == "baidu")
             {
                 return new BKOCRBaidu();
             }
-            else if (ocrType == OCRType[1])
+            else if (ocrType == "microsoft")
             {
                 return new BKOCRMicrosoft();
             }
@@ -50,13 +51,17 @@ namespace BKTrans.Misc
 
         public static BKTransBase CreateBKTransClient(string transType)
         {
-            if (transType == TransType[0])
+            if (transType == "baidu")
             {
                 return new BKTransBaidu();
             }
-            else if (transType == TransType[1])
+            else if (transType == "caiyun")
             {
                 return new BKTransCaiyun();
+            }
+            else if (transType == "google")
+            {
+                return new BKTransGoogle();
             }
             return new BKTransBaidu();
         }

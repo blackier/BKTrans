@@ -5,6 +5,6 @@
              StartupUri="src/MainWindow.xaml"
              Startup="AppOnStartup">
     <Application.Resources>
-         
+
     </Application.Resources>
 </Application>

@@ -8,9 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using static BKTrans.Misc.BKOCRMicrosoft;
+using System.Windows.Media;
 
 namespace BKTrans
 {
@@ -36,8 +38,6 @@ namespace BKTrans
 
         private BKOCRBase _ocrClient;
         private BKSetting _ocrSetting;
-        private BKTransBase _transClient;
-        private BKSetting _transSetting;
 
         private DispatcherTimer _autoCaptrueTransTimer;
         private int _autoCaptrueTransCountdown;
@@ -69,18 +69,21 @@ namespace BKTrans
             if (_options.auto_captrue_trans_open)
                 _autoCaptrueTransTimer.Start();
 
-            // 本地ocr
-            checkbox_local_ocr.IsChecked = _options.ocr_microsoft_open;
-
-            // 双翻译
-            checkbox_both_trans.IsChecked = _options.trans_both;
-
             // 设置支持语言列表
             _comboxUpdating = true;
-            combobox_trans_type.ItemsSource = BKTransMap.TransType;
-            combobox_trans_type.SelectedItem = _options.trans_type;
+            // 因为可能会修改支持的翻译类型
+            // 做下比较，先做差值再合并
+            List<string> newOcrType = _options.ocr_types.Select(type => type.Text).Intersect(BKTransMap.OCRType).Union(BKTransMap.OCRType).ToList();
+            List<string> newTransType = _options.trans_types.Select(type => type.Text).Intersect(BKTransMap.TransType).Union(BKTransMap.TransType).ToList();
+
+            _options.ocr_types = newOcrType.Select(type => new Settings.CheckBoxItem() { IsChecked = _options.ocr_types.Exists(t => t.Text == type && t.IsChecked), Text = type }).ToList();
+            _options.trans_types = newTransType.Select(type => new Settings.CheckBoxItem() { IsChecked = _options.trans_types.Exists(t => t.Text == type && t.IsChecked), Text = type }).ToList();
+
+            combobox_ocr_type.ItemsSource = _options.ocr_types;
+            combobox_trans_type.ItemsSource = _options.trans_types;
             _comboxUpdating = false;
-            RestoreLanguageTypeMap();
+            combobox_ocr_type_CheckClick(null,null);
+            combobox_trans_type_CheckClick(null,null);
 
             // 设置OCR文本替换
             _comboxUpdating = true;
@@ -236,52 +239,66 @@ namespace BKTrans
         private void RestoreLanguageTypeMap()
         {
             // 计算ocr和文本翻译交集
-            string ocrType = BKTransMap.OCRType[checkbox_local_ocr.IsChecked ?? false ? 1 : 0];
+            // ocr只支持选择一个
+            // 文本翻译支持选择好几个
+            int ocrSelect = 0;
+            foreach (var type in _options.ocr_types)
+            {
+                if (type.IsChecked)
+                    break;
+                ocrSelect++;
+            }
+            if (ocrSelect >= _options.ocr_types.Count)
+            {
+                ocrSelect = 0;
+                _options.ocr_types[0].IsChecked = true;
+            }
+
+            string ocrType = BKTransMap.OCRType[ocrSelect];
             List<string> ocrItemsSource = BKTransMap.CreateBKOCRClient(ocrType).GetLangType();
 
-            string transType = BKTransMap.TransType[combobox_trans_type.SelectedIndex];
-            List<string> transItemsSource = ocrItemsSource.Intersect(BKTransMap.CreateBKTransClient(transType).GetLangType()).ToList();
-            if (checkbox_both_trans.IsChecked ?? false)
+            List<string> transItemsSource = new();
+            foreach (var type in _options.trans_types)
             {
-                foreach (string type in BKTransMap.TransType)
+                if (type.IsChecked)
                 {
-                    transItemsSource = transItemsSource.Intersect(BKTransMap.CreateBKTransClient(type).GetLangType()).ToList();
+                    if (transItemsSource.Count == 0)
+                        transItemsSource = BKTransMap.CreateBKTransClient(type.Text).GetLangType();
+                    else
+                        transItemsSource = transItemsSource.Intersect(BKTransMap.CreateBKTransClient(type.Text).GetLangType()).ToList();
                 }
             }
+            if (transItemsSource.Count == 0)
+            {
+                transItemsSource = BKTransMap.CreateBKTransClient(BKTransMap.TransType[0]).GetLangType();
+                _options.trans_types[0].IsChecked = true;
+            }
+            transItemsSource = transItemsSource.Intersect(ocrItemsSource).ToList();
 
-            combobox_src_type.ItemsSource = transItemsSource;
-            combobox_target_type.ItemsSource = transItemsSource;
+            combobox_from_type.ItemsSource = transItemsSource;
+            combobox_to_type.ItemsSource = transItemsSource;
 
-            string srcType = "";
-            string targetType = "";
-            if (transType == BKTransMap.TransType[0])
+            // 如果文本翻译选了好几个
+            // 那么统一设置成和第一个相同的
+            string from = "";
+            string to = "";
+            foreach (var type in _options.trans_types)
             {
-                srcType = _options.trans_baidu.from;
-                targetType = _options.trans_baidu.to;
+                if (type.IsChecked)
+                {
+                    if (string.IsNullOrEmpty(from) || string.IsNullOrEmpty(to))
+                    {
+                        from = _options.GetTransSetting(type.Text).from;
+                        to = _options.GetTransSetting(type.Text).to;
+                    }
+                    else
+                    {
+                        _options.UpdateTransSetting(type.Text, from, to);
+                    }
+                }
             }
-            else if (transType == BKTransMap.TransType[1])
-            {
-                srcType = _options.trans_caiyun.from;
-                targetType = _options.trans_caiyun.to;
-            }
-
-            if (!transItemsSource.Contains(srcType))
-            {
-                srcType = "";
-            }
-            if (!transItemsSource.Contains(targetType))
-            {
-                targetType = "";
-            }
-
-            if (!string.IsNullOrEmpty(srcType))
-            {
-                combobox_src_type.SelectedItem = srcType;
-            }
-            if (!string.IsNullOrEmpty(targetType))
-            {
-                combobox_target_type.SelectedItem = targetType;
-            }
+            combobox_from_type.SelectedItem = from;
+            combobox_to_type.SelectedItem = to;
         }
 
         private void AutoTransSetting(bool start)
@@ -303,49 +320,31 @@ namespace BKTrans
 
         private void SaveLanguageTypeMap()
         {
-            string transType = BKTransMap.TransType[combobox_trans_type.SelectedIndex];
-            _options.trans_type = transType;
-            string ocrType = BKTransMap.OCRType[_options.ocr_microsoft_open ? 1 : 0];
+            string fromType = combobox_from_type.SelectedItem as string;
+            string toType = combobox_to_type.SelectedItem as string;
 
-            string srcType = combobox_src_type.SelectedItem as string;
-            string targetType = combobox_target_type.SelectedItem as string;
+            // ocr
+            foreach (var type in _options.ocr_types)
+            {
+                if (type.IsChecked)
+                {
+                    _options.GetOCRSetting(type.Text).language = fromType;
+
+                    _ocrClient = BKTransMap.CreateBKOCRClient(type.Text);
+                    _ocrSetting = _options.GetOCRSetting(type.Text);
+                    break;
+                }
+            }
 
             // 文本翻译
-            if (transType == BKTransMap.TransType[0])
+            foreach (var type in _options.trans_types)
             {
-                _options.trans_baidu.from = srcType;
-                _options.trans_baidu.to = targetType;
-
-                _transSetting = _options.trans_baidu;
-            }
-
-            if (_options.trans_both)
-                transType = BKTransMap.TransType[1];
-
-            if (transType == BKTransMap.TransType[1])
-            {
-                _options.trans_caiyun.from = srcType;
-                _options.trans_caiyun.to = targetType;
-
-                _transSetting = _options.trans_caiyun;
-            }
-            _transClient = BKTransMap.CreateBKTransClient(transType);
-
-            // ocr翻译
-            _options.ocr_baidu.language_type = srcType;
-            if (ocrType == BKTransMap.OCRType[1])
-            {
-                _ocrSetting = new SettingMiscrosoftOCR()
+                if (type.IsChecked)
                 {
-                    language_tag = srcType
-                };
+                    _options.UpdateTransSetting(type.Text, fromType, toType);
+                    break;
+                }
             }
-            else
-            {
-                _ocrSetting = _options.ocr_baidu;
-            }
-            _ocrClient = BKTransMap.CreateBKOCRClient(ocrType);
-            Settings.SaveSettings();
         }
 
         private async void DoCaptureOCR(bool captrueLast = false, bool showFloatWindow = false, bool showMainWindow = true)
@@ -437,25 +436,25 @@ namespace BKTrans
             SetTargetText("文本翻译中...");
 
             string transResultText = "";
-            if (_options.trans_both)
+            List<Task<string>> transTasks = new();
+
+            foreach (var type in _options.trans_types)
             {
-                var transtasks = Task.WhenAll(new[] {
-                    Task.Run(() => new BKTransBaidu().Trans(_options.trans_baidu, srctext))
-                    , Task.Run(() => new BKTransCaiyun().Trans(_options.trans_caiyun, srctext)) });
-                await Task.Run(() => transtasks.Wait());
-                foreach (var result in transtasks.Result)
+                if (type.IsChecked)
                 {
-                    transResultText += result;
-                    transResultText += _textSpliteString;
+                    transTasks.Add(Task.Run(() => BKTransMap.CreateBKTransClient(type.Text).Trans(_options.GetTransSetting(type.Text), srctext)));
                 }
-                if (!string.IsNullOrEmpty(transResultText))
-                    transResultText = transResultText.Remove(transResultText.Length - _textSpliteString.Length);
-            }
-            else
-            {
-                transResultText = await Task.Run(() => _transClient.Trans(_transSetting, srctext));
             }
 
+            var transtasks = Task.WhenAll(transTasks);
+            await Task.Run(() => transtasks.Wait());
+            foreach (var result in transtasks.Result)
+            {
+                transResultText += result;
+                transResultText += _textSpliteString;
+            }
+            if (!string.IsNullOrEmpty(transResultText))
+                transResultText = transResultText.Remove(transResultText.Length - _textSpliteString.Length);
 
             SetTargetText(transResultText);
             _floatTextWindow.SetText(transResultText);
@@ -627,11 +626,34 @@ namespace BKTrans
             _autoCaptrueTransCountdown = _options.auto_captrue_trans_countdown;
         }
 
-        private void combobox_trans_type_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void combobox_ocr_type_CheckClick(object sender, RoutedEventArgs e)
         {
-            if (_comboxUpdating)
-                return;
             RestoreLanguageTypeMap();
+
+            string selectType = "";
+            foreach (var type in _options.ocr_types)
+            {
+                if (type.IsChecked)
+                {
+                    selectType += type.Text.Substring(0, 1) + ";";
+                }
+            }
+            combobox_ocr_type.Text = selectType.ToUpper();
+        }
+
+        private void combobox_trans_type_CheckClick(object sender, RoutedEventArgs e)
+        {
+            RestoreLanguageTypeMap();
+
+            string selectType = "";
+            foreach(var type in _options.trans_types)
+            {
+                if(type.IsChecked)
+                {
+                    selectType += type.Text.Substring(0,1) + ";";
+                }
+            }
+            combobox_trans_type.Text = selectType.ToUpper();
         }
 
         private void btn_setting_Click(object sender, RoutedEventArgs e)
@@ -667,19 +689,8 @@ namespace BKTrans
             _options.ocr_replace_select = (string)combobox_ocr_replace.SelectedItem;
         }
 
-        private void checkbox_local_ocr_Click(object sender, RoutedEventArgs e)
-        {
-            _options.ocr_microsoft_open = checkbox_local_ocr.IsChecked ?? false ? true : false;
-            RestoreLanguageTypeMap();
-
-        }
-
-        private void checkbox_both_trans_Click(object sender, RoutedEventArgs e)
-        {
-            _options.trans_both = (checkbox_both_trans.IsChecked ?? false) ? true : false;
-            RestoreLanguageTypeMap();
-        }
         #endregion 用户控件
+
         #endregion 事件处理
     }
 }

@@ -27,19 +27,19 @@ namespace BKTrans.Misc
             {"it", "ITA"},
         };
 
-        public class SettingBaiduOCR : BKSetting
+        public class SettingBaiduOCR : BKOCRSetting
         {
             public string grant_type { get; set; }
             public string client_id { get; set; }
             public string client_secret { get; set; }
-            public string language_type { get; set; }
 
             public SettingBaiduOCR()
             {
+                name = "baidu";
                 grant_type = "";
                 client_id = "";
                 client_secret = "";
-                language_type = "";
+                language = "";
             }
         }
 
@@ -150,7 +150,7 @@ namespace BKTrans.Misc
             do
             {
                 string contentString = string.Format("image={0}&language_type={1}",
-                    HttpUtility.UrlEncode(BKMisc.Bitmap2Base64String(_ocrSrcImage)), LangMap[_setting.language_type]);
+                    HttpUtility.UrlEncode(BKMisc.Bitmap2Base64String(_ocrSrcImage)), LangMap[_setting.language]);
 
                 HttpRequestMessage ocrReqMsg = new HttpRequestMessage(HttpMethod.Post, _generalBasicUri + "?access_token=" + _accessToken)
                 {
