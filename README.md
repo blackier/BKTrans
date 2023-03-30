@@ -1,5 +1,9 @@
 # BKTrans
 
+[![Licence](https://img.shields.io/badge/license-GPLv3-blue.svg?style=flat-square&label=License)](./LICENSE)
+[![Latest Release](https://img.shields.io/github/release-pre/blackier/BKTrans.svg?style=flat-square&label=Latest%20Release)](https://github.com/blackier/BKTrans/releases)
+[![Download Stats](https://img.shields.io/github/downloads/blackier/BKTrans/total.svg?style=flat-square&label=Downloads)](https://github.com/blackier/BKTrans/releases)
+
 BKTrans的功能设计上很简单，截图，识别出文字，最后翻译出文本，力求简洁和高效。
 
 ## 使用
