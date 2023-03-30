@@ -150,5 +150,25 @@ namespace BKTrans.Misc
         {
             return DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0);
         }
+
+        public static System.Drawing.Size SizeToSize(System.Windows.Size size)
+        {
+            return new System.Drawing.Size((int)size.Width, (int)size.Height);
+        }
+
+        public static System.Windows.Size SizeToSize(System.Drawing.Size size)
+        {
+            return new System.Windows.Size(size.Width, size.Height);
+        }
+
+        public static System.Drawing.Point PointToPoint(System.Windows.Point point)
+        {
+            return new System.Drawing.Point((int)point.X, (int)point.Y);
+        }
+
+        public static System.Windows.Point PointToPoint(System.Drawing.Point point)
+        {
+            return new System.Windows.Point(point.X, point.Y);
+        }
     }
 }

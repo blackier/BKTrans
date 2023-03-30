@@ -30,7 +30,7 @@ namespace BKTrans
         private RectangleF _captureRect;
         private Bitmap _captureBmp;
 
-        private FloatTextWindow _floatTextWindow;
+        private FloatCaptureRectWindow _floatTextWindow;
 
         private Settings.Options _options;
 
@@ -89,23 +89,23 @@ namespace BKTrans
             _comboxUpdating = false;
 
             // 加载时才需要处理的内容
-            Loaded += new RoutedEventHandler(Window_RoutedEventHandler);
+            Loaded += new RoutedEventHandler(Window_Loaded);
             // 关联关闭函数，设置为最小化到托盘
             Closing += new CancelEventHandler(Window_Closing);
 
             // 翻译浮窗设置
-            _floatTextWindow = new FloatTextWindow((FloatTextWindow.ButtonType btntype, object arg) =>
+            _floatTextWindow = new FloatCaptureRectWindow((FloatCaptureRectWindow.ButtonType btntype, object arg) =>
             {
                 switch (btntype)
                 {
-                    case FloatTextWindow.ButtonType.Capture:
-                        _floatTextWindow.HideWnd();
+                    case FloatCaptureRectWindow.ButtonType.Capture:
+                        _floatTextWindow.HideWindow();
                         Dispatcher.InvokeAsync(() => DoCaptureOCR(false, true, false));
                         break;
-                    case FloatTextWindow.ButtonType.Trans:
+                    case FloatCaptureRectWindow.ButtonType.Trans:
                         Dispatcher.InvokeAsync(() => DoCaptureOCR(true, true, false));
                         break;
-                    case FloatTextWindow.ButtonType.AutoTrans:
+                    case FloatCaptureRectWindow.ButtonType.AutoTrans:
                         Dispatcher.InvokeAsync(() => AutoTransSetting((bool)arg));
                         break;
                     default:
@@ -221,15 +221,15 @@ namespace BKTrans
             });
         }
 
-        private void ShowWnd()
+        private void ShowWindow()
         {
             Show();
         }
 
-        private void HideWnd()
+        private void HideWindow()
         {
             Hide();
-            _floatTextWindow.HideWnd();
+            _floatTextWindow.HideWindow();
             Thread.Sleep(250);
         }
 
@@ -362,9 +362,9 @@ namespace BKTrans
             _floatTextWindow.SetTextRect(_captureRect);
 
             if (showMainWindow)
-                ShowWnd();
+                ShowWindow();
             if (showFloatWindow)
-                _floatTextWindow.ShowWnd();
+                _floatTextWindow.ShowWindow();
             do
             {
                 if (capturedata.captureBmp == null)
@@ -401,7 +401,7 @@ namespace BKTrans
                     {
                         _floatTextWindow.SetText("OCR翻译失败，打开程序界面查看原因。");
                         _floatTextWindow.SetTextRect(_captureRect);
-                        _floatTextWindow.ShowWnd();
+                        _floatTextWindow.ShowWindow();
                     }
                     break;
                 }
@@ -466,7 +466,7 @@ namespace BKTrans
         {
             if (wParam.ToInt64() == (int)HotKeyId.capture)
             {
-                _floatTextWindow.HideWnd();
+                _floatTextWindow.HideWindow();
                 Dispatcher.InvokeAsync(() => DoCaptureOCR(false, true, false));
             }
             else if (wParam.ToInt64() == (int)HotKeyId.trans)
@@ -500,7 +500,7 @@ namespace BKTrans
         }
         private void NotifyIcon_Open(object sender, EventArgs e)
         {
-            _floatTextWindow.ShowWnd();
+            _floatTextWindow.ShowWindow();
         }
 
         private void NotifyIcon_Close(object sender, EventArgs e)
@@ -512,7 +512,7 @@ namespace BKTrans
 
         private void NotifyIcon_Capture(object sender, EventArgs e)
         {
-            _floatTextWindow.HideWnd();
+            _floatTextWindow.HideWindow();
             Dispatcher.InvokeAsync(() => DoCaptureOCR(false, true, false));
         }
 
@@ -535,12 +535,12 @@ namespace BKTrans
         #endregion
 
         #region 窗体事件
-        private void Window_RoutedEventHandler(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // 设置托盘图标
             _notifyClose = false;
             var notifyIconCms = new ContextMenuStrip();
-            notifyIconCms.Items.Add(new ToolStripMenuItem("打开", null, new EventHandler(NotifyIcon_Open)));
+            notifyIconCms.Items.Add(new ToolStripMenuItem("显示", null, new EventHandler(NotifyIcon_Open)));
             notifyIconCms.Items.Add(new ToolStripMenuItem("截取", null, new EventHandler(NotifyIcon_Capture)));
             notifyIconCms.Items.Add(new ToolStripMenuItem("翻译", null, new EventHandler(NotifyIcon_Trans)));
             notifyIconCms.Items.Add("-");
@@ -572,7 +572,7 @@ namespace BKTrans
             else
             {
                 Hide();
-                _floatTextWindow.Hide();
+                _floatTextWindow.HideWindow();
                 e.Cancel = true;
             }
             Settings.SaveSettings();
@@ -651,7 +651,7 @@ namespace BKTrans
         private void btn_capture_Click(object sender, RoutedEventArgs e)
         {
             bool floatwindowVisible = _floatTextWindow.IsVisible;
-            HideWnd();
+            HideWindow();
             Dispatcher.InvokeAsync(() => DoCaptureOCR(false, floatwindowVisible));
         }
 

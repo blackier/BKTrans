@@ -1,17 +1,18 @@
 ﻿using BKTrans.Misc;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Threading;
 
 namespace BKTrans
 {
-    public partial class FloatTextWindow : Window
+    public partial class FloatCaptureRectWindow : Window
     {
         public enum ButtonType
         {
@@ -23,13 +24,24 @@ namespace BKTrans
 
         private Stack<RectangleF> _historyRect;
         private Action<ButtonType, object> _onButtonClick;
-        public FloatTextWindow(Action<ButtonType, object> OnButtonClick = null)
+        private TransResultTextControl _transResultTextControl;
+        private FloatTransTextWindow _floatTransTextWindow;
+        public FloatCaptureRectWindow(Action<ButtonType, object> OnButtonClick = null)
         {
             InitializeComponent();
             ShowInTaskbar = false;
             _onButtonClick = OnButtonClick;
             _historyRect = new();
 
+            _transResultTextControl = new TransResultTextControl();
+            _transResultTextControl.TextButtonMouseWheel += checkbox_text_MouseWheel;
+            _transResultTextControl.TextButtonClick += checkbox_text_Click;
+            _transResultTextControl.DragButtonPreviewMouseLeftButtonDown += checkbox_text_PreviewMouseLeftButtonDown;
+            content_transresult.Content = _transResultTextControl;
+
+            _floatTransTextWindow = new();
+
+            Closing += new CancelEventHandler(Window_Closing);
             Loaded += new RoutedEventHandler(Window_Loaded);
         }
 
@@ -63,7 +75,7 @@ namespace BKTrans
         {
             Dispatcher.Invoke(() =>
             {
-                textbox_transtext.Text = t;
+                _transResultTextControl.Text = t;
             });
 
         }
@@ -76,19 +88,25 @@ namespace BKTrans
             });
         }
 
-        public void ShowWnd()
+        public void ShowWindow()
         {
             Dispatcher.Invoke(() =>
             {
                 Topmost = true;
                 Show();
                 Activate();
+                if (_transResultTextControl.TextButtonIsChecked)
+                    _floatTransTextWindow.ShowWindow();
             });
         }
 
-        public void HideWnd()
+        public void HideWindow()
         {
-            Dispatcher.Invoke(() => Hide());
+            Dispatcher.Invoke(() =>
+            {
+                Hide();
+                _floatTransTextWindow.HideWindow();
+            });
         }
 
         #region 事件处理
@@ -97,8 +115,8 @@ namespace BKTrans
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // 设置拖拽
-            AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(grid_textbox);
-            adornerLayer.Add(new BKDragAdorner(grid_textbox, (RectangleF change) =>
+            AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(rectangele_capture);
+            adornerLayer.Add(new BKDragAdorner(rectangele_capture, (RectangleF change) =>
             {
                 //Left += change.X;
                 //Top += change.Y;
@@ -106,17 +124,21 @@ namespace BKTrans
                 //Height += change.Height;
 
                 var p = 1;
-                var Position = new Rectangle((int)(Left * p + change.X), (int)(Top * p + change.Y), (int)(Width * p + change.Width), (int)(Height * p + change.Height));
+                var newPosition = new Rectangle((int)(Left * p + change.X), (int)(Top * p + change.Y), (int)(Width * p + change.Width), (int)(Height * p + change.Height));
 
                 WindowInteropHelper wih = new(this);
                 IntPtr hWnd = wih.Handle;
-                if (!Position.IsEmpty)
+                if (!newPosition.IsEmpty)
                 {
-                    _ = BKWindowsAPI.MoveWindow(hWnd, Position.Left, Position.Top, Position.Width, Position.Height, false);
+                    _ = BKWindowsAPI.MoveWindow(hWnd, newPosition.Left, newPosition.Top, newPosition.Width, newPosition.Height, false);
                 }
                 //AddHistoryRect();
             }));
 
+        }
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            _floatTransTextWindow.Close();
         }
         #endregion 窗体事件
 
@@ -136,9 +158,11 @@ namespace BKTrans
         private void btn_hide_Click(object sender, RoutedEventArgs e)
         {
             grid_textbox.Visibility = grid_textbox.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+            if(!_transResultTextControl.TextButtonIsChecked)
+                _transResultTextControl.TextVisibility = grid_textbox.Visibility;
 
-            AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(grid_textbox);
-            Adorner[] adorners = adornerLayer.GetAdorners(grid_textbox);
+            AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(rectangele_capture);
+            Adorner[] adorners = adornerLayer.GetAdorners(rectangele_capture);
             for (int i = adorners.Length - 1; i >= 0; i--)
             {
                 adorners[i].Visibility = grid_textbox.Visibility;
@@ -184,17 +208,49 @@ namespace BKTrans
             }
         }
 
-        private void btn_drag_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        private void checkbox_text_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
             if (e.Delta == 0)
                 return;
             double unit = 1;
             if (e.Delta < 0)
                 unit = -unit;
-            double fontSize = textbox_transtext.FontSize;
+            double fontSize = _transResultTextControl.FontSize;
             if (fontSize + unit < 12)
                 return;
-            textbox_transtext.FontSize = fontSize + unit;
+            _transResultTextControl.FontSize = fontSize + unit;
+        }
+        private void checkbox_text_Click(object sender, RoutedEventArgs e)
+        {
+            _transResultTextControl.TextButtonIsChecked = !_transResultTextControl.TextButtonIsChecked;
+            bool isCheck = _transResultTextControl.TextButtonIsChecked;
+
+            _transResultTextControl.ButtonsVisibility = isCheck ? Visibility.Visible : Visibility.Hidden;
+            if (isCheck)
+            {
+                content_transresult.Content = null;
+                _floatTransTextWindow.ChangeContent(_transResultTextControl, isCheck);
+                _floatTransTextWindow.MoveWindow(new Rectangle(BKMisc.PointToPoint(content_transresult.PointToScreen(new())), BKMisc.SizeToSize(content_transresult.RenderSize)));
+                _floatTransTextWindow.ShowWindow();
+                _floatTransTextWindow.MoveWindow(new Rectangle(BKMisc.PointToPoint(content_transresult.PointToScreen(new())), BKMisc.SizeToSize(content_transresult.RenderSize)));
+
+                _transResultTextControl.InitDragAdorner((RectangleF change) =>
+                {
+                    var p = 1;
+                    var newPosition = new Rectangle((int)(_floatTransTextWindow.Left * p + change.X), (int)(_floatTransTextWindow.Top * p + change.Y), (int)(_floatTransTextWindow.Width * p + change.Width), (int)(_floatTransTextWindow.Height * p + change.Height));
+                    _floatTransTextWindow.MoveWindow(newPosition);
+                });
+            }
+            else
+            {
+                _floatTransTextWindow.HideWindow();
+                _floatTransTextWindow.ChangeContent(_transResultTextControl, isCheck);
+                content_transresult.Content = _transResultTextControl;
+            }
+        }
+        private void checkbox_text_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            _floatTransTextWindow.DragMove();
         }
         #endregion 控件事件
         #endregion 事件处理

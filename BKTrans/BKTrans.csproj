@@ -24,6 +24,8 @@
     <None Remove="resource\auto_trans_check.png" />
     <None Remove="resource\drag.png" />
     <None Remove="resource\undo.png" />
+    <None Remove="resource\text.png" />
+    <None Remove="resource\text_check.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,6 +45,8 @@
     <Resource Include="resource\auto_trans_check.png" />
     <Resource Include="resource\drag.png" />
     <Resource Include="resource\undo.png" />
+    <Resource Include="resource\text.png" />
+    <Resource Include="resource\text_check.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,7 +54,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="src\FloatTextWindow.xaml">
+    <Page Update="src\FloatCaptureRectWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
