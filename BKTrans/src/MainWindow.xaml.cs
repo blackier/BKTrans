@@ -7,12 +7,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Threading;
 using static BKTrans.Misc.BKOCRMicrosoft;
-using System.Windows.Media;
 
 namespace BKTrans
 {
@@ -82,8 +82,8 @@ namespace BKTrans
             combobox_ocr_type.ItemsSource = _options.ocr_types;
             combobox_trans_type.ItemsSource = _options.trans_types;
             _comboxUpdating = false;
-            combobox_ocr_type_CheckClick(null,null);
-            combobox_trans_type_CheckClick(null,null);
+            combobox_ocr_type_CheckClick(null, null);
+            combobox_trans_type_CheckClick(null, null);
 
             // 设置OCR文本替换
             _comboxUpdating = true;
@@ -474,7 +474,7 @@ namespace BKTrans
             }
             else if (wParam.ToInt64() == (int)HotKeyId.hide)
             {
-                _floatTextWindow.Hide();
+                _floatTextWindow.HideWindow();
             }
             return IntPtr.Zero;
         }
@@ -493,13 +493,9 @@ namespace BKTrans
             }
             if (!IsVisible)
             {
-                Show();
+                ShowWindow();
             }
             Activate();
-        }
-        private void NotifyIcon_Open(object sender, EventArgs e)
-        {
-            _floatTextWindow.ShowWindow();
         }
 
         private void NotifyIcon_Close(object sender, EventArgs e)
@@ -520,9 +516,14 @@ namespace BKTrans
             DoCaptureOCR(true, true, false);
         }
 
+        private void NotifyIcon_Open(object sender, EventArgs e)
+        {
+            _floatTextWindow.ShowWindow();
+        }
+
         private void NotifyIcon_Hide(object sender, EventArgs e)
         {
-            _floatTextWindow.Hide();
+            _floatTextWindow.HideWindow();
         }
 
         private void NotifyIcon_AutoCaptrueTrans(object sender, EventArgs e)
@@ -539,11 +540,11 @@ namespace BKTrans
             // 设置托盘图标
             _notifyClose = false;
             var notifyIconCms = new ContextMenuStrip();
-            notifyIconCms.Items.Add(new ToolStripMenuItem("显示", null, new EventHandler(NotifyIcon_Open)));
             notifyIconCms.Items.Add(new ToolStripMenuItem("截取", null, new EventHandler(NotifyIcon_Capture)));
             notifyIconCms.Items.Add(new ToolStripMenuItem("翻译", null, new EventHandler(NotifyIcon_Trans)));
             notifyIconCms.Items.Add("-");
-            notifyIconCms.Items.Add(new ToolStripMenuItem("隐藏", null, new EventHandler(NotifyIcon_Hide)));
+            notifyIconCms.Items.Add(new ToolStripMenuItem("显示浮窗", null, new EventHandler(NotifyIcon_Open)));
+            notifyIconCms.Items.Add(new ToolStripMenuItem("隐藏浮窗", null, new EventHandler(NotifyIcon_Hide)));
             notifyIconCms.Items.Add("-");
             notifyIconCms.Items.Add(new ToolStripMenuItem("自动翻译", null, new EventHandler(NotifyIcon_AutoCaptrueTrans))
             {
@@ -646,11 +647,11 @@ namespace BKTrans
             RestoreLanguageTypeMap();
 
             string selectType = "";
-            foreach(var type in _options.trans_types)
+            foreach (var type in _options.trans_types)
             {
-                if(type.IsChecked)
+                if (type.IsChecked)
                 {
-                    selectType += type.Text.Substring(0,1) + ";";
+                    selectType += type.Text.Substring(0, 1) + ";";
                 }
             }
             combobox_trans_type.Text = selectType.ToUpper();
