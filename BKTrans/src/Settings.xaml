@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:BKTrans"
         mc:Ignorable="d"
         Title="Settings" Height="300" Width="400" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterOwner" MinHeight="300" MinWidth="400">
@@ -122,7 +123,20 @@
                         <Button x:Name="btn_ocr_replace_new" Grid.Column="2" Content="添加" Width="35" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Click="btn_ocr_replace_new_Click"/>
                         <Button x:Name="btn_ocr_replace_delete" Grid.Column="2" Content="删除" Width="35" HorizontalAlignment="Left" Margin="55,0,0,0" VerticalAlignment="Center" Click="btn_ocr_replace_delete_Click"/>
                     </Grid>
-                    <DataGrid x:Name="datagrid_ocr_replace" AutoGenerateColumns="False" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HeadersVisibility="Column" VerticalGridLinesBrush="LightGray" HorizontalGridLinesBrush="LightGray" Background="White">
+
+                    <Popup x:Name="popup_datagrid_ocr_replace" AllowsTransparency="True" IsHitTestVisible="False"
+                           Placement="Relative" PlacementTarget="{Binding ElementName=datagrid_ocr_replace}">
+                        <TextBlock Padding="14,14,0,0" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding replace_src}" />
+                    </Popup>
+                    <DataGrid x:Name="datagrid_ocr_replace" Grid.Row="1" AutoGenerateColumns="False"
+                              SelectionMode="Single" HeadersVisibility="Column" 
+                              ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                              VerticalGridLinesBrush="LightGray"  HorizontalGridLinesBrush="LightGray" Background="White" 
+                              Sorting="datagrid_ocr_replace_Sorting" PreviewKeyDown="datagrid_ocr_replace_PreviewKeyDown">
+                        <i:Interaction.Behaviors>
+                            <local:DataGridBehavior Popup="{Binding ElementName=popup_datagrid_ocr_replace}" />
+                        </i:Interaction.Behaviors>
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="源文本" Binding="{Binding replace_src}" Width="1*" />
                             <DataGridTextColumn Header="替换文本" Binding="{Binding replace_dst}" Width="1*" />

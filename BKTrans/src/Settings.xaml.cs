@@ -3,10 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
 
 namespace BKTrans
 {
@@ -179,7 +183,7 @@ namespace BKTrans
             textbox_auto_captrue_trans_countdown.Text = _options.auto_captrue_trans_countdown.ToString();
             textbox_auto_captrue_trans_similarity.Text = _options.auto_captrue_trans_similarity.ToString();
         }
-
+        #region 事件处理
         protected void btn_ok_Click(object sender, RoutedEventArgs e)
         {
             _options.ocr_baidu.client_id = textbox_baiduocr_client_id.Text;
@@ -202,7 +206,6 @@ namespace BKTrans
             Close();
         }
 
-        #region 事件处理
         protected void btn_cancle_Click(object sender, RoutedEventArgs e)
         {
             Close();
@@ -312,6 +315,50 @@ namespace BKTrans
                 return;
             textbox_auto_captrue_trans_similarity.Text = (interval + unit).ToString("0.00");
         }
+
+        private void datagrid_ocr_replace_Sorting(object sender, System.Windows.Controls.DataGridSortingEventArgs e)
+        {
+            var ocrReplace = _options.ocr_replace[_options.ocr_replace_select];
+            if (e.Column.DisplayIndex == 0)
+            {
+                if (e.Column.SortDirection == System.ComponentModel.ListSortDirection.Descending)
+                    ocrReplace = ocrReplace.OrderByDescending(elem => elem.replace_src).ToList();
+                else
+                    ocrReplace = ocrReplace.OrderBy(elem => elem.replace_src).ToList();
+
+            }
+            else if (e.Column.DisplayIndex == 1)
+            {
+                if (e.Column.SortDirection == System.ComponentModel.ListSortDirection.Descending)
+                    ocrReplace = ocrReplace.OrderByDescending(elem => elem.replace_dst).ToList();
+                else
+                    ocrReplace = ocrReplace.OrderBy(elem => elem.replace_dst).ToList();
+            }
+
+            _options.ocr_replace[_options.ocr_replace_select] = ocrReplace;
+            datagrid_ocr_replace.ItemsSource = _options.ocr_replace[_options.ocr_replace_select];
+
+            e.Handled = true;
+        }
+
+        private void datagrid_ocr_replace_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                var selectIndex = datagrid_ocr_replace.SelectedIndex;
+                _options.ocr_replace[_options.ocr_replace_select].Insert(selectIndex + 1, new());
+
+                //datagrid_ocr_replace.SelectedIndex = selectIndex;
+                CollectionViewSource.GetDefaultView(datagrid_ocr_replace.ItemsSource).Refresh();
+
+                datagrid_ocr_replace.UpdateLayout();
+                //datagrid_ocr_replace.ScrollIntoView(datagrid_ocr_replace.Items[selectIndex]);
+
+                DataGridRow row = (DataGridRow)datagrid_ocr_replace.ItemContainerGenerator.ContainerFromIndex(selectIndex);
+                row?.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+            }
+        }
+
         #endregion 事件处理
     }
 }
