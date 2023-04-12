@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Platforms>x64;x86</Platforms>
     <Version>0.1.0</Version>
-    <Copyright>Copyright © 2021-2022 (GPLv3)</Copyright>
+    <Copyright>Copyright © 2021-2023 (GPLv3)</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
