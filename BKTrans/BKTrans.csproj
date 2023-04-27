@@ -9,7 +9,7 @@
     <ApplicationIcon>BKTrans.ico</ApplicationIcon>
     <Version>0.1.0</Version>
     <Copyright>Copyright © 2021-2023 (GPLv3)</Copyright>
-    <ApplicationManifest>src\app.manifest</ApplicationManifest>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,41 +17,39 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="resource\capture.png" />
-    <None Remove="resource\hide.png" />
-    <None Remove="resource\setting.png" />
-    <None Remove="resource\trans.png" />
-    <None Remove="resource\auto_trans.png" />
-    <None Remove="resource\auto_trans_check.png" />
-    <None Remove="resource\drag.png" />
-    <None Remove="resource\undo.png" />
-    <None Remove="resource\text.png" />
-    <None Remove="resource\text_check.png" />
+    <None Remove="Asserts\capture.png" />
+    <None Remove="Asserts\hide.png" />
+    <None Remove="Asserts\setting.png" />
+    <None Remove="Asserts\trans.png" />
+    <None Remove="Asserts\auto_trans.png" />
+    <None Remove="Asserts\auto_trans_check.png" />
+    <None Remove="Asserts\drag.png" />
+    <None Remove="Asserts\undo.png" />
+    <None Remove="Asserts\text.png" />
+    <None Remove="Asserts\text_check.png" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ApplicationDefinition Include="src/App.xaml"></ApplicationDefinition>
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="BKTrans.ico" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="resource\capture.png" />
-    <Resource Include="resource\hide.png" />
-    <Resource Include="resource\setting.png" />
-    <Resource Include="resource\trans.png" />
-    <Resource Include="resource\auto_trans.png" />
-    <Resource Include="resource\auto_trans_check.png" />
-    <Resource Include="resource\drag.png" />
-    <Resource Include="resource\undo.png" />
-    <Resource Include="resource\text.png" />
-    <Resource Include="resource\text_check.png" />
+    <Resource Include="Asserts\capture.png" />
+    <Resource Include="Asserts\hide.png" />
+    <Resource Include="Asserts\setting.png" />
+    <Resource Include="Asserts\trans.png" />
+    <Resource Include="Asserts\auto_trans.png" />
+    <Resource Include="Asserts\auto_trans_check.png" />
+    <Resource Include="Asserts\drag.png" />
+    <Resource Include="Asserts\undo.png" />
+    <Resource Include="Asserts\text.png" />
+    <Resource Include="Asserts\text_check.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -59,7 +57,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="src\FloatCaptureRectWindow.xaml">
+    <Page Update="Views\FloatCaptureRectWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>

@@ -17,7 +17,7 @@ namespace BKTrans
     /// <summary>
     /// Interaction logic for Settings.xaml
     /// </summary>
-    public partial class Settings : Window
+    public partial class SettingsWindow : Window
     {
         [Serializable]
         public class CheckBoxItem
@@ -148,7 +148,7 @@ namespace BKTrans
             BKMisc.SaveTextFile(_settingsFilePath, BKMisc.JsonSerialize<Options>(_options, true, true, JavaScriptEncoder.Create(UnicodeRanges.All)));
         }
 
-        public Settings()
+        public SettingsWindow()
         {
             InitializeComponent();
             LoadWindow();

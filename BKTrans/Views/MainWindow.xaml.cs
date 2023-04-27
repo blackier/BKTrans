@@ -34,11 +34,6 @@ namespace BKTrans
 
         private FloatCaptureRectWindow _floatTextWindow;
 
-        private Settings.Options _options;
-
-        private BKOCRBase _ocrClient;
-        private BKSetting _ocrSetting;
-
         private DispatcherTimer _autoCaptrueTransTimer;
         private int _autoCaptrueTransCountdown;
         private bool _autoCaptrueTransStart;
@@ -49,8 +44,14 @@ namespace BKTrans
         private string _tsmenuitemAutotransName = "tsmenuitem_autotrans";
 
         static int _autoCaptrueTransDebugNum = 0;
+
+        private SettingsViewModel _viewModel;
+
         public MainWindow()
         {
+            _viewModel = new SettingsViewModel();
+            this.DataContext = _viewModel;
+
             InitializeComponent();
 
             // 异常处理
@@ -58,38 +59,18 @@ namespace BKTrans
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
-            _options = Settings.LoadSetting();
-
             // 自动截图翻译
-            _autoCaptrueTransCountdown = _options.auto_captrue_trans_countdown;
+            _autoCaptrueTransCountdown = _viewModel.AutoCaptrueTransCountdown;
             _autoCaptrueTransStart = false;
             _autoCaptrueTransTimer = new();
             _autoCaptrueTransTimer.Tick += _catprueTransTimer_Tick;
-            _autoCaptrueTransTimer.Interval = new TimeSpan(0, 0, 0, 0, _options.auto_captrue_trans_interval);
-            if (_options.auto_captrue_trans_open)
+            _autoCaptrueTransTimer.Interval = new TimeSpan(0, 0, 0, 0, _viewModel.AutoCaptrueTransInterval);
+            if (_viewModel.AutoCaptrueTransOpen)
                 _autoCaptrueTransTimer.Start();
 
             // 设置支持语言列表
-            _comboxUpdating = true;
-            // 因为可能会修改支持的翻译类型
-            // 做下比较，先做差值再合并
-            List<string> newOcrType = _options.ocr_types.Select(type => type.Text).Intersect(BKTransMap.OCRType).Union(BKTransMap.OCRType).ToList();
-            List<string> newTransType = _options.trans_types.Select(type => type.Text).Intersect(BKTransMap.TransType).Union(BKTransMap.TransType).ToList();
-
-            _options.ocr_types = newOcrType.Select(type => new Settings.CheckBoxItem() { IsChecked = _options.ocr_types.Exists(t => t.Text == type && t.IsChecked), Text = type }).ToList();
-            _options.trans_types = newTransType.Select(type => new Settings.CheckBoxItem() { IsChecked = _options.trans_types.Exists(t => t.Text == type && t.IsChecked), Text = type }).ToList();
-
-            combobox_ocr_type.ItemsSource = _options.ocr_types;
-            combobox_trans_type.ItemsSource = _options.trans_types;
-            _comboxUpdating = false;
             combobox_ocr_type_CheckClick(null, null);
             combobox_trans_type_CheckClick(null, null);
-
-            // 设置OCR文本替换
-            _comboxUpdating = true;
-            combobox_ocr_replace.ItemsSource = _options.ocr_replace.Keys.ToList();
-            combobox_ocr_replace.SelectedItem = _options.ocr_replace_select;
-            _comboxUpdating = false;
 
             // 加载时才需要处理的内容
             Loaded += new RoutedEventHandler(Window_Loaded);
@@ -116,7 +97,7 @@ namespace BKTrans
                 }
 
             });
-            _floatTextWindow.SetAutoTransStatus(_options.auto_captrue_trans_open);
+            _floatTextWindow.SetAutoTransStatus(_viewModel.AutoCaptrueTransOpen);
         }
 
         public void BringToForeground()
@@ -127,7 +108,6 @@ namespace BKTrans
                 WindowState = WindowState.Normal;
             }
 
-            // According to some sources these steps gurantee that an app will be brought to foreground.
             Activate();
             Topmost = true;
             Topmost = false;
@@ -236,120 +216,25 @@ namespace BKTrans
             Thread.Sleep(250);
         }
 
-        private void RestoreLanguageTypeMap()
-        {
-            // 计算ocr和文本翻译交集
-            // ocr只支持选择一个
-            // 文本翻译支持选择好几个
-            int ocrSelect = 0;
-            foreach (var type in _options.ocr_types)
-            {
-                if (type.IsChecked)
-                    break;
-                ocrSelect++;
-            }
-            if (ocrSelect >= _options.ocr_types.Count)
-            {
-                ocrSelect = 0;
-                _options.ocr_types[0].IsChecked = true;
-            }
-
-            string ocrType = BKTransMap.OCRType[ocrSelect];
-            List<string> ocrItemsSource = BKTransMap.CreateBKOCRClient(ocrType).GetLangType();
-
-            List<string> transItemsSource = new();
-            foreach (var type in _options.trans_types)
-            {
-                if (type.IsChecked)
-                {
-                    if (transItemsSource.Count == 0)
-                        transItemsSource = BKTransMap.CreateBKTransClient(type.Text).GetLangType();
-                    else
-                        transItemsSource = transItemsSource.Intersect(BKTransMap.CreateBKTransClient(type.Text).GetLangType()).ToList();
-                }
-            }
-            if (transItemsSource.Count == 0)
-            {
-                transItemsSource = BKTransMap.CreateBKTransClient(BKTransMap.TransType[0]).GetLangType();
-                _options.trans_types[0].IsChecked = true;
-            }
-            transItemsSource = transItemsSource.Intersect(ocrItemsSource).ToList();
-
-            combobox_from_type.ItemsSource = transItemsSource;
-            combobox_to_type.ItemsSource = transItemsSource;
-
-            // 如果文本翻译选了好几个
-            // 那么统一设置成和第一个相同的
-            string from = "";
-            string to = "";
-            foreach (var type in _options.trans_types)
-            {
-                if (type.IsChecked)
-                {
-                    if (string.IsNullOrEmpty(from) || string.IsNullOrEmpty(to))
-                    {
-                        from = _options.GetTransSetting(type.Text).from;
-                        to = _options.GetTransSetting(type.Text).to;
-                    }
-                    else
-                    {
-                        _options.UpdateTransSetting(type.Text, from, to);
-                    }
-                }
-            }
-            combobox_from_type.SelectedItem = from;
-            combobox_to_type.SelectedItem = to;
-        }
-
         private void AutoTransSetting(bool start)
         {
             if (start)
             {
                 _autoCaptrueTransTimer.Start();
-                _options.auto_captrue_trans_open = true;
+                _viewModel.AutoCaptrueTransOpen = true;
             }
             else
             {
                 _autoCaptrueTransTimer.Stop();
-                _options.auto_captrue_trans_open = false;
+                _viewModel.AutoCaptrueTransOpen = false;
             }
-            _floatTextWindow.SetAutoTransStatus(_options.auto_captrue_trans_open);
+            _floatTextWindow.SetAutoTransStatus(_viewModel.AutoCaptrueTransOpen);
             if (_notifyIcon.ContextMenuStrip.Items[_tsmenuitemAutotransName] != null)
-                (_notifyIcon.ContextMenuStrip.Items[_tsmenuitemAutotransName] as ToolStripMenuItem).Checked = _options.auto_captrue_trans_open;
-        }
-
-        private void SaveLanguageTypeMap()
-        {
-            string fromType = combobox_from_type.SelectedItem as string;
-            string toType = combobox_to_type.SelectedItem as string;
-
-            // ocr
-            foreach (var type in _options.ocr_types)
-            {
-                if (type.IsChecked)
-                {
-                    _options.GetOCRSetting(type.Text).language = fromType;
-
-                    _ocrClient = BKTransMap.CreateBKOCRClient(type.Text);
-                    _ocrSetting = _options.GetOCRSetting(type.Text);
-                    break;
-                }
-            }
-
-            // 文本翻译
-            foreach (var type in _options.trans_types)
-            {
-                if (type.IsChecked)
-                {
-                    _options.UpdateTransSetting(type.Text, fromType, toType);
-                    break;
-                }
-            }
+                (_notifyIcon.ContextMenuStrip.Items[_tsmenuitemAutotransName] as ToolStripMenuItem).Checked = _viewModel.AutoCaptrueTransOpen;
         }
 
         private async void DoCaptureOCR(bool captrueLast = false, bool showFloatWindow = false, bool showMainWindow = true)
         {
-            SaveLanguageTypeMap();
             BKScreenCapture.DataStruct capturedata;
 
             if (captrueLast)
@@ -385,40 +270,15 @@ namespace BKTrans
                 _captureBmp = bmpData;
                 SetSourceText("截取完成，等待OCR翻译...");
 
-                string ocrResultText = "";
-                string ocrResult = "";
-                _ = await Task.Run(() => _ocrClient.OCR(_ocrSetting, bmpData, out ocrResult));
-                try
-                {
-                    ocrResultText = _ocrClient.ParseResult(ocrResult);
-                }
-                catch
-                {
-                    ocrResultText = ocrResult;
-                    SetSourceText(ocrResultText);
-                    if (showFloatWindow)
-                    {
-                        _floatTextWindow.SetText("OCR翻译失败，打开程序界面查看原因。");
-                        _floatTextWindow.SetTextRect(_captureRect);
-                        _floatTextWindow.ShowWindow();
-                    }
-                    break;
-                }
+                string ocrResultText = await _viewModel.OCR(bmpData);
                 if (string.IsNullOrEmpty(ocrResultText))
                 {
                     SetSourceText("");
                     SetTargetText("");
                     break;
                 }
-                if (_options.ocr_replace[_options.ocr_replace_select].Count > 0)
-                {
-                    string replacetext = (string)ocrResultText.Clone();
-                    foreach (var replacemap in _options.ocr_replace[_options.ocr_replace_select])
-                        if (!string.IsNullOrEmpty(replacemap.replace_src))
-                            replacetext = replacetext.Replace(replacemap.replace_src, replacemap.replace_dst);
 
-                    ocrResultText = replacetext + _textSpliteString + ocrResultText;
-                }
+                ocrResultText = _viewModel.OCRRepalce(ocrResultText) + _textSpliteString + ocrResultText;
                 SetSourceText(ocrResultText);
 
                 Dispatcher.Invoke(() => DoTextTrans());
@@ -427,8 +287,6 @@ namespace BKTrans
 
         private async void DoTextTrans()
         {
-            SaveLanguageTypeMap();
-
             string srctext = GetSourceText();
             if (string.IsNullOrEmpty(srctext))
                 return;
@@ -436,19 +294,7 @@ namespace BKTrans
             SetTargetText("文本翻译中...");
 
             string transResultText = "";
-            List<Task<string>> transTasks = new();
-
-            foreach (var type in _options.trans_types)
-            {
-                if (type.IsChecked)
-                {
-                    transTasks.Add(Task.Run(() => BKTransMap.CreateBKTransClient(type.Text).Trans(_options.GetTransSetting(type.Text), srctext)));
-                }
-            }
-
-            var transtasks = Task.WhenAll(transTasks);
-            await Task.Run(() => transtasks.Wait());
-            foreach (var result in transtasks.Result)
+            foreach (var result in await _viewModel.TransText(srctext))
             {
                 transResultText += result;
                 transResultText += _textSpliteString;
@@ -548,7 +394,7 @@ namespace BKTrans
             notifyIconCms.Items.Add("-");
             notifyIconCms.Items.Add(new ToolStripMenuItem("自动翻译", null, new EventHandler(NotifyIcon_AutoCaptrueTrans))
             {
-                Checked = _options.auto_captrue_trans_open,
+                Checked = _viewModel.AutoCaptrueTransOpen,
                 Name = _tsmenuitemAutotransName
             });
             notifyIconCms.Items.Add("-");
@@ -575,7 +421,7 @@ namespace BKTrans
                 _floatTextWindow.HideWindow();
                 e.Cancel = true;
             }
-            Settings.SaveSettings();
+            SettingsModel.SaveSettings();
         }
         #endregion 窗体事件
 
@@ -606,7 +452,7 @@ namespace BKTrans
                 float similarity = BKMisc.BitmapDHashCompare(newcaptruebmp, (Bitmap)_captureBmp.Clone());
 
                 _autoCaptrueTransDebugNum++;
-                if (similarity < _options.auto_captrue_trans_similarity)
+                if (similarity < _viewModel.AutoCaptrueTransSimilarity)
                 {
                     // 发生变化
                     //newcaptruebmp.Save($"{_autoCaptrueTransDebugNum}_{similarity}_1.png", ImageFormat.Png);
@@ -624,51 +470,28 @@ namespace BKTrans
                 _autoCaptrueTransStart = false;
             } while (false);
 
-            _autoCaptrueTransCountdown = _options.auto_captrue_trans_countdown;
+            _autoCaptrueTransCountdown = _viewModel.AutoCaptrueTransCountdown;
         }
 
         private void combobox_ocr_type_CheckClick(object sender, RoutedEventArgs e)
         {
-            RestoreLanguageTypeMap();
-
-            string selectType = "";
-            foreach (var type in _options.ocr_types)
-            {
-                if (type.IsChecked)
-                {
-                    selectType += type.Text.Substring(0, 1) + ";";
-                }
-            }
-            combobox_ocr_type.Text = selectType.ToUpper();
+            _viewModel.UpdateLanguageTypeMap();
         }
 
         private void combobox_trans_type_CheckClick(object sender, RoutedEventArgs e)
         {
-            RestoreLanguageTypeMap();
-
-            string selectType = "";
-            foreach (var type in _options.trans_types)
-            {
-                if (type.IsChecked)
-                {
-                    selectType += type.Text.Substring(0, 1) + ";";
-                }
-            }
-            combobox_trans_type.Text = selectType.ToUpper();
+            _viewModel.UpdateLanguageTypeMap();
         }
 
         private void btn_setting_Click(object sender, RoutedEventArgs e)
         {
-            var settingsWindow = new Settings
+            var settingsWindow = new SettingsWindow
             {
                 Owner = this
             };
             settingsWindow.ShowDialog();
 
-            _comboxUpdating = true;
-            combobox_ocr_replace.ItemsSource = _options.ocr_replace.Keys.ToList();
-            combobox_ocr_replace.SelectedItem = _options.ocr_replace_select;
-            _comboxUpdating = false;
+            _viewModel.OcrReplaceIsChanged = true;
         }
 
         private void btn_capture_Click(object sender, RoutedEventArgs e)
@@ -681,13 +504,6 @@ namespace BKTrans
         private void btn_trans_Click(object sender, RoutedEventArgs e)
         {
             Dispatcher.InvokeAsync(() => DoTextTrans());
-        }
-
-        private void combobox_ocr_replace_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (_comboxUpdating)
-                return;
-            _options.ocr_replace_select = (string)combobox_ocr_replace.SelectedItem;
         }
 
         #endregion 用户控件

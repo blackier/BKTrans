@@ -4,9 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BKTrans"
-        xmlns:System="clr-namespace:System;assembly=System.Runtime" x:Class="BKTrans.MainWindow"
+        xmlns:System="clr-namespace:System;assembly=System.Runtime"
+        x:Class="BKTrans.MainWindow"
+        d:DataContext="{d:DesignInstance local:SettingsViewModel}"
         mc:Ignorable="d"
-        Title="BKTrans" Height="300" Width="400" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="400" MinHeight="300" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterScreen">
+        Title="BKTrans" Height="300" Width="400" MinWidth="400" MinHeight="300"
+        HorizontalAlignment="Center" VerticalAlignment="Center" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterScreen">
     <Grid x:Name="MainGrid" Grid.Column="3">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
@@ -20,8 +23,10 @@
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <Label Content="原文" HorizontalAlignment="Left" Margin="0,3,0,3" VerticalAlignment="Center" Height="25" Width="35" />
-            <ComboBox x:Name="combobox_from_type" Width="60" SelectedIndex="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" HorizontalAlignment="Left" Margin="35,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" />
-            <ComboBox x:Name="combobox_ocr_type" IsReadOnly="True" IsEditable="True" Width="70" SelectedIndex="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Height="20" HorizontalAlignment="Left" Margin="105,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" >
+            <ComboBox x:Name="combobox_from_type" ItemsSource="{Binding FromTypes}" SelectedItem="{Binding FromTypesSelectedItem}"
+                      Width="60" SelectedIndex="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" HorizontalAlignment="Left" Margin="35,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" />
+            <ComboBox x:Name="combobox_ocr_type" ItemsSource="{Binding OcrTypes}" Text="{Binding OcrTypesSelectedText}"
+                      IsReadOnly="True" IsEditable="True" Width="70" SelectedIndex="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Height="20" HorizontalAlignment="Left" Margin="105,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" >
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <CheckBox Content="{Binding Text}" IsChecked="{Binding IsChecked}" Click="combobox_ocr_type_CheckClick">
@@ -29,7 +34,8 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <ComboBox x:Name="combobox_ocr_replace" Width="70" SelectedIndex="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Height="20" HorizontalAlignment="Right" Margin="0,0,40,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" SelectionChanged="combobox_ocr_replace_SelectionChanged" />
+            <ComboBox x:Name="combobox_ocr_replace" ItemsSource="{Binding OcrReplace}" SelectedItem="{Binding OcrReplaceSelectedItem}"
+                      Width="70" SelectedIndex="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Height="20" HorizontalAlignment="Right" Margin="0,0,40,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False"  />
             <Button x:Name="btn_setting" HorizontalAlignment="Right" Height="20" VerticalAlignment="Center" Width="20" Margin="0,0,10,0" BorderBrush="{x:Null}" Foreground="{x:Null}" Click="btn_setting_Click">
                 <Button.Background>
                     <ImageBrush ImageSource="/resource/setting.png" />
@@ -56,8 +62,10 @@
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <Label Content="译文" HorizontalAlignment="Left" Margin="0,3,0,3" VerticalAlignment="Center" Height="25" Width="35" />
-            <ComboBox x:Name="combobox_to_type" Width="60" SelectedIndex="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" HorizontalAlignment="Left" Margin="35,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" />
-            <ComboBox x:Name="combobox_trans_type" IsReadOnly="True" IsEditable="True" Width="70" SelectedIndex="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Height="20" HorizontalAlignment="Left" Margin="105,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" >
+            <ComboBox x:Name="combobox_to_type" ItemsSource="{Binding ToTypes}" SelectedItem="{Binding ToTypesSelectedItem}"
+                      Width="60" SelectedIndex="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="20" HorizontalAlignment="Left" Margin="35,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" />
+            <ComboBox x:Name="combobox_trans_type" ItemsSource="{Binding TransTypes}" Text="{Binding TransTypesSelectedText}"
+                      IsReadOnly="True" IsEditable="True" Width="70" SelectedIndex="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Height="20" HorizontalAlignment="Left" Margin="105,0,0,0" Padding="0,0,0,0" ScrollViewer.CanContentScroll="False" >
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <CheckBox Content="{Binding Text}" IsChecked="{Binding IsChecked}" Click="combobox_trans_type_CheckClick">
