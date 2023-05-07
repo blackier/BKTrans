@@ -45,11 +45,11 @@ namespace BKTrans
 
         static int _autoCaptrueTransDebugNum = 0;
 
-        private SettingsViewModel _viewModel;
+        private MainWindowViewModel _viewModel;
 
         public MainWindow()
         {
-            _viewModel = new SettingsViewModel();
+            _viewModel = new MainWindowViewModel();
             this.DataContext = _viewModel;
 
             InitializeComponent();

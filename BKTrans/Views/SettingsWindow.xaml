@@ -5,8 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:BKTrans"
+        d:DataContext="{d:DesignInstance local:SettingsWindowViewModel}"
         mc:Ignorable="d"
         Title="Settings" Height="300" Width="400" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterOwner" MinHeight="300" MinWidth="400">
+    <Window.Resources>
+        <i:EventTrigger x:Key="TextBoxUpdateSource" x:Shared="False"  SourceName="btn_ok" EventName="Click" >
+            <i:ChangePropertyAction TargetObject="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}" PropertyName="TextBoxUpdateSource" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
+        </i:EventTrigger>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -38,8 +44,16 @@
                                 </Grid.ColumnDefinitions>
                                 <Label Content="client__id:" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
                                 <Label Content="client__secret:" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
-                                <TextBox x:Name="textbox_baiduocr_client_id" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
-                                <TextBox x:Name="textbox_baiduocr_client_secret" Text="" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                                <TextBox x:Name="textbox_baiduocr_client_id" Text="{Binding OcrBaiduClientID, UpdateSourceTrigger=Explicit}" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2">
+                                    <i:Interaction.Triggers>
+                                        <StaticResource ResourceKey="TextBoxUpdateSource"/>
+                                    </i:Interaction.Triggers> 
+                                </TextBox>
+                                <TextBox x:Name="textbox_baiduocr_client_secret" Text="{Binding OcrBaiduClientSecret, UpdateSourceTrigger=Explicit}" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2">
+                                    <i:Interaction.Triggers>
+                                        <StaticResource ResourceKey="TextBoxUpdateSource"/>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
                             </Grid>
                         </GroupBox>
                         <GroupBox Header="百度翻译" Grid.Row="1" BorderThickness="0,1,0,0">
@@ -60,9 +74,21 @@
                                 <Label Content="appid:" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
                                 <Label Content="secretkey:" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
                                 <Label Content="salt:" Grid.Row="3" Grid.Column="1" VerticalContentAlignment="Center"/>
-                                <TextBox x:Name="textbox_baiduapi_appid" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
-                                <TextBox x:Name="textbox_baiduapi_secretkey" Text="" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
-                                <TextBox x:Name="textbox_baiduapi_salt" Text="" Grid.Row="3" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                                <TextBox x:Name="textbox_baiduapi_appid" Text="{Binding TransBaiduAppID, UpdateSourceTrigger=Explicit}" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2">
+                                    <i:Interaction.Triggers>
+                                        <StaticResource ResourceKey="TextBoxUpdateSource"/>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+                                <TextBox x:Name="textbox_baiduapi_secretkey" Text="{Binding TransBaiduSecretKey, UpdateSourceTrigger=Explicit}" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2">
+                                    <i:Interaction.Triggers>
+                                        <StaticResource ResourceKey="TextBoxUpdateSource"/>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+                                <TextBox x:Name="textbox_baiduapi_salt" Text="{Binding TransBaiduSalt, UpdateSourceTrigger=Explicit}" Grid.Row="3" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2">
+                                    <i:Interaction.Triggers>
+                                        <StaticResource ResourceKey="TextBoxUpdateSource"/>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
                             </Grid>
                         </GroupBox>
                         <GroupBox Header="彩云小译" Grid.Row="2" BorderThickness="0,1,0,0">
@@ -81,8 +107,16 @@
                                 </Grid.ColumnDefinitions>
                                 <Label Content="token:" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
                                 <Label Content="request_id:" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
-                                <TextBox x:Name="textbox_caiyunapi_token" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
-                                <TextBox x:Name="textbox_caiyunapi_request_id" Text="" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                                <TextBox x:Name="textbox_caiyunapi_token" Text="{Binding TransCaiyunToken, UpdateSourceTrigger=Explicit}" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2">
+                                    <i:Interaction.Triggers>
+                                        <StaticResource ResourceKey="TextBoxUpdateSource"/>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+                                <TextBox x:Name="textbox_caiyunapi_request_id" Text="{Binding TransCaiyunReqeustID, UpdateSourceTrigger=Explicit}" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2">
+                                    <i:Interaction.Triggers>
+                                        <StaticResource ResourceKey="TextBoxUpdateSource"/>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
                             </Grid>
                         </GroupBox>
                         <GroupBox Header="Google翻译" Grid.Row="3" BorderThickness="0,1,0,0">
@@ -99,7 +133,11 @@
                                     <ColumnDefinition Width="15"/>
                                 </Grid.ColumnDefinitions>
                                 <Label Content="api__key:" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
-                                <TextBox x:Name="textbox_google_api_key" Text="" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2"/>
+                                <TextBox x:Name="textbox_google_api_key" Text="{Binding TransGoogleApiKey, UpdateSourceTrigger=Explicit}" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="0,2,0,2">
+                                    <i:Interaction.Triggers>
+                                        <StaticResource ResourceKey="TextBoxUpdateSource"/>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
                             </Grid>
                         </GroupBox>
                     </Grid>
@@ -118,7 +156,7 @@
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="15"/>
                         </Grid.ColumnDefinitions>
-                        <ComboBox x:Name="combox_ocr_replace" Grid.Column="0" HorizontalAlignment="Left" Margin="8,0,0,0" VerticalAlignment="Center" Width="90" SelectionChanged="combox_ocr_replace_SelectionChanged"/>
+                        <ComboBox x:Name="combox_ocr_replace" ItemsSource="{Binding OcrReplace}" SelectedItem="{Binding OcrReplaceSelectedItem}" Grid.Column="0" HorizontalAlignment="Left" Margin="8,0,0,0" VerticalAlignment="Center" Width="90" />
                         <TextBox x:Name="textbox_ocr_replace_new" Grid.Column="1"  HorizontalAlignment="Left" Margin="8,0,0,0" VerticalAlignment="Center" Width="90"/>
                         <Button x:Name="btn_ocr_replace_new" Grid.Column="2" Content="添加" Width="35" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Click="btn_ocr_replace_new_Click"/>
                         <Button x:Name="btn_ocr_replace_delete" Grid.Column="2" Content="删除" Width="35" HorizontalAlignment="Left" Margin="55,0,0,0" VerticalAlignment="Center" Click="btn_ocr_replace_delete_Click"/>
@@ -129,13 +167,14 @@
                         <TextBlock Padding="14,14,0,0" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding replace_src}" />
                     </Popup>
                     <DataGrid x:Name="datagrid_ocr_replace" Grid.Row="1" AutoGenerateColumns="False"
+                              ItemsSource="{Binding OcrReplaceItems, UpdateSourceTrigger=Explicit, Mode=TwoWay}"
                               SelectionMode="Single" HeadersVisibility="Column" 
                               ScrollViewer.VerticalScrollBarVisibility="Hidden"
                               HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                               VerticalGridLinesBrush="LightGray"  HorizontalGridLinesBrush="LightGray" Background="White" 
                               Sorting="datagrid_ocr_replace_Sorting" PreviewKeyDown="datagrid_ocr_replace_PreviewKeyDown">
                         <i:Interaction.Behaviors>
-                            <local:DataGridBehavior Popup="{Binding ElementName=popup_datagrid_ocr_replace}" />
+                            <local:DataGridBehavior x:Name="datagrid_ocr_replace_behvior" Popup="{Binding ElementName=popup_datagrid_ocr_replace}" />
                         </i:Interaction.Behaviors>
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="源文本" Binding="{Binding replace_src}" Width="1*" />
@@ -161,13 +200,25 @@
                     </Grid.ColumnDefinitions>
 
                     <Label Content="采样间隔(ms)：" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="textbox_auto_captrue_trans_interval" IsReadOnly="True" Text="" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2" MouseWheel="textbox_auto_captrue_trans_interval_MouseWheel"/>
+                    <TextBox x:Name="textbox_auto_captrue_trans_interval" IsReadOnly="True" Text="{Binding AutoCaptrueTransInterval, UpdateSourceTrigger=Explicit}" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2" MouseWheel="textbox_auto_captrue_trans_interval_MouseWheel">
+                        <i:Interaction.Triggers>
+                            <StaticResource ResourceKey="TextBoxUpdateSource"/>
+                        </i:Interaction.Triggers>
+                    </TextBox>
 
                     <Label Content="采样倒数：" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="textbox_auto_captrue_trans_countdown" IsReadOnly="True" Text="" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2" MouseWheel="textbox_auto_captrue_trans_countdown_MouseWheel"/>
+                    <TextBox x:Name="textbox_auto_captrue_trans_countdown" IsReadOnly="True" Text="{Binding AutoCaptrueTransCountdown, UpdateSourceTrigger=Explicit}" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2" MouseWheel="textbox_auto_captrue_trans_countdown_MouseWheel">
+                        <i:Interaction.Triggers>
+                            <StaticResource ResourceKey="TextBoxUpdateSource"/>
+                        </i:Interaction.Triggers>
+                    </TextBox>
 
                     <Label Content="相似度临界值：" Grid.Row="3" Grid.Column="1" VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="textbox_auto_captrue_trans_similarity" IsReadOnly="True" Text="" Grid.Row="3" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2" MouseWheel="textbox_auto_captrue_trans_similarity_MouseWheel"/>
+                    <TextBox x:Name="textbox_auto_captrue_trans_similarity" IsReadOnly="True" Text="{Binding AutoCaptrueTransSimilarity, UpdateSourceTrigger=Explicit}" Grid.Row="3" Grid.Column="2" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,2,0,2" MouseWheel="textbox_auto_captrue_trans_similarity_MouseWheel">
+                        <i:Interaction.Triggers>
+                            <StaticResource ResourceKey="TextBoxUpdateSource"/>
+                        </i:Interaction.Triggers>
+                    </TextBox>
                 </Grid>
             </TabItem>
         </TabControl>

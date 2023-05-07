@@ -38,7 +38,7 @@
                         <Grid>
                             <Button x:Name="btn_text" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}">
                                 <Button.Background>
-                                    <ImageBrush ImageSource="/resource/text.png" />
+                                    <ImageBrush ImageSource="/Asserts/text.png" />
                                 </Button.Background>
                             </Button>
                         </Grid>
@@ -46,14 +46,14 @@
                             <Trigger Property="IsChecked" Value="true">
                                 <Setter TargetName="btn_text" Property="Background">
                                     <Setter.Value>
-                                        <ImageBrush ImageSource="/resource/text_check.png"/>
+                                        <ImageBrush ImageSource="/Asserts/text_check.png"/>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="false">
                                 <Setter TargetName="btn_text" Property="Background">
                                     <Setter.Value>
-                                        <ImageBrush ImageSource="/resource/text.png"/>
+                                        <ImageBrush ImageSource="/Asserts/text.png"/>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
@@ -63,12 +63,12 @@
             </CheckBox>
             <Button x:Name="btn_drag" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" PreviewMouseLeftButtonDown="btn_drag_PreviewMouseLeftButtonDown">
                 <Button.Background>
-                    <ImageBrush ImageSource="/resource/drag.png" />
+                    <ImageBrush ImageSource="/Asserts/drag.png" />
                 </Button.Background>
             </Button>
             <Button x:Name="btn_hide" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" Click="btn_hide_Click">
                 <Button.Background>
-                    <ImageBrush ImageSource="/resource/hide.png" />
+                    <ImageBrush ImageSource="/Asserts/hide.png" />
                 </Button.Background>
             </Button>
         </WrapPanel>

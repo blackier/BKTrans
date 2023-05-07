@@ -119,7 +119,7 @@ namespace BKTrans
 
         private static string _settingsFilePath;
 
-        public static Settings LoadSetting()
+        public static Settings LoadSettings()
         {
             if (_settings == null)
             {
@@ -130,19 +130,18 @@ namespace BKTrans
                 }
                 try
                 {
-                    // 因为可能会修改支持的翻译类型
-                    // 做下比较，先做差值再合并
                     _settings = BKMisc.JsonDeserialize<Settings>(BKMisc.LoadTextFile(_settingsFilePath));
-                    List<string> newOcrType = _settings.ocr_types.Select(type => type.Text).Intersect(BKTransMap.OCRType).Union(BKTransMap.OCRType).ToList();
-                    List<string> newTransType = _settings.trans_types.Select(type => type.Text).Intersect(BKTransMap.TransType).Union(BKTransMap.TransType).ToList();
-
-                    _settings.ocr_types = newOcrType.Select(type => new CheckBoxItem() { IsChecked = _settings.ocr_types.Exists(t => t.Text == type && t.IsChecked), Text = type }).ToList();
-                    _settings.trans_types = newTransType.Select(type => new CheckBoxItem() { IsChecked = _settings.trans_types.Exists(t => t.Text == type && t.IsChecked), Text = type }).ToList();
-
                 }
                 catch
                 {
                 }
+                // 因为可能会修改支持的翻译类型
+                // 做下比较，先做差值再合并
+                List<string> newOcrType = _settings.ocr_types.Select(type => type.Text).Intersect(BKTransMap.OCRType).Union(BKTransMap.OCRType).ToList();
+                List<string> newTransType = _settings.trans_types.Select(type => type.Text).Intersect(BKTransMap.TransType).Union(BKTransMap.TransType).ToList();
+
+                _settings.ocr_types = newOcrType.Select(type => new CheckBoxItem() { IsChecked = _settings.ocr_types.Exists(t => t.Text == type && t.IsChecked), Text = type }).ToList();
+                _settings.trans_types = newTransType.Select(type => new CheckBoxItem() { IsChecked = _settings.trans_types.Exists(t => t.Text == type && t.IsChecked), Text = type }).ToList();
             }
             return _settings;
         }

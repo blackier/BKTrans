@@ -1,16 +1,10 @@
-﻿using BKTrans.Misc;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text.Encodings.Web;
-using System.Text.Unicode;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using static BKTrans.SettingsModel;
 
 namespace BKTrans
 {
@@ -19,190 +13,27 @@ namespace BKTrans
     /// </summary>
     public partial class SettingsWindow : Window
     {
-        [Serializable]
-        public class CheckBoxItem
+
+        public object TextBoxUpdateSource
         {
-            public bool IsChecked { get; set; }
-            public string Text { get; set; }
-            public CheckBoxItem()
+            set
             {
-                IsChecked = false;
-                Text = "";
+                BindingOperations.GetBindingExpression(value as TextBox, TextBox.TextProperty).UpdateSource();
             }
         }
 
-        [Serializable]
-        public class OCRReplace
-        {
-            public string replace_src { get; set; }
-            public string replace_dst { get; set; }
-            public OCRReplace()
-            {
-                replace_src = "";
-                replace_dst = "";
-            }
-        }
-
-        [Serializable]
-        public class Options
-        {
-            // 翻译源
-            public List<CheckBoxItem> ocr_types { get; set; }
-            public List<CheckBoxItem> trans_types { get; set; }
-            // ocr参数
-            public BKOCRBaidu.SettingBaiduOCR ocr_baidu { get; set; }
-            public BKOCRMicrosoft.SettingMiscrosoftOCR ocr_microsoft { get; set; }
-            // 翻译参数
-            public BKTransBaidu.SettingBaiduTrans trans_baidu { get; set; }
-            public BKTransCaiyun.SettingCaiyunTrans trans_caiyun { get; set; }
-            public BKTransGoogle.SettingGoogleTrans trans_google { get; set; }
-
-            // 截图翻译事件间隔
-            public int auto_captrue_trans_interval { get; set; }
-            public int auto_captrue_trans_countdown { get; set; }
-            public bool auto_captrue_trans_open { get; set; }
-            public float auto_captrue_trans_similarity { get; set; }
-
-            // ocr翻译替换
-            public string ocr_replace_select { get; set; }
-            public Dictionary<string, List<OCRReplace>> ocr_replace { get; set; }
-
-            public Options()
-            {
-                ocr_types = new();
-                trans_types = new();
-
-                ocr_baidu = new();
-                ocr_microsoft = new();
-                trans_baidu = new();
-                trans_caiyun = new();
-                trans_google = new();
-
-                auto_captrue_trans_interval = 150;
-                auto_captrue_trans_countdown = 5;
-                auto_captrue_trans_open = false;
-                auto_captrue_trans_similarity = 0.9f;
-
-                ocr_replace_select = "";
-                ocr_replace = new() { { "", new() } };
-            }
-
-            public void UpdateTransSetting(string trans_type, string from, string to)
-            {
-                GetTransSetting(trans_type).from = from;
-                GetTransSetting(trans_type).to = to;
-            }
-
-            public BKTransSetting GetTransSetting(string tans_type)
-            {
-                if (tans_type == "baidu")
-                    return trans_baidu;
-
-                if (tans_type == "caiyun")
-                    return trans_caiyun;
-
-                if (tans_type == "google")
-                    return trans_google;
-
-                return new();
-            }
-
-            public BKOCRSetting GetOCRSetting(string ocr_type)
-            {
-                if (ocr_type == "baidu")
-                    return ocr_baidu;
-
-                if (ocr_type == "microsoft")
-                    return ocr_microsoft;
-
-                return new();
-            }
-        }
-        private static Options _options;
-
-        private static string _settingsFilePath;
-
-        private bool _combox_ocr_replace_updating = false;
-
-        public static Options LoadSetting()
-        {
-            if (_options == null)
-            {
-                _options = new Options();
-                if (_settingsFilePath == null)
-                {
-                    _settingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "settings.json");
-                }
-                try
-                {
-                    _options = BKMisc.JsonDeserialize<Options>(BKMisc.LoadTextFile(_settingsFilePath));
-                }
-                catch
-                {
-                }
-            }
-            return _options;
-        }
-        public static void SaveSettings()
-        {
-            BKMisc.SaveTextFile(_settingsFilePath, BKMisc.JsonSerialize<Options>(_options, true, true, JavaScriptEncoder.Create(UnicodeRanges.All)));
-        }
+        private SettingsWindowViewModel _viewModel;
 
         public SettingsWindow()
         {
+            _viewModel = new SettingsWindowViewModel();
+            this.DataContext = _viewModel;
             InitializeComponent();
-            LoadWindow();
-        }
-
-        protected void LoadWindow()
-        {
-            LoadSetting();
-
-            // api
-            textbox_baiduocr_client_id.Text = _options.ocr_baidu.client_id;
-            textbox_baiduocr_client_secret.Text = _options.ocr_baidu.client_secret;
-            textbox_baiduapi_appid.Text = _options.trans_baidu.appid;
-            textbox_baiduapi_secretkey.Text = _options.trans_baidu.secretkey;
-            textbox_baiduapi_salt.Text = _options.trans_baidu.salt;
-            textbox_caiyunapi_token.Text = _options.trans_caiyun.token;
-            textbox_caiyunapi_request_id.Text = _options.trans_caiyun.request_id;
-            textbox_google_api_key.Text = _options.trans_google.api_key;
-
-            // ocr替换
-            _combox_ocr_replace_updating = true;
-            combox_ocr_replace.ItemsSource = _options.ocr_replace.Keys.ToList();
-            combox_ocr_replace.SelectedItem = _options.ocr_replace_select;
-            _combox_ocr_replace_updating = false;
-
-            datagrid_ocr_replace.ItemsSource = _options.ocr_replace[_options.ocr_replace_select];
-
-            textbox_ocr_replace_new.IsEnabled = false;
-
-            // 自动翻译
-            textbox_auto_captrue_trans_interval.Text = _options.auto_captrue_trans_interval.ToString();
-            textbox_auto_captrue_trans_countdown.Text = _options.auto_captrue_trans_countdown.ToString();
-            textbox_auto_captrue_trans_similarity.Text = _options.auto_captrue_trans_similarity.ToString();
         }
         #region 事件处理
         protected void btn_ok_Click(object sender, RoutedEventArgs e)
         {
-            _options.ocr_baidu.client_id = textbox_baiduocr_client_id.Text;
-            _options.ocr_baidu.client_secret = textbox_baiduocr_client_secret.Text;
-            _options.trans_baidu.appid = textbox_baiduapi_appid.Text;
-            _options.trans_baidu.secretkey = textbox_baiduapi_secretkey.Text;
-            _options.trans_baidu.salt = textbox_baiduapi_salt.Text;
-            _options.trans_caiyun.token = textbox_caiyunapi_token.Text;
-            _options.trans_caiyun.request_id = textbox_caiyunapi_request_id.Text;
-            _options.trans_google.api_key = textbox_google_api_key.Text;
-
-            if (int.TryParse(textbox_auto_captrue_trans_interval.Text, out int auto_captrue_trans_interval))
-                _options.auto_captrue_trans_interval = auto_captrue_trans_interval;
-            if (int.TryParse(textbox_auto_captrue_trans_countdown.Text, out int auto_captrue_trans_countdown))
-                _options.auto_captrue_trans_countdown = auto_captrue_trans_countdown;
-            if (float.TryParse(textbox_auto_captrue_trans_similarity.Text, out float auto_captrue_trans_similarity))
-                _options.auto_captrue_trans_similarity = auto_captrue_trans_similarity;
-
-            SaveSettings();
+            BindingOperations.GetBindingExpression(datagrid_ocr_replace, DataGrid.ItemsSourceProperty).UpdateSource();
             Close();
         }
 
@@ -213,30 +44,7 @@ namespace BKTrans
 
         private void btn_ocr_replace_new_Click(object sender, RoutedEventArgs e)
         {
-            bool ctrl_enable = textbox_ocr_replace_new.IsEnabled;
-
-            combox_ocr_replace.IsEnabled = ctrl_enable;
-            btn_ocr_replace_delete.IsEnabled = ctrl_enable;
-            datagrid_ocr_replace.IsEnabled = ctrl_enable;
-
-            if (ctrl_enable)
-            {
-                if (!string.IsNullOrEmpty(textbox_ocr_replace_new.Text))
-                {
-                    _options.ocr_replace[textbox_ocr_replace_new.Text] = new();
-                    _options.ocr_replace_select = textbox_ocr_replace_new.Text;
-                }
-                textbox_ocr_replace_new.Text = "";
-
-                _combox_ocr_replace_updating = true;
-                combox_ocr_replace.ItemsSource = _options.ocr_replace.Keys.ToList();
-                combox_ocr_replace.SelectedItem = _options.ocr_replace_select;
-                _combox_ocr_replace_updating = false;
-
-                datagrid_ocr_replace.ItemsSource = _options.ocr_replace[_options.ocr_replace_select];
-            }
-
-            textbox_ocr_replace_new.IsEnabled = !ctrl_enable;
+            _viewModel.NewOcrReplace(textbox_ocr_replace_new.Text);
         }
 
         private void btn_ocr_replace_delete_Click(object sender, RoutedEventArgs e)
@@ -244,35 +52,7 @@ namespace BKTrans
             if (MessageBox.Show("确定删除？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.No)
                 return;
 
-            if (!_options.ocr_replace.ContainsKey((string)combox_ocr_replace.SelectedItem))
-                return;
-            // 删除旧的
-            _options.ocr_replace.Remove((string)combox_ocr_replace.SelectedItem);
-            // 选择第一个
-            if (_options.ocr_replace.Count == 0)
-            {
-                _options.ocr_replace_select = "";
-                _options.ocr_replace = new() { { "", new() } };
-            }
-            else
-            {
-                _options.ocr_replace_select = _options.ocr_replace.ElementAt(0).Key;
-            }
-
-            _combox_ocr_replace_updating = true;
-            combox_ocr_replace.ItemsSource = _options.ocr_replace.Keys.ToList();
-            combox_ocr_replace.SelectedItem = _options.ocr_replace_select;
-            _combox_ocr_replace_updating = false;
-
-            datagrid_ocr_replace.ItemsSource = _options.ocr_replace[_options.ocr_replace_select];
-        }
-
-        private void combox_ocr_replace_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (_combox_ocr_replace_updating)
-                return;
-            _options.ocr_replace_select = (string)combox_ocr_replace.SelectedItem;
-            datagrid_ocr_replace.ItemsSource = _options.ocr_replace[_options.ocr_replace_select];
+            _viewModel.DeleteOcrSeletedItem();
         }
 
         private void textbox_auto_captrue_trans_interval_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
@@ -318,7 +98,8 @@ namespace BKTrans
 
         private void datagrid_ocr_replace_Sorting(object sender, System.Windows.Controls.DataGridSortingEventArgs e)
         {
-            var ocrReplace = _options.ocr_replace[_options.ocr_replace_select];
+            var ocrReplace = datagrid_ocr_replace.ItemsSource as List<OCRReplace>;
+
             if (e.Column.DisplayIndex == 0)
             {
                 if (e.Column.SortDirection == System.ComponentModel.ListSortDirection.Descending)
@@ -335,20 +116,19 @@ namespace BKTrans
                     ocrReplace = ocrReplace.OrderBy(elem => elem.replace_dst).ToList();
             }
 
-            _options.ocr_replace[_options.ocr_replace_select] = ocrReplace;
-            datagrid_ocr_replace.ItemsSource = _options.ocr_replace[_options.ocr_replace_select];
+            datagrid_ocr_replace.ItemsSource = ocrReplace;
 
             e.Handled = true;
         }
 
         private void datagrid_ocr_replace_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            if (e.Key == System.Windows.Input.Key.Enter)
+            if (e.Key == System.Windows.Input.Key.Enter && !datagrid_ocr_replace_behvior.IsEditing)
             {
                 var selectIndex = datagrid_ocr_replace.SelectedIndex;
-                _options.ocr_replace[_options.ocr_replace_select].Insert(selectIndex + 1, new());
+                var ocrReplace = datagrid_ocr_replace.ItemsSource as List<OCRReplace>;
+                ocrReplace.Insert(ocrReplace.Count == selectIndex ? selectIndex : selectIndex + 1, new());
 
-                //datagrid_ocr_replace.SelectedIndex = selectIndex;
                 CollectionViewSource.GetDefaultView(datagrid_ocr_replace.ItemsSource).Refresh();
 
                 datagrid_ocr_replace.UpdateLayout();

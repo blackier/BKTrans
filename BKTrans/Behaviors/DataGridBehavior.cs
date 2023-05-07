@@ -143,6 +143,8 @@ namespace BKTrans
         private bool isEditing;
         private bool isDragging;
 
+        public bool IsEditing => isEditing;
+
         #region DragEnded
         public static readonly RoutedEvent DragEndedEvent =
             EventManager.RegisterRoutedEvent("DragEnded", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(DataGridBehavior));
@@ -220,7 +222,7 @@ namespace BKTrans
             if (isEditing) return;
 
             var row = UIHelpers.TryFindFromPoint<DataGridRow>((UIElement)sender, e.GetPosition(AssociatedObject));
-            if (row == null || row.IsEditing) return;
+            if (row == null || row.IsEditing || row.DataContext == CollectionView.NewItemPlaceholder) return;
 
             //set flag that indicates we're capturing mouse movements
             isDragging = true;

@@ -13,7 +13,7 @@ using System.Windows.Forms.VisualStyles;
 
 namespace BKTrans
 {
-    public partial class SettingsViewModel : ObservableObject
+    public partial class MainWindowViewModel : ObservableObject
     {
         private readonly SettingsModel.Settings _settings;
 
@@ -147,9 +147,9 @@ namespace BKTrans
         }
         #endregion
 
-        public SettingsViewModel()
+        public MainWindowViewModel()
         {
-            _settings = SettingsModel.LoadSetting();
+            _settings = SettingsModel.LoadSettings();
             UpdateLanguageTypeMap();
         }
 

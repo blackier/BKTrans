@@ -47,27 +47,27 @@
         <WrapPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Bottom">
             <Button x:Name="btn_undo" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" Click="btn_undo_Click">
                 <Button.Background>
-                    <ImageBrush ImageSource="/resource/undo.png" />
+                    <ImageBrush ImageSource="/Asserts/undo.png" />
                 </Button.Background>
             </Button>
             <Button x:Name="btn_drag" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" PreviewMouseLeftButtonDown="btn_drag_PreviewMouseLeftButtonDown">
                 <Button.Background>
-                    <ImageBrush ImageSource="/resource/drag.png" />
+                    <ImageBrush ImageSource="/Asserts/drag.png" />
                 </Button.Background>
             </Button>
             <Button x:Name="btn_hide" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" Click="btn_hide_Click">
                 <Button.Background>
-                    <ImageBrush ImageSource="/resource/hide.png" />
+                    <ImageBrush ImageSource="/Asserts/hide.png" />
                 </Button.Background>
             </Button>
             <Button x:Name="btn_capture" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" Click="btn_capture_Click">
                 <Button.Background>
-                    <ImageBrush ImageSource="/resource/capture.png" />
+                    <ImageBrush ImageSource="/Asserts/capture.png" />
                 </Button.Background>
             </Button>
             <Button x:Name="btn_trans" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" Click="btn_trans_Click">
                 <Button.Background>
-                    <ImageBrush ImageSource="/resource/trans.png" />
+                    <ImageBrush ImageSource="/Asserts/trans.png" />
                 </Button.Background>
             </Button>
             <CheckBox x:Name="checkbox_autotrans" Width="20" Height="20" Click="checkbox_autotrans_Click">
@@ -76,7 +76,7 @@
                         <Grid>
                             <Button x:Name="btn_autotrans" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}">
                                 <Button.Background>
-                                    <ImageBrush ImageSource="/resource/auto_trans.png" />
+                                    <ImageBrush ImageSource="/Asserts/auto_trans.png" />
                                 </Button.Background>
                             </Button>
                         </Grid>
@@ -84,14 +84,14 @@
                             <Trigger Property="IsChecked" Value="true">
                                 <Setter TargetName="btn_autotrans" Property="Background">
                                     <Setter.Value>
-                                        <ImageBrush ImageSource="/resource/auto_trans_check.png"/>
+                                        <ImageBrush ImageSource="/Asserts/auto_trans_check.png"/>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="false">
                                 <Setter TargetName="btn_autotrans" Property="Background">
                                     <Setter.Value>
-                                        <ImageBrush ImageSource="/resource/auto_trans.png"/>
+                                        <ImageBrush ImageSource="/Asserts/auto_trans.png"/>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
