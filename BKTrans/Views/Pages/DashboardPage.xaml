@@ -1,0 +1,158 @@
+﻿<Page
+    x:Class="BKTrans.Views.Pages.DashboardPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:System="clr-namespace:System;assembly=System.Runtime"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:BKTrans.Views.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="Dashboard Page"
+    d:DataContext="{d:DesignInstance local:DashboardPage,
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="450"
+    d:DesignWidth="600"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    mc:Ignorable="d">
+    <Grid x:Name="MainGrid" Grid.Column="3">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="45" />
+        </Grid.RowDefinitions>
+
+        <DockPanel>
+            <DockPanel DockPanel.Dock="Top">
+                <TextBlock
+                    Width="35"
+                    Margin="3,0,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    FontSize="14"
+                    Text="原文" />
+                <ComboBox
+                    x:Name="combobox_from_type"
+                    Width="70"
+                    MinWidth="70"
+                    ItemsSource="{Binding FromTypes}"
+                    SelectedItem="{Binding FromTypesSelectedItem}" />
+                <ComboBox
+                    x:Name="combobox_ocr_type"
+                    MinWidth="70"
+                    Margin="6,0"
+                    IsEditable="True"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding OcrTypes}"
+                    Text="{Binding OcrTypesSelectedText}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox
+                                Click="combobox_ocr_type_CheckClick"
+                                Content="{Binding Text}"
+                                IsChecked="{Binding IsChecked}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <ComboBox
+                        x:Name="combobox_ocr_replace"
+                        MinWidth="70"
+                        ItemsSource="{Binding OcrReplace}"
+                        SelectedItem="{Binding OcrReplaceSelectedItem}" />
+                    <ui:Button
+                        x:Name="btn_setting"
+                        Width="32"
+                        Height="32"
+                        Margin="3,0,3,0"
+                        Padding="0"
+                        Background="{x:Null}"
+                        BorderBrush="{x:Null}"
+                        Click="btn_setting_Click">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="Settings32" />
+                        </ui:Button.Icon>
+                    </ui:Button>
+                </StackPanel>
+            </DockPanel>
+            <TextBox
+                x:Name="textbox_source_text"
+                Grid.Row="1"
+                Width="auto"
+                Margin="3,3,3,3"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                FontSize="14"
+                Text=""
+                TextWrapping="Wrap" />
+        </DockPanel>
+        <DockPanel Grid.Row="1">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                <TextBlock
+                    Width="35"
+                    Margin="3,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    FontSize="14"
+                    Text="译文" />
+                <ComboBox
+                    x:Name="combobox_to_type"
+                    Width="70"
+                    MinWidth="70"
+                    ItemsSource="{Binding ToTypes}"
+                    SelectedItem="{Binding ToTypesSelectedItem}" />
+                <ComboBox
+                    x:Name="combobox_trans_type"
+                    MinWidth="70"
+                    Margin="6,0"
+                    IsEditable="True"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding TransTypes}"
+                    Text="{Binding TransTypesSelectedText}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox
+                                Click="combobox_trans_type_CheckClick"
+                                Content="{Binding Text}"
+                                IsChecked="{Binding IsChecked}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <TextBox
+                x:Name="textbox_target_text"
+                Grid.Row="1"
+                Width="auto"
+                Margin="3,3,3,3"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                FontSize="14"
+                Text=""
+                TextWrapping="Wrap" />
+        </DockPanel>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Button
+                x:Name="btn_capture"
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Click="btn_capture_Click"
+                Content="截取" />
+            <Button
+                x:Name="btn_trans"
+                Grid.Column="3"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Click="btn_trans_Click"
+                Content="翻译" />
+        </Grid>
+    </Grid>
+</Page>

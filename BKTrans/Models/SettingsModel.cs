@@ -126,7 +126,7 @@ namespace BKTrans
                 _settings = new Settings();
                 if (_settingsFilePath == null)
                 {
-                    _settingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "settings.json");
+                    _settingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "BKTransSettings.json");
                 }
                 try
                 {

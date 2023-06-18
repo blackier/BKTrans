@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm;
-using CommunityToolkit.Mvvm.ComponentModel;
-using static System.Windows.Forms.Design.AxImporter;
 using static BKTrans.SettingsModel;
 
 namespace BKTrans
 {
-    public partial class SettingsWindowViewModel : ObservableObject
+    public partial class SettingsViewModel : ObservableObject
     {
         private readonly SettingsModel.Settings _settings;
 
@@ -150,7 +147,7 @@ namespace BKTrans
         }
 
         #endregion 自动翻译
-        public SettingsWindowViewModel()
+        public SettingsViewModel()
         {
             _settings = SettingsModel.LoadSettings();
 

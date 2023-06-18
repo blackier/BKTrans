@@ -1,3 +1,6 @@
 [submodule "ShareX"]
 	path = ThirdParty/ShareX
 	url = https://github.com/ShareX/ShareX.git
+[submodule "wpfui"]
+	path = ThirdParty/wpfui
+	url = https://github.com/lepoco/wpfui.git

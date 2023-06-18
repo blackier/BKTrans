@@ -1,17 +1,27 @@
-﻿<UserControl x:Class="BKTrans.TransResultTextControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:BKTrans"
-             mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="400">
+﻿<UserControl
+    x:Class="BKTrans.Views.Controls.TransResultTextControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:BKTrans.Views.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="300"
+    d:DesignWidth="400"
+    mc:Ignorable="d">
     <UserControl.Resources>
         <ControlTemplate x:Key="ctrltemplate_pic_btn" TargetType="{x:Type Button}">
-            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True" />
+            <Grid>
+                <Border
+                    x:Name="border"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    SnapsToDevicePixels="True" />
+                <Label Background="{TemplateBinding Background}" />
+            </Grid>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter TargetName="border" Property="BorderBrush" Value="#FFBEE6FD" />
+                    <Setter TargetName="border" Property="Background" Value="#01FFFFFF" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
                     <Setter TargetName="border" Property="BorderBrush" Value="#FF3C7FB1" />
@@ -30,13 +40,33 @@
             <ColumnDefinition Width="1*" />
             <ColumnDefinition x:Name="gridcolumn_btn" Width="60" />
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="textbox_transtext" TextWrapping="Wrap" BorderBrush="{x:Null}" Padding="1,1,1,1" Background="#A6FFFFFF" FontSize="16" FontWeight="Bold" />
-        <WrapPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top">
-            <CheckBox x:Name="checkbox_text" Width="20" Height="20" MouseWheel="checkbox_text_MouseWheel" Click="checkbox_text_Click">
+        <TextBox
+            x:Name="textbox_transtext"
+            Padding="1,1,1,1"
+            VerticalAlignment="Stretch"
+            BorderBrush="{x:Null}"
+            FontSize="16"
+            FontWeight="Bold"
+            TextWrapping="Wrap" />
+        <WrapPanel
+            Grid.Column="1"
+            VerticalAlignment="Top"
+            Orientation="Vertical">
+            <CheckBox
+                x:Name="checkbox_text"
+                Width="20"
+                Height="20"
+                MinWidth="20"
+                MinHeight="20"
+                Click="checkbox_text_Click"
+                MouseWheel="checkbox_text_MouseWheel">
                 <CheckBox.Template>
                     <ControlTemplate TargetType="{x:Type CheckBox}">
                         <Grid>
-                            <Button x:Name="btn_text" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}">
+                            <Button
+                                x:Name="btn_text"
+                                Style="{StaticResource style_pic_btn}"
+                                Template="{StaticResource ctrltemplate_pic_btn}">
                                 <Button.Background>
                                     <ImageBrush ImageSource="/Asserts/text.png" />
                                 </Button.Background>
@@ -46,14 +76,14 @@
                             <Trigger Property="IsChecked" Value="true">
                                 <Setter TargetName="btn_text" Property="Background">
                                     <Setter.Value>
-                                        <ImageBrush ImageSource="/Asserts/text_check.png"/>
+                                        <ImageBrush ImageSource="/Asserts/text_check.png" />
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="false">
                                 <Setter TargetName="btn_text" Property="Background">
                                     <Setter.Value>
-                                        <ImageBrush ImageSource="/Asserts/text.png"/>
+                                        <ImageBrush ImageSource="/Asserts/text.png" />
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
@@ -61,12 +91,20 @@
                     </ControlTemplate>
                 </CheckBox.Template>
             </CheckBox>
-            <Button x:Name="btn_drag" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" PreviewMouseLeftButtonDown="btn_drag_PreviewMouseLeftButtonDown">
+            <Button
+                x:Name="btn_drag"
+                PreviewMouseLeftButtonDown="btn_drag_PreviewMouseLeftButtonDown"
+                Style="{StaticResource style_pic_btn}"
+                Template="{StaticResource ctrltemplate_pic_btn}">
                 <Button.Background>
                     <ImageBrush ImageSource="/Asserts/drag.png" />
                 </Button.Background>
             </Button>
-            <Button x:Name="btn_hide" Template="{StaticResource ctrltemplate_pic_btn}" Style="{StaticResource style_pic_btn}" Click="btn_hide_Click">
+            <Button
+                x:Name="btn_hide"
+                Click="btn_hide_Click"
+                Style="{StaticResource style_pic_btn}"
+                Template="{StaticResource ctrltemplate_pic_btn}">
                 <Button.Background>
                     <ImageBrush ImageSource="/Asserts/hide.png" />
                 </Button.Background>
