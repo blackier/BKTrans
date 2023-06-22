@@ -102,7 +102,7 @@ namespace BKTrans.Misc
         {
             JsonSerializerOptions options = new()
             {
-                DefaultIgnoreCondition = ignoreNullValues ? JsonIgnoreCondition.WhenWritingDefault : JsonIgnoreCondition.Never,
+                DefaultIgnoreCondition = ignoreNullValues ? JsonIgnoreCondition.WhenWritingNull : JsonIgnoreCondition.Never,
                 WriteIndented = writeIndented,
                 Encoder = charsetEncoder
             };

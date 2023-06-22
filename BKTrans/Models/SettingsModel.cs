@@ -60,6 +60,9 @@ namespace BKTrans
             public bool auto_captrue_trans_open { get; set; }
             public float auto_captrue_trans_similarity { get; set; }
 
+            // ocr结果是否自动翻译
+            public bool auto_trans_ocr_result { get; set; }
+
             // ocr翻译替换
             public string ocr_replace_select { get; set; }
             public Dictionary<string, List<OCRReplace>> ocr_replace { get; set; }
@@ -79,6 +82,8 @@ namespace BKTrans
                 auto_captrue_trans_countdown = 5;
                 auto_captrue_trans_open = false;
                 auto_captrue_trans_similarity = 0.9f;
+
+                auto_trans_ocr_result = true;
 
                 ocr_replace_select = "";
                 ocr_replace = new() { { "", new() } };

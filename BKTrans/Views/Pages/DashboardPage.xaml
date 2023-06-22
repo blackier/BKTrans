@@ -88,38 +88,83 @@
                 TextWrapping="Wrap" />
         </DockPanel>
         <DockPanel Grid.Row="1">
-            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                <TextBlock
-                    Width="35"
-                    Margin="3,0"
-                    HorizontalAlignment="Left"
+            <Grid DockPanel.Dock="Top">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        Width="35"
+                        Margin="3,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        FontSize="14"
+                        Text="译文" />
+                    <ComboBox
+                        x:Name="combobox_to_type"
+                        Width="70"
+                        MinWidth="70"
+                        ItemsSource="{Binding ToTypes}"
+                        SelectedItem="{Binding ToTypesSelectedItem}" />
+                    <ComboBox
+                        x:Name="combobox_trans_type"
+                        MinWidth="70"
+                        Margin="6,0"
+                        IsEditable="True"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding TransTypes}"
+                        Text="{Binding TransTypesSelectedText}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox
+                                    Click="combobox_trans_type_CheckClick"
+                                    Content="{Binding Text}"
+                                    IsChecked="{Binding IsChecked}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+                <CheckBox
+                    x:Name="checkbox_auto_trans_ocr_result"
+                    Width="32"
+                    Height="32"
+                    Padding="0"
+                    HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    FontSize="14"
-                    Text="译文" />
-                <ComboBox
-                    x:Name="combobox_to_type"
-                    Width="70"
-                    MinWidth="70"
-                    ItemsSource="{Binding ToTypes}"
-                    SelectedItem="{Binding ToTypesSelectedItem}" />
-                <ComboBox
-                    x:Name="combobox_trans_type"
-                    MinWidth="70"
-                    Margin="6,0"
-                    IsEditable="True"
-                    IsReadOnly="True"
-                    ItemsSource="{Binding TransTypes}"
-                    Text="{Binding TransTypesSelectedText}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <CheckBox
-                                Click="combobox_trans_type_CheckClick"
-                                Content="{Binding Text}"
-                                IsChecked="{Binding IsChecked}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-            </StackPanel>
+                    Click="checkbox_auto_trans_ocr_result_Click"
+                    IsChecked="{Binding AutoTransOCRResult}">
+                    <CheckBox.Template>
+                        <ControlTemplate TargetType="{x:Type CheckBox}">
+                            <ui:Button
+                                x:Name="btn_auto_trans_ocr_result"
+                                Width="{TemplateBinding Width}"
+                                Height="{TemplateBinding Height}"
+                                Padding="{TemplateBinding Padding}"
+                                HorizontalAlignment="Center"
+                                Background="{x:Null}"
+                                BorderBrush="{x:Null}">
+                                <ui:Button.Icon>
+                                    <ui:SymbolIcon Symbol="ArrowSync20" />
+                                </ui:Button.Icon>
+                            </ui:Button>
+
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="true">
+                                    <Setter TargetName="btn_auto_trans_ocr_result" Property="Icon">
+                                        <Setter.Value>
+                                            <ui:SymbolIcon Symbol="ArrowSync20" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="false">
+                                    <Setter TargetName="btn_auto_trans_ocr_result" Property="Icon">
+                                        <Setter.Value>
+                                            <ui:SymbolIcon Symbol="ArrowSyncOff20" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </CheckBox.Template>
+                </CheckBox>
+            </Grid>
             <TextBox
                 x:Name="textbox_target_text"
                 Grid.Row="1"

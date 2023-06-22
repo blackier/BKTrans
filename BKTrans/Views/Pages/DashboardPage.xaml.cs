@@ -204,7 +204,8 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
             ocrResultText = _viewModel.OCRRepalce(ocrResultText) + _textSpliteString + ocrResultText;
             SetSourceText(ocrResultText);
 
-            Dispatcher.Invoke(() => DoTextTrans());
+            if(_viewModel.AutoTransOCRResult)
+                Dispatcher.Invoke(() => DoTextTrans());
         } while (false);
     }
 
@@ -304,6 +305,11 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
     private void btn_trans_Click(object sender, RoutedEventArgs e)
     {
         DoTextTrans();
+    }
+
+    private void checkbox_auto_trans_ocr_result_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.AutoTransOCRResult = !_viewModel.AutoTransOCRResult;
     }
 
     #endregion 用户控件

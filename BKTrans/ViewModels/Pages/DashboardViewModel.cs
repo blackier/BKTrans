@@ -110,7 +110,7 @@ public partial class DashboardViewModel : ObservableObject
     }
     #endregion 类型选择
 
-    #region 自动翻译配置
+    #region 自动截图翻译配置
     public bool AutoCaptrueTransOpen
     {
         get => _settings.auto_captrue_trans_open;
@@ -144,6 +144,16 @@ public partial class DashboardViewModel : ObservableObject
         }
     }
     #endregion
+
+    // ocr结果是否自动翻译
+    public bool AutoTransOCRResult
+    {
+        get => _settings.auto_trans_ocr_result;
+        set
+        {
+            SetProperty(_settings.auto_trans_ocr_result, value, _settings, (s, v) => s.auto_trans_ocr_result = v);
+        }
+    }
 
     public DashboardViewModel()
     {
