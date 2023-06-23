@@ -1,4 +1,5 @@
 ﻿using BKTrans.Misc;
+using BKTrans.Models;
 using BKTrans.Services.Contracts;
 using BKTrans.ViewModels;
 using BKTrans.Views.Pages;

@@ -1,0 +1,126 @@
+﻿<Page
+    x:Class="BKTrans.Views.Pages.Settings.SettingsOCRReplacePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:bh="clr-namespace:BKTrans.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:BKTrans.Views.Pages.Settings"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="Settings OCR Replace Page"
+    d:DataContext="{d:DesignInstance local:SettingsOCRReplacePage,
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="450"
+    d:DesignWidth="600"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <i:EventTrigger
+            x:Key="TextBoxUpdateSource"
+            x:Shared="False"
+            EventName="Click"
+            SourceName="btn_save">
+            <i:ChangePropertyAction
+                PropertyName="TextBoxUpdateSource"
+                TargetObject="{Binding RelativeSource={RelativeSource AncestorType={x:Type Page}}}"
+                Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
+        </i:EventTrigger>
+    </Page.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="45" />
+        </Grid.RowDefinitions>
+
+        <DockPanel>
+            <DockPanel DockPanel.Dock="Top">
+                <ComboBox
+                    x:Name="combox_ocr_replace"
+                    MinWidth="90"
+                    ItemsSource="{Binding ViewModel.OcrReplace}"
+                    SelectedItem="{Binding ViewModel.OcrReplaceSelectedItem}" />
+                <TextBox
+                    x:Name="textbox_ocr_replace_new"
+                    Grid.Column="1"
+                    Width="90"
+                    MinWidth="90"
+                    Margin="8,0,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center" />
+                <Button
+                    x:Name="btn_ocr_replace_new"
+                    Margin="8,0,0,0"
+                    Click="btn_ocr_replace_new_Click"
+                    Content="添加" />
+                <Button
+                    x:Name="btn_ocr_replace_delete"
+                    Margin="8,0,0,0"
+                    Click="btn_ocr_replace_delete_Click"
+                    Content="删除" />
+            </DockPanel>
+            <Grid Margin="0,6,0,0" DockPanel.Dock="Bottom">
+                <Popup
+                    x:Name="popup_datagrid_ocr_replace"
+                    AllowsTransparency="True"
+                    IsHitTestVisible="False"
+                    Placement="Relative"
+                    PlacementTarget="{Binding ElementName=datagrid_ocr_replace}">
+                    <StackPanel>
+                        <ui:Button Content="{Binding replace_src}" />
+                    </StackPanel>
+                </Popup>
+                <!--  目前wpfui的选中和编辑样式还有问题，已经有issue提出了，后续看什么时候更新  -->
+                <ui:DataGrid
+                    x:Name="datagrid_ocr_replace"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    AutoGenerateColumns="False"
+                    HeadersVisibility="Column"
+                    ItemsSource="{Binding ViewModel.OcrReplaceItems, UpdateSourceTrigger=Explicit, Mode=TwoWay}"
+                    PreviewKeyDown="datagrid_ocr_replace_PreviewKeyDown"
+                    SelectionMode="Single"
+                    Sorting="datagrid_ocr_replace_Sorting">
+                    <i:Interaction.Behaviors>
+                        <bh:DataGridBehavior x:Name="datagrid_ocr_replace_behvior" Popup="{Binding ElementName=popup_datagrid_ocr_replace}" />
+                    </i:Interaction.Behaviors>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="1*"
+                            Binding="{Binding replace_src}"
+                            Header="源文本" />
+                        <DataGridTextColumn
+                            Width="1*"
+                            Binding="{Binding replace_dst}"
+                            Header="替换文本" />
+                    </DataGrid.Columns>
+                </ui:DataGrid>
+            </Grid>
+        </DockPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Button
+                x:Name="btn_cancle"
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Click="btn_cancle_Click"
+                Content="取消" />
+            <Button
+                x:Name="btn_save"
+                Grid.Column="3"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Click="btn_save_Click"
+                Content="保存" />
+        </Grid>
+    </Grid>
+</Page>

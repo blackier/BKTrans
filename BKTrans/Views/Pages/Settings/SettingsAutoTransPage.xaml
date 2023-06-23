@@ -1,0 +1,116 @@
+﻿<Page
+    x:Class="BKTrans.Views.Pages.Settings.SettingsAutoTransPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:bh="clr-namespace:BKTrans.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:BKTrans.Views.Pages.Settings"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="Settings Auto Trans Page"
+    d:DataContext="{d:DesignInstance local:SettingsAutoTransPage,
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="450"
+    d:DesignWidth="600"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <i:EventTrigger
+            x:Key="TextBoxUpdateSource"
+            x:Shared="False"
+            EventName="Click"
+            SourceName="btn_save">
+            <i:ChangePropertyAction
+                PropertyName="TextBoxUpdateSource"
+                TargetObject="{Binding RelativeSource={RelativeSource AncestorType={x:Type Page}}}"
+                Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
+        </i:EventTrigger>
+    </Page.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="45" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <StackPanel>
+                <DockPanel>
+                    <Label
+                        Width="120"
+                        VerticalContentAlignment="Center"
+                        Content="采样间隔(ms)：" />
+                    <TextBox
+                        x:Name="textbox_auto_captrue_trans_interval"
+                        Width="auto"
+                        Margin="0,2,0,2"
+                        IsReadOnly="True"
+                        MouseWheel="textbox_auto_captrue_trans_interval_MouseWheel"
+                        Text="{Binding ViewModel.AutoCaptrueTransInterval, UpdateSourceTrigger=Explicit}">
+                        <i:Interaction.Triggers>
+                            <StaticResource ResourceKey="TextBoxUpdateSource" />
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                </DockPanel>
+                <DockPanel>
+                    <Label
+                        Width="120"
+                        VerticalContentAlignment="Center"
+                        Content="采样倒数：" />
+                    <TextBox
+                        x:Name="textbox_auto_captrue_trans_countdown"
+                        Margin="0,2,0,2"
+                        IsReadOnly="True"
+                        MouseWheel="textbox_auto_captrue_trans_countdown_MouseWheel"
+                        Text="{Binding ViewModel.AutoCaptrueTransCountdown, UpdateSourceTrigger=Explicit}">
+                        <i:Interaction.Triggers>
+                            <StaticResource ResourceKey="TextBoxUpdateSource" />
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                </DockPanel>
+                <DockPanel>
+                    <Label
+                        Width="120"
+                        VerticalContentAlignment="Center"
+                        Content="相似度临界值：" />
+                    <TextBox
+                        x:Name="textbox_auto_captrue_trans_similarity"
+                        Margin="0,2,0,2"
+                        IsReadOnly="True"
+                        MouseWheel="textbox_auto_captrue_trans_similarity_MouseWheel"
+                        Text="{Binding ViewModel.AutoCaptrueTransSimilarity, UpdateSourceTrigger=Explicit}">
+                        <i:Interaction.Triggers>
+                            <StaticResource ResourceKey="TextBoxUpdateSource" />
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                </DockPanel>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Button
+                x:Name="btn_cancle"
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Click="btn_cancle_Click"
+                Content="取消" />
+            <Button
+                x:Name="btn_save"
+                Grid.Column="3"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Click="btn_save_Click"
+                Content="保存" />
+        </Grid>
+    </Grid>
+</Page>

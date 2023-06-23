@@ -2,8 +2,10 @@
 using BKTrans.Services.Contracts;
 using BKTrans.ViewModels;
 using BKTrans.ViewModels.Pages;
+using BKTrans.ViewModels.Pages.Settings;
 using BKTrans.Views;
 using BKTrans.Views.Pages;
+using BKTrans.Views.Pages.Settings;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,6 +46,16 @@ public partial class App : Application
             services.AddSingleton<DashboardViewModel>();
             services.AddTransient<SettingsPage>();
             services.AddTransient<SettingsViewModel>();
+            services.AddTransient<AboutPage>();
+            services.AddTransient<AboutViewModel>();
+
+            // settings pages
+            services.AddTransient<SettingsTransPage>();
+            services.AddTransient<SettingsTransViewModel>();
+            services.AddTransient<SettingsOCRReplacePage>();
+            services.AddTransient<SettingsOCRReplaceViewModel>();
+            services.AddTransient<SettingsAutoTransPage>();
+            services.AddTransient<SettingsAutoTransViewModel>();
 
             // Windows
             services.AddSingleton<FloatCaptureRectWindow>();

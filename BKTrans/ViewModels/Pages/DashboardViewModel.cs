@@ -1,4 +1,5 @@
 ﻿using BKTrans.Misc;
+using BKTrans.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
