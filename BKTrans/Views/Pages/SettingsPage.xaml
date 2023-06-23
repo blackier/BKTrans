@@ -48,7 +48,7 @@
                                         Width="90"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Center"
-                                        Text="client__id:" />
+                                        Text="client_id:" />
                                     <TextBox x:Name="textbox_baiduocr_client_id" Text="{Binding OcrBaiduClientID, UpdateSourceTrigger=Explicit}">
                                         <i:Interaction.Triggers>
                                             <StaticResource ResourceKey="TextBoxUpdateSource" />
@@ -60,7 +60,7 @@
                                         Width="90"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Center"
-                                        Text="client__secret:" />
+                                        Text="client_secret:" />
                                     <TextBox x:Name="textbox_baiduocr_client_secret" Text="{Binding OcrBaiduClientSecret, UpdateSourceTrigger=Explicit}">
                                         <i:Interaction.Triggers>
                                             <StaticResource ResourceKey="TextBoxUpdateSource" />
@@ -144,7 +144,7 @@
                                         Width="90"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Center"
-                                        Text="api__key:" />
+                                        Text="api_key:" />
                                     <TextBox x:Name="textbox_google_api_key" Text="{Binding TransGoogleApiKey, UpdateSourceTrigger=Explicit}">
                                         <i:Interaction.Triggers>
                                             <StaticResource ResourceKey="TextBoxUpdateSource" />

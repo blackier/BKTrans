@@ -83,8 +83,11 @@
                 Margin="3,3,3,3"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
+                AcceptsReturn="True"
+                AcceptsTab="True"
+                AllowDrop="True"
+                AutoWordSelection="True"
                 FontSize="14"
-                Text=""
                 TextWrapping="Wrap" />
         </DockPanel>
         <DockPanel Grid.Row="1">
@@ -172,8 +175,11 @@
                 Margin="3,3,3,3"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
+                AcceptsReturn="True"
+                AcceptsTab="True"
+                AllowDrop="True"
+                AutoWordSelection="True"
                 FontSize="14"
-                Text=""
                 TextWrapping="Wrap" />
         </DockPanel>
         <Grid Grid.Row="2">
