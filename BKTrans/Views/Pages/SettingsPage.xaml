@@ -54,6 +54,10 @@
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem
+                    Content="快捷键"
+                    Icon="{ui:SymbolIcon Keyboard24}"
+                    TargetPageType="{x:Type pages:SettingsShortcutsPage}" />
+                <ui:NavigationViewItem
                     Content="关于"
                     Icon="{ui:SymbolIcon Info24}"
                     TargetPageType="{x:Type local:AboutPage}" />

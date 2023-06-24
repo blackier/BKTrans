@@ -68,9 +68,9 @@ public partial class MainWindow : IWindow
     // Win32API: RegisterHotKey function
     private enum HotKeyId
     {
-        capture = 0xB001,
-        trans = 0xB002,
-        hide = 0xB003
+        Capture = 0xB001,
+        ShowFloatWindow = 0xB002,
+        HideFloatWindow = 0xB003
     }
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
@@ -81,9 +81,9 @@ public partial class MainWindow : IWindow
         // 热键注册
         IntPtr handle = new WindowInteropHelper(this).EnsureHandle();
         bool is_succeess = false;
-        is_succeess = BKHotKey.Register(handle, (int)HotKeyId.capture, (uint)BKHotKey.Modifiers.norepeat, (uint)Keys.F2);
-        is_succeess = BKHotKey.Register(handle, (int)HotKeyId.trans, (uint)(BKHotKey.Modifiers.shift | BKHotKey.Modifiers.alt | BKHotKey.Modifiers.norepeat), (uint)Keys.X);
-        is_succeess = BKHotKey.Register(handle, (int)HotKeyId.hide, (uint)(BKHotKey.Modifiers.shift | BKHotKey.Modifiers.alt | BKHotKey.Modifiers.norepeat), (uint)Keys.Z);
+        is_succeess = BKHotKey.Register(handle, (int)HotKeyId.Capture, (uint)BKHotKey.Modifiers.norepeat, (uint)Keys.F2);
+        is_succeess = BKHotKey.Register(handle, (int)HotKeyId.ShowFloatWindow, (uint)(BKHotKey.Modifiers.shift | BKHotKey.Modifiers.alt | BKHotKey.Modifiers.norepeat), (uint)Keys.X);
+        is_succeess = BKHotKey.Register(handle, (int)HotKeyId.HideFloatWindow, (uint)(BKHotKey.Modifiers.shift | BKHotKey.Modifiers.alt | BKHotKey.Modifiers.norepeat), (uint)Keys.Z);
         if (!is_succeess)
         {
             Dispatcher.InvokeAsync(() => App.SnackbarError("热键注册失败"));
@@ -111,15 +111,15 @@ public partial class MainWindow : IWindow
     private IntPtr HwndSourceHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
         // 快捷键处理
-        if (wParam.ToInt64() == (int)HotKeyId.capture)
+        if (wParam.ToInt64() == (int)HotKeyId.Capture)
         {
             App.GetService<DashboardPage>()?.CaptureTrans();
         }
-        else if (wParam.ToInt64() == (int)HotKeyId.trans)
+        else if (wParam.ToInt64() == (int)HotKeyId.ShowFloatWindow)
         {
             App.GetService<DashboardPage>()?.CaptureTransLast();
         }
-        else if (wParam.ToInt64() == (int)HotKeyId.hide)
+        else if (wParam.ToInt64() == (int)HotKeyId.HideFloatWindow)
         {
             App.GetService<FloatCaptureRectWindow>()?.HideWindow();
         }

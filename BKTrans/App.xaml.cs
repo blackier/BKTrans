@@ -56,6 +56,8 @@ public partial class App : Application
             services.AddTransient<SettingsOCRReplaceViewModel>();
             services.AddTransient<SettingsAutoTransPage>();
             services.AddTransient<SettingsAutoTransViewModel>();
+            services.AddTransient<SettingsShortcutsPage>();
+            services.AddTransient<SettingsShortcutsViewModel>();
 
             // Windows
             services.AddSingleton<FloatCaptureRectWindow>();
@@ -117,7 +119,7 @@ public partial class App : Application
             error_msg += e.InnerException.Message + "\n";
             error_msg += e.InnerException.StackTrace + "\n\n";
         } while (false);
-        //SetTargetText(error_msg);
+        SnackbarError(error_msg);
     }
 
     private bool SingleInstance()
@@ -188,9 +190,15 @@ public partial class App : Application
         Current.MainWindow.Hide();
     }
 
+    public static void SnackbarSuccess(string message)
+    {
+        var snackbarService = GetService<ISnackbarService>();
+        snackbarService.Show("成功", message, Wpf.Ui.Controls.ControlAppearance.Success);
+    }
+
     public static void SnackbarError(string message)
     {
         var snackbarService = GetService<ISnackbarService>();
-        snackbarService.Show("", message, Wpf.Ui.Controls.ControlAppearance.Danger);
+        snackbarService.Show("失败", message, Wpf.Ui.Controls.ControlAppearance.Danger);
     }
 }

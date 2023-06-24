@@ -1,4 +1,5 @@
-﻿using BKTrans.ViewModels.Pages;
+﻿using BKTrans.Models;
+using BKTrans.ViewModels.Pages;
 using BKTrans.ViewModels.Pages.Settings;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +38,7 @@ public partial class SettingsTransPage : INavigableView<SettingsTransViewModel>
     #region 事件处理
     protected void btn_save_Click(object sender, RoutedEventArgs e)
     {
+        SettingsModel.SaveSettings();
     }
 
     protected void btn_cancle_Click(object sender, RoutedEventArgs e)

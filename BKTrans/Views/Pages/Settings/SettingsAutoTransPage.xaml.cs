@@ -1,4 +1,5 @@
-﻿using BKTrans.ViewModels.Pages;
+﻿using BKTrans.Models;
+using BKTrans.ViewModels.Pages;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -36,6 +37,7 @@ public partial class SettingsAutoTransPage : INavigableView<SettingsAutoTransVie
     #region 事件处理
     protected void btn_save_Click(object sender, RoutedEventArgs e)
     {
+        SettingsModel.SaveSettings();
     }
 
     protected void btn_cancle_Click(object sender, RoutedEventArgs e)

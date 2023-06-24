@@ -8,6 +8,7 @@
     xmlns:local="clr-namespace:BKTrans.Views.Pages.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:vc="clr-namespace:BKTrans.ValueConverters"
     Title="Settings OCR Replace Page"
     d:DataContext="{d:DesignInstance local:SettingsOCRReplacePage,
                                      IsDesignTimeCreatable=False}"
@@ -28,6 +29,7 @@
                 TargetObject="{Binding RelativeSource={RelativeSource AncestorType={x:Type Page}}}"
                 Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
         </i:EventTrigger>
+        <vc:ColllectionElementIndexConverter x:Key="ColllectionElementIndexConverter" />
     </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -60,6 +62,16 @@
                     Margin="8,0,0,0"
                     Click="btn_ocr_replace_delete_Click"
                     Content="删除" />
+                <Button
+                    x:Name="btn_ocr_replace_import"
+                    Margin="8,0,0,0"
+                    Click="btn_ocr_replace_import_Click"
+                    Content="导入" />
+                <Button
+                    x:Name="btn_ocr_replace_export"
+                    Margin="8,0,0,0"
+                    Click="btn_ocr_replace_export_Click"
+                    Content="导出" />
             </DockPanel>
             <Grid Margin="0,6,0,0" DockPanel.Dock="Bottom">
                 <Popup
@@ -78,15 +90,24 @@
                     HorizontalContentAlignment="Center"
                     VerticalContentAlignment="Center"
                     AutoGenerateColumns="False"
+                    CanUserSortColumns="False"
                     HeadersVisibility="Column"
                     ItemsSource="{Binding ViewModel.OcrReplaceItems, UpdateSourceTrigger=Explicit, Mode=TwoWay}"
                     PreviewKeyDown="datagrid_ocr_replace_PreviewKeyDown"
-                    SelectionMode="Single"
-                    Sorting="datagrid_ocr_replace_Sorting">
+                    SelectionMode="Single">
                     <i:Interaction.Behaviors>
                         <bh:DataGridBehavior x:Name="datagrid_ocr_replace_behvior" Popup="{Binding ElementName=popup_datagrid_ocr_replace}" />
                     </i:Interaction.Behaviors>
                     <DataGrid.Columns>
+                        <DataGridTextColumn Width="48" Header="">
+                            <DataGridTextColumn.Binding>
+                                <MultiBinding Converter="{StaticResource ColllectionElementIndexConverter}" StringFormat="{}{0}">
+                                    <Binding />
+                                    <Binding Path="ItemsSource" RelativeSource="{RelativeSource AncestorType=DataGrid}" />
+                                    <Binding Path="SelectedItem" RelativeSource="{RelativeSource AncestorType=DataGrid}" />
+                                </MultiBinding>
+                            </DataGridTextColumn.Binding>
+                        </DataGridTextColumn>
                         <DataGridTextColumn
                             Width="1*"
                             Binding="{Binding replace_src}"
@@ -96,6 +117,28 @@
                             Binding="{Binding replace_dst}"
                             Header="替换文本" />
                     </DataGrid.Columns>
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <ui:MenuItem Header="排序">
+                                <ui:MenuItem
+                                    Click="datagrid_ocr_replace_menuitem_Click"
+                                    Header="字符顺序"
+                                    Tag="0" />
+                                <ui:MenuItem
+                                    Click="datagrid_ocr_replace_menuitem_Click"
+                                    Header="字符倒序"
+                                    Tag="1" />
+                                <ui:MenuItem
+                                    Click="datagrid_ocr_replace_menuitem_Click"
+                                    Header="长度顺序"
+                                    Tag="2" />
+                                <ui:MenuItem
+                                    Click="datagrid_ocr_replace_menuitem_Click"
+                                    Header="长度倒序"
+                                    Tag="3" />
+                            </ui:MenuItem>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
                 </ui:DataGrid>
             </Grid>
         </DockPanel>

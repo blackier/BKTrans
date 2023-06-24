@@ -1,16 +1,25 @@
-﻿using BKTrans.Models;
+﻿using BKTrans.Misc;
+using BKTrans.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 
 namespace BKTrans.ViewModels.Pages.Settings;
 
 public partial class SettingsOCRReplaceViewModel : ObservableObject
 {
-    private readonly SettingsModel.Settings _settings;
 
+    public enum SortType
+    {
+        ByChar,
+        ByCharDesc,
+        ByLength,
+        ByLengthDesc
+    }
 
     #region ocr替换
     public List<string> OcrReplace
@@ -40,6 +49,7 @@ public partial class SettingsOCRReplaceViewModel : ObservableObject
 
     #endregion ocr替换
 
+    private readonly SettingsModel.Settings _settings;
     public SettingsOCRReplaceViewModel()
     {
         _settings = SettingsModel.LoadSettings();
@@ -65,6 +75,7 @@ public partial class SettingsOCRReplaceViewModel : ObservableObject
 
         OnPropertyChanged(nameof(OcrReplaceSelectedItem));
         OnPropertyChanged(nameof(OcrReplace));
+        OnPropertyChanged(nameof(OcrReplaceItems));
     }
 
     public void NewOcrReplace(string name)
@@ -77,5 +88,23 @@ public partial class SettingsOCRReplaceViewModel : ObservableObject
 
         OnPropertyChanged(nameof(OcrReplace));
         OnPropertyChanged(nameof(OcrReplaceSelectedItem));
+        OnPropertyChanged(nameof(OcrReplaceItems));
+    }
+
+    public void SaveOCRReplace(string fileName, List<SettingsModel.OCRReplace> oCRReplaces)
+    {
+        BKMisc.SaveTextFile(fileName, BKMisc.JsonSerialize(oCRReplaces, true, true, JavaScriptEncoder.Create(UnicodeRanges.All)));
+    }
+
+    public List<SettingsModel.OCRReplace> LoadOCRReplace(string fileName)
+    {
+        try
+        {
+            return BKMisc.JsonDeserialize<List<SettingsModel.OCRReplace>>(BKMisc.LoadTextFile(fileName));
+        }
+        catch
+        {
+            return null;
+        }
     }
 }
