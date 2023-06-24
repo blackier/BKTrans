@@ -36,125 +36,134 @@
         </Grid.RowDefinitions>
 
         <!--  API 后续可以考虑用wpfui的passwordtextbox，但现在有bug，显示隐藏密码会清空文本，后续修复才能用  -->
-        <ScrollViewer VerticalScrollBarVisibility="Hidden">
+        <ScrollViewer>
             <StackPanel>
                 <TextBlock
-                    Margin="0,0,0,10"
-                    FontSize="20"
-                    FontWeight="Medium"
+                    FontSize="18"
+                    FontWeight="DemiBold"
                     Text="API" />
-                <GroupBox BorderThickness="0,1,0,0" Header="百度OCR">
+                <ui:Card Margin="0,8,0,0">
                     <StackPanel>
-                        <DockPanel Margin="0,2,0,2">
-                            <TextBlock
-                                Width="90"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Text="client_id:" />
-                            <TextBox x:Name="textbox_baiduocr_client_id" Text="{Binding ViewModel.OcrBaiduClientID, UpdateSourceTrigger=Explicit}">
-                                <i:Interaction.Triggers>
-                                    <StaticResource ResourceKey="TextBoxUpdateSource" />
-                                </i:Interaction.Triggers>
-                            </TextBox>
-                        </DockPanel>
-                        <DockPanel Margin="0,2,0,2">
-                            <TextBlock
-                                Width="90"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Text="client_secret:" />
-                            <TextBox x:Name="textbox_baiduocr_client_secret" Text="{Binding ViewModel.OcrBaiduClientSecret, UpdateSourceTrigger=Explicit}">
-                                <i:Interaction.Triggers>
-                                    <StaticResource ResourceKey="TextBoxUpdateSource" />
-                                </i:Interaction.Triggers>
-                            </TextBox>
-                        </DockPanel>
+                        <Expander Header="百度OCR">
+                            <Expander.Content>
+                                <StackPanel>
+                                    <DockPanel>
+                                        <TextBlock
+                                            Width="90"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            Text="client_id:" />
+                                        <TextBox x:Name="textbox_baiduocr_client_id" Text="{Binding ViewModel.OcrBaiduClientID, UpdateSourceTrigger=Explicit}">
+                                            <i:Interaction.Triggers>
+                                                <StaticResource ResourceKey="TextBoxUpdateSource" />
+                                            </i:Interaction.Triggers>
+                                        </TextBox>
+                                    </DockPanel>
+                                    <DockPanel Margin="0,6,0,0">
+                                        <TextBlock
+                                            Width="90"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            Text="client_secret:" />
+                                        <TextBox x:Name="textbox_baiduocr_client_secret" Text="{Binding ViewModel.OcrBaiduClientSecret, UpdateSourceTrigger=Explicit}">
+                                            <i:Interaction.Triggers>
+                                                <StaticResource ResourceKey="TextBoxUpdateSource" />
+                                            </i:Interaction.Triggers>
+                                        </TextBox>
+                                    </DockPanel>
+                                </StackPanel>
+                            </Expander.Content>
+                        </Expander>
+                        <Expander Margin="0,8,0,0" Header="百度翻译">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock
+                                        Width="90"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        Text="appid:" />
+                                    <TextBox x:Name="textbox_baiduapi_appid" Text="{Binding ViewModel.TransBaiduAppID, UpdateSourceTrigger=Explicit}">
+                                        <i:Interaction.Triggers>
+                                            <StaticResource ResourceKey="TextBoxUpdateSource" />
+                                        </i:Interaction.Triggers>
+                                    </TextBox>
+                                </DockPanel>
+                                <DockPanel Margin="0,6,0,0">
+                                    <TextBlock
+                                        Width="90"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        Text="secretkey:" />
+                                    <TextBox x:Name="textbox_baiduapi_secretkey" Text="{Binding ViewModel.TransBaiduSecretKey, UpdateSourceTrigger=Explicit}">
+                                        <i:Interaction.Triggers>
+                                            <StaticResource ResourceKey="TextBoxUpdateSource" />
+                                        </i:Interaction.Triggers>
+                                    </TextBox>
+                                </DockPanel>
+                                <DockPanel Margin="0,6,0,0">
+                                    <TextBlock
+                                        Width="90"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        Text="salt:" />
+                                    <TextBox x:Name="textbox_baiduapi_salt" Text="{Binding ViewModel.TransBaiduSalt, UpdateSourceTrigger=Explicit}">
+                                        <i:Interaction.Triggers>
+                                            <StaticResource ResourceKey="TextBoxUpdateSource" />
+                                        </i:Interaction.Triggers>
+                                    </TextBox>
+                                </DockPanel>
+                            </StackPanel>
+                        </Expander>
                     </StackPanel>
-                </GroupBox>
-                <GroupBox BorderThickness="0,1,0,0" Header="百度翻译">
-                    <StackPanel>
-                        <DockPanel Margin="0,2,0,2">
-                            <TextBlock
-                                Width="90"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Text="appid:" />
-                            <TextBox x:Name="textbox_baiduapi_appid" Text="{Binding ViewModel.TransBaiduAppID, UpdateSourceTrigger=Explicit}">
-                                <i:Interaction.Triggers>
-                                    <StaticResource ResourceKey="TextBoxUpdateSource" />
-                                </i:Interaction.Triggers>
-                            </TextBox>
-                        </DockPanel>
-                        <DockPanel Margin="0,2,0,2">
-                            <TextBlock
-                                Width="90"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Text="secretkey:" />
-                            <TextBox x:Name="textbox_baiduapi_secretkey" Text="{Binding ViewModel.TransBaiduSecretKey, UpdateSourceTrigger=Explicit}">
-                                <i:Interaction.Triggers>
-                                    <StaticResource ResourceKey="TextBoxUpdateSource" />
-                                </i:Interaction.Triggers>
-                            </TextBox>
-                        </DockPanel>
-                        <DockPanel Margin="0,2,0,2">
-                            <TextBlock
-                                Width="90"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Text="salt:" />
-                            <TextBox x:Name="textbox_baiduapi_salt" Text="{Binding ViewModel.TransBaiduSalt, UpdateSourceTrigger=Explicit}">
-                                <i:Interaction.Triggers>
-                                    <StaticResource ResourceKey="TextBoxUpdateSource" />
-                                </i:Interaction.Triggers>
-                            </TextBox>
-                        </DockPanel>
-                    </StackPanel>
-                </GroupBox>
-                <GroupBox BorderThickness="0,1,0,0" Header="彩云小译">
-                    <StackPanel>
-                        <DockPanel Margin="0,2,0,2">
-                            <TextBlock
-                                Width="90"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Text="token:" />
-                            <TextBox x:Name="textbox_caiyunapi_token" Text="{Binding ViewModel.TransCaiyunToken, UpdateSourceTrigger=Explicit}">
-                                <i:Interaction.Triggers>
-                                    <StaticResource ResourceKey="TextBoxUpdateSource" />
-                                </i:Interaction.Triggers>
-                            </TextBox>
-                        </DockPanel>
-                        <DockPanel Margin="0,2,0,2">
-                            <TextBlock
-                                Width="90"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Text="request_id:" />
-                            <TextBox x:Name="textbox_caiyunapi_request_id" Text="{Binding ViewModel.TransCaiyunReqeustID, UpdateSourceTrigger=Explicit}">
-                                <i:Interaction.Triggers>
-                                    <StaticResource ResourceKey="TextBoxUpdateSource" />
-                                </i:Interaction.Triggers>
-                            </TextBox>
-                        </DockPanel>
-                    </StackPanel>
-                </GroupBox>
-                <GroupBox BorderThickness="0,1,0,0" Header="Google翻译">
-                    <StackPanel>
-                        <DockPanel Margin="0,2,0,2">
-                            <TextBlock
-                                Width="90"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Text="api_key:" />
-                            <TextBox x:Name="textbox_google_api_key" Text="{Binding ViewModel.TransGoogleApiKey, UpdateSourceTrigger=Explicit}">
-                                <i:Interaction.Triggers>
-                                    <StaticResource ResourceKey="TextBoxUpdateSource" />
-                                </i:Interaction.Triggers>
-                            </TextBox>
-                        </DockPanel>
-                    </StackPanel>
-                </GroupBox>
+                </ui:Card>
+                <ui:Card Margin="0,8,0,0">
+                    <Expander Header="彩云小译">
+                        <StackPanel>
+                            <DockPanel>
+                                <TextBlock
+                                    Width="90"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Text="token:" />
+                                <TextBox x:Name="textbox_caiyunapi_token" Text="{Binding ViewModel.TransCaiyunToken, UpdateSourceTrigger=Explicit}">
+                                    <i:Interaction.Triggers>
+                                        <StaticResource ResourceKey="TextBoxUpdateSource" />
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+                            </DockPanel>
+                            <DockPanel Margin="0,6,0,0">
+                                <TextBlock
+                                    Width="90"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Text="request_id:" />
+                                <TextBox x:Name="textbox_caiyunapi_request_id" Text="{Binding ViewModel.TransCaiyunReqeustID, UpdateSourceTrigger=Explicit}">
+                                    <i:Interaction.Triggers>
+                                        <StaticResource ResourceKey="TextBoxUpdateSource" />
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+                            </DockPanel>
+                        </StackPanel>
+                    </Expander>
+                </ui:Card>
+                <ui:Card Margin="0,8,0,0">
+                    <Expander Header="Google翻译">
+                        <StackPanel>
+                            <DockPanel>
+                                <TextBlock
+                                    Width="90"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Text="api_key:" />
+                                <TextBox x:Name="textbox_google_api_key" Text="{Binding ViewModel.TransGoogleApiKey, UpdateSourceTrigger=Explicit}">
+                                    <i:Interaction.Triggers>
+                                        <StaticResource ResourceKey="TextBoxUpdateSource" />
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+                            </DockPanel>
+                        </StackPanel>
+                    </Expander>
+                </ui:Card>
             </StackPanel>
         </ScrollViewer>
         <Grid Grid.Row="1">
