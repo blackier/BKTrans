@@ -152,7 +152,7 @@ public class SettingsModel
     }
     public static void SaveSettings()
     {
-        BKMisc.SaveTextFile(_settingsFilePath, BKMisc.JsonSerialize<Settings>(_settings, true, true, JavaScriptEncoder.Create(UnicodeRanges.All)));
+        BKMisc.SaveTextFile(_settingsFilePath, BKMisc.JsonSerialize(_settings));
     }
 
     public SettingsModel() { }

@@ -93,7 +93,7 @@ public partial class SettingsOCRReplaceViewModel : ObservableObject
 
     public void SaveOCRReplace(string fileName, List<SettingsModel.OCRReplace> oCRReplaces)
     {
-        BKMisc.SaveTextFile(fileName, BKMisc.JsonSerialize(oCRReplaces, true, true, JavaScriptEncoder.Create(UnicodeRanges.All)));
+        BKMisc.SaveTextFile(fileName, BKMisc.JsonSerialize(oCRReplaces));
     }
 
     public List<SettingsModel.OCRReplace> LoadOCRReplace(string fileName)

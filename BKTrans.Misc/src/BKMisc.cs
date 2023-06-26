@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Unicode;
 using System.Windows;
 using System.Windows.Media;
 
@@ -100,6 +101,8 @@ namespace BKTrans.Misc
 
         public static string JsonSerialize<T>(T obj, bool ignoreNullValues = true, bool writeIndented = true, JavaScriptEncoder charsetEncoder = null)
         {
+            if (charsetEncoder == null)
+                charsetEncoder = JavaScriptEncoder.Create(UnicodeRanges.All);
             JsonSerializerOptions options = new()
             {
                 DefaultIgnoreCondition = ignoreNullValues ? JsonIgnoreCondition.WhenWritingNull : JsonIgnoreCondition.Never,

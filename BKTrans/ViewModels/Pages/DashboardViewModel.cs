@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Windows.Forms.VisualStyles;
+using static BKTrans.ViewModels.Pages.DashboardViewModel.TransResult;
 
 namespace BKTrans.ViewModels.Pages;
 
@@ -156,6 +157,18 @@ public partial class DashboardViewModel : ObservableObject
         }
     }
 
+    // 翻译记录
+    public record TransResult
+    {
+        public record TransResultItem
+        {
+            public string tool { get; set; }
+            public string result { get; set; }
+        }
+        public List<TransResultItem> ocr_result { get; set; }
+        public List<TransResultItem> trans_result { get; set; }
+    };
+
     public DashboardViewModel()
     {
         _settings = SettingsModel.LoadSettings();
@@ -230,8 +243,9 @@ public partial class DashboardViewModel : ObservableObject
         TransTypes = new(_settings.trans_types);
     }
 
-    public async Task<string> OCR(Bitmap img)
+    public async Task<TransResult> OCR(Bitmap img)
     {
+        TransResultItem ocr_result_item = new();
         BKOCRBase ocrClient = null;
         BKSetting ocrSetting = null;
         foreach (var type in OcrTypes)
@@ -240,25 +254,25 @@ public partial class DashboardViewModel : ObservableObject
             {
                 _settings.GetOCRSetting(type.Text).language = FromTypesSelectedItem;
 
+                ocr_result_item.tool = type.Text;
                 ocrClient = BKTransMap.CreateBKOCRClient(type.Text);
                 ocrSetting = _settings.GetOCRSetting(type.Text);
                 break;
             }
         }
 
-        string ocrResultText = "";
         string ocrResult = "";
         await Task.Run(() => ocrClient.OCR(ocrSetting, img, out ocrResult));
         try
         {
-            ocrResultText = ocrClient.ParseResult(ocrResult);
+            ocr_result_item.result = ocrClient.ParseResult(ocrResult);
         }
         catch
         {
-            ocrResultText = "OCR翻译失败，打开程序界面查看原因。";
+            ocr_result_item.result = "OCR翻译失败，打开程序界面查看原因。";
 
         }
-        return ocrResultText;
+        return new TransResult() { ocr_result = new() { ocr_result_item } };
     }
 
     public string OCRRepalce(string srcText)
@@ -276,29 +290,28 @@ public partial class DashboardViewModel : ObservableObject
         return srcText;
     }
 
-    public async Task<string[]> TransText(string text)
+    public async Task<TransResult> TransText(string text)
     {
+        List<Task> transTasks = new();
+        TransResult result = new TransResult() { trans_result = new() };
+
         foreach (var type in TransTypes)
         {
             if (type.IsChecked)
             {
+                TransResultItem trans_result_item = new();
+                trans_result_item.tool = type.Text;
                 _settings.UpdateTransSetting(type.Text, FromTypesSelectedItem, ToTypesSelectedItem);
-                break;
-            }
-        }
-
-        List<Task<string>> transTasks = new();
-
-        foreach (var type in TransTypes)
-        {
-            if (type.IsChecked)
-            {
-                transTasks.Add(Task.Run(() => BKTransMap.CreateBKTransClient(type.Text).Trans(_settings.GetTransSetting(type.Text), text)));
+                transTasks.Add(Task.Run(() =>
+                {
+                    trans_result_item.result = BKTransMap.CreateBKTransClient(type.Text).Trans(_settings.GetTransSetting(type.Text), text);
+                    result.trans_result.Add(trans_result_item);
+                }));
             }
         }
 
         var transtasks = Task.WhenAll(transTasks);
         await Task.Run(() => transtasks.Wait());
-        return transtasks.Result;
+        return result;
     }
 }

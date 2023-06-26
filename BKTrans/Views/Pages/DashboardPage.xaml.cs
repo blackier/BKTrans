@@ -1,11 +1,14 @@
 ﻿using BKTrans.Misc;
 using BKTrans.ViewModels.Pages;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,6 +18,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Wpf.Ui.Controls.Navigation;
+using static BKTrans.ViewModels.Pages.DashboardViewModel;
 
 namespace BKTrans.Views.Pages;
 
@@ -37,6 +41,7 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
     static int _autoCaptrueTransDebugNum = 0;
 
     private DashboardViewModel _viewModel;
+    private Serilog.ILogger _transLogger;
 
     public DashboardViewModel ViewModel { get { return _viewModel; } }
 
@@ -46,6 +51,14 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
         DataContext = _viewModel;
 
         InitializeComponent();
+
+        // 翻译日志
+        _transLogger = new LoggerConfiguration()
+            .WriteTo.File(
+                "logs/trans_.log",
+                rollingInterval: RollingInterval.Day)
+            .CreateLogger();
+        _transLogger.Information("logger init");
 
         // 自动截图翻译
         _autoCaptrueTransCountdown = _viewModel.AutoCaptrueTransCountdown;
@@ -193,23 +206,27 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
             _captureBmp = bmpData;
             SetSourceText("截取完成，等待OCR翻译...");
 
-            string ocrResultText = await _viewModel.OCR(bmpData);
-            if (string.IsNullOrEmpty(ocrResultText))
+            TransResult ocrResult = await _viewModel.OCR(bmpData);
+            if (ocrResult.ocr_result.Count == 0 || string.IsNullOrEmpty(ocrResult.ocr_result[0].result))
             {
                 SetSourceText("");
                 SetTargetText("");
                 break;
             }
+            string ocrResultText = ocrResult.ocr_result[0].result;
 
             ocrResultText = _viewModel.OCRRepalce(ocrResultText) + _textSpliteString + ocrResultText;
             SetSourceText(ocrResultText);
 
-            if(_viewModel.AutoTransOCRResult)
-                Dispatcher.Invoke(() => DoTextTrans());
+            if (_viewModel.AutoTransOCRResult)
+                Dispatcher.Invoke(() => DoTextTrans(ocrResult));
+            else
+                _transLogger.Information($"Only OCR:\n{BKMisc.JsonSerialize(ocrResult)}");
+
         } while (false);
     }
 
-    private async void DoTextTrans()
+    private async void DoTextTrans(TransResult ocrResult = null)
     {
         string srctext = GetSourceText();
         if (string.IsNullOrEmpty(srctext))
@@ -218,9 +235,10 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
         SetTargetText("文本翻译中...");
 
         string transResultText = "";
-        foreach (var result in await _viewModel.TransText(srctext))
+        TransResult transResult = await _viewModel.TransText(srctext);
+        foreach (var result in (await _viewModel.TransText(srctext)).trans_result)
         {
-            transResultText += result;
+            transResultText += result.result;
             transResultText += _textSpliteString;
         }
         if (!string.IsNullOrEmpty(transResultText))
@@ -228,6 +246,17 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
 
         SetTargetText(transResultText);
         _floatTextWindow.SetText(transResultText);
+
+        transResult.trans_result.Add(new TransResult.TransResultItem() { tool = "text", result = srctext });
+        if (ocrResult != null)
+        {
+            transResult.ocr_result = ocrResult.ocr_result;
+            _transLogger.Information($"OCR Trans: \n{BKMisc.JsonSerialize(transResult)}");
+        }
+        else
+        {
+            _transLogger.Information($"Only Trans: \n{BKMisc.JsonSerialize(transResult)}");
+        }
     }
 
     #region 事件处理
