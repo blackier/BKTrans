@@ -36,16 +36,16 @@
                     x:Name="combobox_from_type"
                     Width="70"
                     MinWidth="70"
-                    ItemsSource="{Binding FromTypes}"
-                    SelectedItem="{Binding FromTypesSelectedItem}" />
+                    ItemsSource="{Binding ViewModel.FromTypes}"
+                    SelectedItem="{Binding ViewModel.FromTypesSelectedItem}" />
                 <ComboBox
                     x:Name="combobox_ocr_type"
                     MinWidth="70"
                     Margin="6,0"
                     IsEditable="True"
                     IsReadOnly="True"
-                    ItemsSource="{Binding OcrTypes}"
-                    Text="{Binding OcrTypesSelectedText}">
+                    ItemsSource="{Binding ViewModel.OcrTypes}"
+                    Text="{Binding ViewModel.OcrTypesSelectedText}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <CheckBox
@@ -59,8 +59,8 @@
                     <ComboBox
                         x:Name="combobox_ocr_replace"
                         MinWidth="70"
-                        ItemsSource="{Binding OcrReplace}"
-                        SelectedItem="{Binding OcrReplaceSelectedItem}" />
+                        ItemsSource="{Binding ViewModel.OcrReplace}"
+                        SelectedItem="{Binding ViewModel.OcrReplaceSelectedItem}" />
                     <ui:Button
                         x:Name="btn_setting"
                         Width="32"
@@ -76,19 +76,53 @@
                     </ui:Button>
                 </StackPanel>
             </DockPanel>
-            <TextBox
-                x:Name="textbox_source_text"
-                Grid.Row="1"
-                Width="auto"
-                Margin="3,3,3,3"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                AcceptsReturn="True"
-                AcceptsTab="True"
-                AllowDrop="True"
-                AutoWordSelection="True"
-                FontSize="14"
-                TextWrapping="Wrap" />
+            <Grid>
+                <RichTextBox
+                    x:Name="richtextbox_source_text"
+                    Width="auto"
+                    Margin="3,3,3,3"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    AcceptsReturn="True"
+                    AcceptsTab="True"
+                    AllowDrop="True"
+                    AutoWordSelection="True"
+                    IsDocumentEnabled="True">
+                    <RichTextBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Command="ApplicationCommands.Cut" />
+                            <MenuItem Command="ApplicationCommands.Copy" />
+                            <MenuItem Command="ApplicationCommands.Paste" />
+                            <Separator />
+                            <MenuItem Click="richtextbox_source_text_MenuItem_Click" Header="添加替换" />
+                        </ContextMenu>
+                    </RichTextBox.ContextMenu>
+                    <FlowDocument FontFamily="微软雅黑" FontSize="14" />
+                </RichTextBox>
+                <ui:Flyout
+                    x:Name="flyout_add_ocr_replace"
+                    HorizontalOffset="-50"
+                    Placement="Mouse"
+                    VerticalOffset="-50">
+                    <StackPanel Width="160">
+                        <ui:TextBox
+                            x:Name="textbox_ocr_replace_src"
+                            VerticalAlignment="Stretch"
+                            PlaceholderText="源文本" />
+                        <ui:TextBox
+                            x:Name="textbox_ocr_replace_dst"
+                            Margin="0,8"
+                            VerticalAlignment="Stretch"
+                            PlaceholderText="替换文本" />
+                        <ui:Button
+                            MinWidth="80"
+                            HorizontalAlignment="Center"
+                            Appearance="Primary"
+                            Click="btn_add_ocr_replace_Click"
+                            Content="添加" />
+                    </StackPanel>
+                </ui:Flyout>
+            </Grid>
         </DockPanel>
         <DockPanel Grid.Row="1">
             <Grid DockPanel.Dock="Top">
@@ -104,16 +138,16 @@
                         x:Name="combobox_to_type"
                         Width="70"
                         MinWidth="70"
-                        ItemsSource="{Binding ToTypes}"
-                        SelectedItem="{Binding ToTypesSelectedItem}" />
+                        ItemsSource="{Binding ViewModel.ToTypes}"
+                        SelectedItem="{Binding ViewModel.ToTypesSelectedItem}" />
                     <ComboBox
                         x:Name="combobox_trans_type"
                         MinWidth="70"
                         Margin="6,0"
                         IsEditable="True"
                         IsReadOnly="True"
-                        ItemsSource="{Binding TransTypes}"
-                        Text="{Binding TransTypesSelectedText}">
+                        ItemsSource="{Binding ViewModel.TransTypes}"
+                        Text="{Binding ViewModel.TransTypesSelectedText}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <CheckBox
@@ -132,7 +166,7 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Click="checkbox_auto_trans_ocr_result_Click"
-                    IsChecked="{Binding AutoTransOCRResult}">
+                    IsChecked="{Binding ViewModel.AutoTransOCRResult}">
                     <CheckBox.Template>
                         <ControlTemplate TargetType="{x:Type CheckBox}">
                             <ui:Button

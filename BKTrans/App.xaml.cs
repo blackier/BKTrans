@@ -6,6 +6,7 @@ using BKTrans.ViewModels.Pages.Settings;
 using BKTrans.Views;
 using BKTrans.Views.Pages;
 using BKTrans.Views.Pages.Settings;
+using Serilog;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +25,8 @@ public partial class App : Application
     private const string _uniqueMutexName = "{GUID}BKTransSingleInstanceMutex";
     private EventWaitHandle _eventWaitHandle;
     private Mutex _mutex;
+
+    private static Serilog.ILogger _appLogger;
 
     private static readonly IHost _host = Host
         .CreateDefaultBuilder()
@@ -73,6 +76,13 @@ public partial class App : Application
         if (SingleInstance())
             return;
 
+        _appLogger = new LoggerConfiguration()
+            .WriteTo.File(
+                "logs/app_.log",
+                rollingInterval: RollingInterval.Day)
+            .CreateLogger();
+        _appLogger.Information("Application Startup");
+
         Dispatcher.UnhandledException += OnDispatcherUnhandledException;
         AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
         TaskScheduler.UnobservedTaskException += OnTaskSchedulerUnobservedTaskException;
@@ -119,7 +129,8 @@ public partial class App : Application
             error_msg += e.InnerException.Message + "\n";
             error_msg += e.InnerException.StackTrace + "\n\n";
         } while (false);
-        SnackbarError(error_msg);
+        _appLogger.Error(error_msg);
+        SnackbarError("程序发生异常，详情查看logs");
     }
 
     private bool SingleInstance()
@@ -199,6 +210,6 @@ public partial class App : Application
     public static void SnackbarError(string message)
     {
         var snackbarService = GetService<ISnackbarService>();
-        snackbarService.Show("失败", message, Wpf.Ui.Controls.ControlAppearance.Danger);
+        snackbarService.Show("失败", message, Wpf.Ui.Controls.ControlAppearance.Danger, timeout: TimeSpan.FromSeconds(1.5));
     }
 }

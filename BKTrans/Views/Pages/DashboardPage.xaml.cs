@@ -1,4 +1,5 @@
-﻿using BKTrans.Misc;
+﻿using BKTrans.Controls;
+using BKTrans.Misc;
 using BKTrans.ViewModels.Pages;
 using Serilog;
 using System;
@@ -7,13 +8,15 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -33,24 +36,26 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
     private int _autoCaptrueTransCountdown;
     private bool _autoCaptrueTransStart;
 
-    private bool _comboxUpdating = false;
     private string _textSpliteString = "\n+++===+++===+++\n";
-
-    private string _tsmenuitemAutotransName = "tsmenuitem_autotrans";
 
     static int _autoCaptrueTransDebugNum = 0;
 
     private DashboardViewModel _viewModel;
-    private Serilog.ILogger _transLogger;
+    private ILogger _transLogger;
 
     public DashboardViewModel ViewModel { get { return _viewModel; } }
 
     public DashboardPage(DashboardViewModel viewModel, FloatCaptureRectWindow floatCaptureRectWindow)
     {
         _viewModel = viewModel;
-        DataContext = _viewModel;
+        DataContext = this;
 
         InitializeComponent();
+
+        // 复制粘贴时，格式化ocr翻译的文本
+        richtextbox_source_text.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, richtextbox_source_text_CopyCommand));
+        DataObject.AddCopyingHandler(richtextbox_source_text, richtextbox_source_text_Copying);
+        DataObject.AddPastingHandler(richtextbox_source_text, richtextbox_source_text_Pasting);
 
         // 翻译日志
         _transLogger = new LoggerConfiguration()
@@ -95,21 +100,51 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
 
         });
         _floatTextWindow.SetAutoTransStatus(_viewModel.AutoCaptrueTransOpen);
+
+        // 页面加载时
+        Loaded += OnLoaded;
     }
 
-    private void SetSourceText(string src_text)
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // 加载时重新读取一遍ocr替换
+        _viewModel.OcrReplaceIsChanged = true;
+    }
+
+    public void OnSwitchTheme()
+    {
+        // 主题切换有bug，字体颜色只支持白色的，需要切换主题时重新设置颜色
+        richtextbox_source_text.Document.Foreground = textbox_target_text.Foreground.Clone();
+    }
+
+    private void SetSourceText(string srcText, List<ReplaceTextItem> replaceText = null)
     {
         Dispatcher.Invoke(() =>
         {
-            textbox_source_text.Text = src_text;
+            Paragraph paragraph_source_text = new Paragraph();
+            if (replaceText != null && replaceText.Count > 0)
+            {
+                foreach (var item in replaceText)
+                {
+                    if (string.IsNullOrEmpty(item.dst))
+                        paragraph_source_text.Inlines.Add(new Run(item.src));
+                    else
+                        paragraph_source_text.Inlines.Add(new OCRReplaceItem(item.src, item.dst));
+                }
+                paragraph_source_text.Inlines.Add(_textSpliteString);
+            }
+            paragraph_source_text.Inlines.Add(srcText);
+
+            richtextbox_source_text.Document.Blocks.Clear();
+            richtextbox_source_text.Document.Blocks.Add(paragraph_source_text);
         });
     }
 
-    private void SetTargetText(string target_text)
+    private void SetTargetText(string targetText)
     {
         Dispatcher.Invoke(() =>
         {
-            textbox_target_text.Text = target_text;
+            textbox_target_text.Text = targetText;
         });
     }
 
@@ -117,7 +152,21 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
     {
         string text = Dispatcher.Invoke(() =>
         {
-            return textbox_source_text.Text;
+            StringBuilder sb = new StringBuilder();
+            foreach (Block b in richtextbox_source_text.Document.Blocks)
+            {
+                if (b is Paragraph)
+                {
+                    foreach (Inline inline in ((Paragraph)b).Inlines)
+                    {
+                        if (inline is OCRReplaceItem i)
+                            sb.Append(i.Text);
+                        else if (inline is Run r)
+                            sb.Append(r.Text);
+                    }
+                }
+            }
+            return sb.ToString();
         });
         text = text.Split(_textSpliteString)[0];
         return text;
@@ -215,8 +264,7 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
             }
             string ocrResultText = ocrResult.ocr_result[0].result;
 
-            ocrResultText = _viewModel.OCRRepalce(ocrResultText) + _textSpliteString + ocrResultText;
-            SetSourceText(ocrResultText);
+            SetSourceText(ocrResultText, _viewModel.OCRRepalce(ocrResultText));
 
             if (_viewModel.AutoTransOCRResult)
                 Dispatcher.Invoke(() => DoTextTrans(ocrResult));
@@ -322,8 +370,6 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
     private void btn_setting_Click(object sender, RoutedEventArgs e)
     {
         App.NavigateTo(typeof(SettingsPage));
-
-        _viewModel.OcrReplaceIsChanged = true;
     }
 
     private void btn_capture_Click(object sender, RoutedEventArgs e)
@@ -339,6 +385,101 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
     private void checkbox_auto_trans_ocr_result_Click(object sender, RoutedEventArgs e)
     {
         _viewModel.AutoTransOCRResult = !_viewModel.AutoTransOCRResult;
+    }
+
+    private string GetInlineText(RichTextBox richTextBox)
+    {
+        StringBuilder sb = new StringBuilder();
+        foreach (Block b in richTextBox.Document.Blocks)
+        {
+            if (b is Paragraph p)
+            {
+                foreach (Inline inline in p.Inlines)
+                {
+                    if (inline is OCRReplaceItem i)
+                    {
+                        if (richTextBox.Selection.Contains(i.ContentStart))
+                            sb.Append(i.Text);
+                    }
+                    else if (inline is Run r)
+                    {
+                        if (richTextBox.Selection.Contains(r.ContentStart))
+                        {
+                            if (richTextBox.Selection.Contains(r.ContentEnd))
+                            {
+                                sb.Append(r.Text);
+                            }
+                            else
+                            {
+                                sb.Append(new TextRange(r.ContentStart, richTextBox.Selection.End).Text);
+                                break;
+                            }
+                        }
+                        else if (r.ContentStart.CompareTo(richTextBox.Selection.Start) < 0
+                            && r.ContentEnd.CompareTo(richTextBox.Selection.Start) > 0)
+                        {
+                            if (r.ContentEnd.CompareTo(richTextBox.Selection.End) > 0)
+                            {
+                                sb.Append(new TextRange(richTextBox.Selection.Start, richTextBox.Selection.End).Text);
+                                break;
+                            }
+                            else
+                            {
+                                sb.Append(new TextRange(richTextBox.Selection.Start, r.ContentEnd).Text);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return sb.ToString();
+    }
+
+    private void richtextbox_source_text_CopyCommand(object sender, ExecutedRoutedEventArgs e)
+    {
+        copyText = GetInlineText(richtextbox_source_text);
+        Clipboard.SetText(copyText);
+    }
+
+    private string copyText = "";
+    private bool dropCopy = false;
+    private void richtextbox_source_text_Copying(object sender, DataObjectCopyingEventArgs e)
+    {
+        dropCopy = e.IsDragDrop;
+        copyText = GetInlineText(richtextbox_source_text);
+        Clipboard.SetText(copyText);
+    }
+
+    private void richtextbox_source_text_Pasting(object sender, DataObjectPastingEventArgs e)
+    {
+        string text;
+
+        if (!string.IsNullOrEmpty(copyText) && dropCopy)
+        {
+            text = copyText;
+            copyText = "";
+            dropCopy = false;
+        }
+        else
+        {
+            text = e.DataObject.GetData(DataFormats.Text) as string ?? string.Empty;
+        }
+
+        e.DataObject = new DataObject(DataFormats.Text, text);
+    }
+
+    private void richtextbox_source_text_MenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        string selectText = GetInlineText(richtextbox_source_text);
+        textbox_ocr_replace_src.Text = selectText;
+        textbox_ocr_replace_dst.Text = "";
+        flyout_add_ocr_replace.IsOpen = true;
+    }
+
+    private void btn_add_ocr_replace_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.AddOcrReplaceItem(textbox_ocr_replace_src.Text, textbox_ocr_replace_dst.Text);
+        flyout_add_ocr_replace.IsOpen = false;
     }
 
     #endregion 用户控件

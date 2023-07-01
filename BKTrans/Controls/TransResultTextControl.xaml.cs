@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace BKTrans.Views.Controls;
+namespace BKTrans.Controls;
 
 /// <summary>
 /// Interaction logic for TransResultTextControl.xaml

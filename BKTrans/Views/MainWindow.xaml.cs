@@ -177,6 +177,7 @@ public partial class MainWindow : IWindow
         var currentTheme = Wpf.Ui.Appearance.Theme.GetAppTheme();
 
         Wpf.Ui.Appearance.Theme.Apply(currentTheme == Wpf.Ui.Appearance.ThemeType.Light ? Wpf.Ui.Appearance.ThemeType.Dark : Wpf.Ui.Appearance.ThemeType.Light);
+        App.GetService<DashboardPage>()?.OnSwitchTheme();
     }
 
     private void tray_MenuItem_Click(object sender, RoutedEventArgs e)

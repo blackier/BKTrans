@@ -1,5 +1,5 @@
 ﻿using BKTrans.Misc;
-using BKTrans.Views.Controls;
+using BKTrans.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

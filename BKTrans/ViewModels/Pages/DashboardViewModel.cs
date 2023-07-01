@@ -275,19 +275,51 @@ public partial class DashboardViewModel : ObservableObject
         return new TransResult() { ocr_result = new() { ocr_result_item } };
     }
 
-    public string OCRRepalce(string srcText)
+    public record ReplaceTextItem
     {
-        if (_settings.ocr_replace[_settings.ocr_replace_select].Count > 0)
+        public string src { get; set; }
+        public string dst { get; set; }
+    }
+    public List<ReplaceTextItem> OCRRepalce(string srcText)
+    {
+        // 量少，简单的替换
+        // key是源文本，value是替换后的文本
+        List<ReplaceTextItem> replaceTextArr = new() { new() { src = srcText } };
+        foreach (var replaceMap in _settings.ocr_replace[_settings.ocr_replace_select])
         {
-            string replacetext = (string)srcText.Clone();
-            foreach (var replacemap in _settings.ocr_replace[_settings.ocr_replace_select])
-                if (!string.IsNullOrEmpty(replacemap.replace_src))
-                    replacetext = replacetext.Replace(replacemap.replace_src, replacemap.replace_dst);
+            if (string.IsNullOrEmpty(replaceMap.replace_src))
+                continue;
 
-            return replacetext;
+            List<ReplaceTextItem> replaceTextArrTemp = new();
+            foreach (var replaceText in replaceTextArr)
+            {
+                // 已经替换过的跳过
+                if (!string.IsNullOrEmpty(replaceText.dst))
+                {
+                    replaceTextArrTemp.Add(replaceText);
+                    continue;
+                }
+
+                string[] splitArr = replaceText.src.Split(replaceMap.replace_src);
+                if (splitArr.Length == 1)
+                {
+                    replaceTextArrTemp.Add(replaceText);
+                    continue;
+                }
+                foreach (var t in splitArr)
+                {
+                    // 插入替换的文本
+                    replaceTextArrTemp.Add(new() { src = t });
+                    replaceTextArrTemp.Add(new() { src = replaceMap.replace_src, dst = replaceMap.replace_dst });
+                }
+                // 删掉多余的一个插入
+                replaceTextArrTemp.RemoveAt(replaceTextArrTemp.Count - 1);
+
+            }
+            replaceTextArr = replaceTextArrTemp;
         }
 
-        return srcText;
+        return replaceTextArr;
     }
 
     public async Task<TransResult> TransText(string text)
@@ -313,5 +345,13 @@ public partial class DashboardViewModel : ObservableObject
         var transtasks = Task.WhenAll(transTasks);
         await Task.Run(() => transtasks.Wait());
         return result;
+    }
+
+    public void AddOcrReplaceItem(string replace_src, string replace_dst)
+    {
+        if (string.IsNullOrEmpty(replace_src))
+            return;
+
+        _settings.ocr_replace[_settings.ocr_replace_select].Add(new() { replace_src = replace_src, replace_dst = replace_dst });
     }
 }
