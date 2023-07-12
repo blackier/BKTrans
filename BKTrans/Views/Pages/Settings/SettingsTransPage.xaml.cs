@@ -7,14 +7,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Wpf.Ui.Controls.Navigation;
 
 namespace BKTrans.Views.Pages.Settings;
 
 /// <summary>
 /// Interaction logic for Settings.xaml
 /// </summary>
-public partial class SettingsTransPage : INavigableView<SettingsTransViewModel>
+public partial class SettingsTransPage : wpfui.INavigableView<SettingsTransViewModel>
 {
 
     public object TextBoxUpdateSource

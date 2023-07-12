@@ -20,12 +20,11 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Wpf.Ui.Controls.Navigation;
 using static BKTrans.ViewModels.Pages.DashboardViewModel;
 
 namespace BKTrans.Views.Pages;
 
-public partial class DashboardPage : INavigableView<DashboardViewModel>
+public partial class DashboardPage : wpfui.INavigableView<DashboardViewModel>
 {
     private RectangleF _captureRect;
     private Bitmap _captureBmp;

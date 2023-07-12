@@ -15,7 +15,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using Wpf.Ui.Controls.Navigation;
 using static BKTrans.Models.SettingsModel;
 
 namespace BKTrans.Views.Pages.Settings;
@@ -23,7 +22,7 @@ namespace BKTrans.Views.Pages.Settings;
 /// <summary>
 /// Interaction logic for Settings.xaml
 /// </summary>
-public partial class SettingsOCRReplacePage : INavigableView<SettingsOCRReplaceViewModel>
+public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRReplaceViewModel>
 {
 
     public object TextBoxUpdateSource
@@ -64,7 +63,7 @@ public partial class SettingsOCRReplacePage : INavigableView<SettingsOCRReplaceV
 
     private async void btn_ocr_replace_delete_Click(object sender, RoutedEventArgs e)
     {
-        var uiMessageBox = new Wpf.Ui.Controls.MessageBoxControl.MessageBox
+        var uiMessageBox = new wpfui.MessageBox
         {
             Title = "警告",
             Content = "删除后不可恢复，是否删除？",
@@ -73,7 +72,7 @@ public partial class SettingsOCRReplacePage : INavigableView<SettingsOCRReplaceV
             CloseButtonText = "取消",
         };
 
-        if (await uiMessageBox.ShowDialogAsync() != Wpf.Ui.Controls.MessageBoxControl.MessageBoxResult.Primary)
+        if (await uiMessageBox.ShowDialogAsync() != wpfui.MessageBoxResult.Primary)
             return;
 
         _viewModel.DeleteOcrSeletedItem();

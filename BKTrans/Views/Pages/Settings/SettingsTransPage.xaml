@@ -35,7 +35,6 @@
             <RowDefinition Height="45" />
         </Grid.RowDefinitions>
 
-        <!--  API 后续可以考虑用wpfui的passwordtextbox，但现在有bug，显示隐藏密码会清空文本，后续修复才能用  -->
         <ScrollViewer>
             <StackPanel>
                 <TextBlock

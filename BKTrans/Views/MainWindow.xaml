@@ -26,7 +26,7 @@
             x:Name="TitleBar"
             Title="BKTrans"
             Grid.Row="0"
-            Padding="5,10,0,0">
+            Padding="6,0,0,6">
             <ui:TitleBar.Icon>
                 <ui:ImageIcon Source="pack://application:,,,/BKTrans.ico" />
             </ui:TitleBar.Icon>

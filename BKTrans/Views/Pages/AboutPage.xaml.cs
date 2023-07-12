@@ -5,14 +5,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Wpf.Ui.Controls.Navigation;
 
 namespace BKTrans.Views.Pages;
 
 /// <summary>
 /// Interaction logic for Settings.xaml
 /// </summary>
-public partial class AboutPage : INavigableView<AboutViewModel>
+public partial class AboutPage : wpfui.INavigableView<AboutViewModel>
 {
     private AboutViewModel _viewModel;
 

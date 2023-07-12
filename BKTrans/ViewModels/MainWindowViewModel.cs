@@ -8,8 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Wpf.Ui.Controls;
-using Wpf.Ui.Controls.IconElements;
 
 namespace BKTrans.ViewModels;
 

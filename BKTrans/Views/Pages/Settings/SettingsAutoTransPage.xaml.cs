@@ -6,14 +6,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Wpf.Ui.Controls.Navigation;
 
 namespace BKTrans.Views.Pages.Settings;
 
 /// <summary>
 /// Interaction logic for Settings.xaml
 /// </summary>
-public partial class SettingsAutoTransPage : INavigableView<SettingsAutoTransViewModel>
+public partial class SettingsAutoTransPage : wpfui.INavigableView<SettingsAutoTransViewModel>
 {
 
     public object TextBoxUpdateSource

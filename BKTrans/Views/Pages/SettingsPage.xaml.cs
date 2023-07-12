@@ -8,15 +8,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Wpf.Ui.Controls.Navigation;
-using static BKTrans.Models.SettingsModel;
 
 namespace BKTrans.Views.Pages;
 
 /// <summary>
 /// Interaction logic for Settings.xaml
 /// </summary>
-public partial class SettingsPage : INavigableView<SettingsViewModel>
+public partial class SettingsPage : wpfui.INavigableView<SettingsViewModel>
 {
 
     public object TextBoxUpdateSource

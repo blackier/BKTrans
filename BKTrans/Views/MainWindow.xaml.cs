@@ -18,8 +18,6 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
 using WinRT;
-using Wpf.Ui.Controls.IconElements;
-using Wpf.Ui.Controls.Navigation;
 
 namespace BKTrans.Views;
 
@@ -74,10 +72,6 @@ public partial class MainWindow : IWindow
     }
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        // native窗体事件hook
-        if (DesignerHelper.IsInDesignMode)
-            return;
-
         // 热键注册
         IntPtr handle = new WindowInteropHelper(this).EnsureHandle();
         bool is_succeess = false;
