@@ -31,7 +31,6 @@ public partial class FloatCaptureRectWindow : Window
     public FloatCaptureRectWindow(FloatTransTextWindow floatTransTextWindow)
     {
         InitializeComponent();
-        Owner = Application.Current.MainWindow;
 
         ShowInTaskbar = false;
         _onButtonClick = null;

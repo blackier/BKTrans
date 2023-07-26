@@ -192,6 +192,9 @@ public partial class MainWindow : IWindow
                 App.GetService<FloatCaptureRectWindow>()?.HideWindow();
                 break;
             case MainWindowViewModel.TrayType.Exit:
+                // 不能设置这两个窗体为子窗体，obs捕捉不到子窗体，手动关闭
+                App.GetService<FloatCaptureRectWindow>()?.Close();
+                App.GetService<FloatTransTextWindow>()?.Close();
                 _notifyClose = true;
                 Close();
                 break;

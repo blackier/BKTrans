@@ -24,7 +24,6 @@ public partial class FloatTransTextWindow : Window
     public FloatTransTextWindow()
     {
         InitializeComponent();
-        Owner = Application.Current.MainWindow;
 
         ShowInTaskbar = false;
     }
