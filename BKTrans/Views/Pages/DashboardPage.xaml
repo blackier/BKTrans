@@ -87,6 +87,7 @@
                     AcceptsTab="True"
                     AllowDrop="True"
                     AutoWordSelection="True"
+                    ContextMenuOpening="richtextbox_source_text_ContextMenuOpening"
                     IsDocumentEnabled="True">
                     <RichTextBox.ContextMenu>
                         <ContextMenu>
@@ -95,9 +96,10 @@
                             <MenuItem Command="ApplicationCommands.Paste" />
                             <Separator />
                             <MenuItem Click="richtextbox_source_text_MenuItem_Click" Header="添加替换" />
+                            <MenuItem x:Name="menuitem_similar_char" Header="相似字" />
                         </ContextMenu>
                     </RichTextBox.ContextMenu>
-                    <FlowDocument FontFamily="微软雅黑" FontSize="14" />
+                    <FlowDocument FontFamily="微软雅黑" FontSize="16" />
                 </RichTextBox>
                 <ui:Flyout
                     x:Name="flyout_add_ocr_replace"
@@ -213,7 +215,7 @@
                 AcceptsTab="True"
                 AllowDrop="True"
                 AutoWordSelection="True"
-                FontSize="14"
+                FontSize="16"
                 TextWrapping="Wrap" />
         </DockPanel>
         <Grid Grid.Row="2">

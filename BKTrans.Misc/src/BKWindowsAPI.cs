@@ -7,8 +7,12 @@ using System.Threading.Tasks;
 
 namespace BKTrans.Misc
 {
-     public class BKWindowsAPI
+    public class BKWindowsAPI
     {
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool SetCursorPos(int X, int Y);
+
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
     }

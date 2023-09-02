@@ -1,5 +1,5 @@
-﻿using BKTrans.Misc;
-using BKTrans.Controls;
+﻿using BKTrans.Controls;
+using BKTrans.Misc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -215,6 +215,9 @@ public partial class FloatCaptureRectWindow : Window
             Left = preRect.Left;
             Width = preRect.Width;
             Height = preRect.Height;
+
+            System.Windows.Point position = btn_undo.PointToScreen(new System.Windows.Point(0d, 0d));
+            BKWindowsAPI.SetCursorPos((int)(position.X + btn_undo.Width/2), (int)(position.Y + btn_undo.Height / 2));
         }
     }
 

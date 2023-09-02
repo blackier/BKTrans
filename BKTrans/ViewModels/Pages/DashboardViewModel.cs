@@ -354,4 +354,12 @@ public partial class DashboardViewModel : ObservableObject
 
         _settings.ocr_replace[_settings.ocr_replace_select].Add(new() { replace_src = replace_src, replace_dst = replace_dst });
     }
+
+    public List<string> GetSimilarChars(string similarChar)
+    {
+        if (string.IsNullOrEmpty(similarChar))
+            return null;
+
+        return _settings.similar_chars.Find((item) => item.IndexOf(similarChar) >= 0);
+    }
 }

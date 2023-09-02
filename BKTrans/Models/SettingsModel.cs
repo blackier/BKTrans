@@ -66,6 +66,8 @@ public class SettingsModel
         // ocr翻译替换
         public string ocr_replace_select { get; set; }
         public Dictionary<string, List<OCRReplace>> ocr_replace { get; set; }
+        // 相似字
+        public List<List<string>> similar_chars { get; set; }
 
         public Settings()
         {
@@ -87,6 +89,8 @@ public class SettingsModel
 
             ocr_replace_select = "";
             ocr_replace = new() { { "", new() } };
+
+            similar_chars = new();
         }
 
         public void UpdateTransSetting(string trans_type, string from, string to)
@@ -147,12 +151,49 @@ public class SettingsModel
 
             _settings.ocr_types = newOcrType.Select(type => new CheckBoxItem() { IsChecked = _settings.ocr_types.Exists(t => t.Text == type && t.IsChecked), Text = type }).ToList();
             _settings.trans_types = newTransType.Select(type => new CheckBoxItem() { IsChecked = _settings.trans_types.Exists(t => t.Text == type && t.IsChecked), Text = type }).ToList();
+
+            // 相似字是为了ocr识别一些字形出问题时，用于替换掉，内置日语字母的替换
+            if (_settings.similar_chars.Count <= 0)
+            {
+                _settings.similar_chars = DefaultSimilarChars();
+            }
         }
         return _settings;
     }
     public static void SaveSettings()
     {
         BKMisc.SaveTextFile(_settingsFilePath, BKMisc.JsonSerialize(_settings));
+    }
+
+    private static List<List<string>> DefaultSimilarChars()
+    {
+        return new() {
+            new(){ "ア", "イ", "ウ", "エ", "オ", "ァ", "ィ", "ゥ", "ェ", "ォ"},
+            new(){ "か", "カ", "が", "ガ", "ヵ" },
+            new(){ "き", "キ", "ぎ", "ギ"},
+            new(){ "く", "ク", "ぐ", "グ"},
+            new(){ "け", "ケ", "げ", "ゲ", "ヶ"},
+            new(){ "こ", "コ", "ご", "ゴ"},
+            new(){ "さ", "サ", "ざ", "ザ"},
+            new(){ "し", "シ", "じ", "ジ"},
+            new(){ "す", "ス", "ず", "ズ"},
+            new(){ "せ", "セ", "ぜ", "ゼ"},
+            new(){ "そ", "ソ", "ぞ", "ゾ"},
+            new(){ "た", "タ", "だ", "ダ"},
+            new(){ "ち", "チ", "ぢ", "ヂ"},
+            new(){ "つ", "ツ", "づ", "ヅ", "っ"},
+            new(){ "て", "テ", "で", "デ"},
+            new(){ "と", "ト", "ど", "ド"},
+            new(){ "は", "ハ", "ば", "バ", "ぱ", "パ"},
+            new(){ "ひ", "ヒ", "び", "ビ", "ぴ", "ピ"},
+            new(){ "ふ", "フ", "ぶ", "ブ", "ぷ", "プ"},
+            new(){ "へ", "べ", "ぺ"},
+            new(){ "ほ", "ホ", "ぼ", "ボ", "ぽ", "ポ"},
+            new(){ "や", "ヤ", "ゃ", "ャ" },
+            new(){ "ゆ", "ユ", "ゅ", "ュ" },
+            new(){ "よ", "ヨ", "ょ", "ョ" },
+            new(){ "ワ", "ヮ" }
+        };
     }
 
     public SettingsModel() { }

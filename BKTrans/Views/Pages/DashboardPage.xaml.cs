@@ -474,6 +474,30 @@ public partial class DashboardPage : wpfui.INavigableView<DashboardViewModel>
         textbox_ocr_replace_dst.Text = "";
         flyout_add_ocr_replace.IsOpen = true;
     }
+    private void richtextbox_source_text_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+    {
+        string selectText = GetInlineText(richtextbox_source_text);
+        List<string> similarChars = _viewModel.GetSimilarChars(selectText);
+        menuitem_similar_char.Items.Clear();
+        if (similarChars is not null && similarChars.Count > 0)
+        {
+            foreach (string schar in similarChars)
+            {
+                var i = new MenuItem() { Header = schar };
+                i.Click += (object sender, RoutedEventArgs e) =>
+                {
+                    Clipboard.SetText(schar);
+                    richtextbox_source_text.Paste();
+                };
+                menuitem_similar_char.Items.Add(i);
+            }
+            menuitem_similar_char.IsEnabled = true;
+        }
+        else
+        {
+            menuitem_similar_char.IsEnabled = false;
+        }
+    }
 
     private void btn_add_ocr_replace_Click(object sender, RoutedEventArgs e)
     {
