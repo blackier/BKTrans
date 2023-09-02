@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:BKTrans.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tray="http://schemas.lepo.co/wpfui/2022/xaml/tray"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="BKTrans"
     Width="600"
@@ -30,41 +31,39 @@
             <ui:TitleBar.Icon>
                 <ui:ImageIcon Source="pack://application:,,,/BKTrans.ico" />
             </ui:TitleBar.Icon>
-            <ui:TitleBar.Tray>
-                <ui:NotifyIcon
-                    FocusOnLeftClick="True"
-                    Icon="pack://application:,,,/BKTrans.ico"
-                    MenuOnRightClick="True"
-                    TooltipText="BKTrans">
-                    <ui:NotifyIcon.Menu>
-                        <ContextMenu>
-                            <ui:MenuItem
-                                Click="tray_MenuItem_Click"
-                                Header="截取"
-                                Tag="0" />
-                            <ui:MenuItem
-                                Click="tray_MenuItem_Click"
-                                Header="翻译"
-                                Tag="1" />
-                            <Separator />
-                            <ui:MenuItem
-                                Click="tray_MenuItem_Click"
-                                Header="显示浮窗"
-                                Tag="2" />
-                            <ui:MenuItem
-                                Click="tray_MenuItem_Click"
-                                Header="隐藏浮窗"
-                                Tag="3" />
-                            <Separator />
-                            <ui:MenuItem
-                                Click="tray_MenuItem_Click"
-                                Header="退出"
-                                Tag="4" />
-                        </ContextMenu>
-                    </ui:NotifyIcon.Menu>
-                </ui:NotifyIcon>
-            </ui:TitleBar.Tray>
         </ui:TitleBar>
+        <tray:NotifyIcon
+            FocusOnLeftClick="True"
+            Icon="pack://application:,,,/BKTrans.ico"
+            MenuOnRightClick="True"
+            TooltipText="BKTrans">
+            <tray:NotifyIcon.Menu>
+                <ContextMenu>
+                    <ui:MenuItem
+                        Click="tray_MenuItem_Click"
+                        Header="截取"
+                        Tag="0" />
+                    <ui:MenuItem
+                        Click="tray_MenuItem_Click"
+                        Header="翻译"
+                        Tag="1" />
+                    <Separator />
+                    <ui:MenuItem
+                        Click="tray_MenuItem_Click"
+                        Header="显示浮窗"
+                        Tag="2" />
+                    <ui:MenuItem
+                        Click="tray_MenuItem_Click"
+                        Header="隐藏浮窗"
+                        Tag="3" />
+                    <Separator />
+                    <ui:MenuItem
+                        Click="tray_MenuItem_Click"
+                        Header="退出"
+                        Tag="4" />
+                </ContextMenu>
+            </tray:NotifyIcon.Menu>
+        </tray:NotifyIcon>
 
         <ui:Button
             x:Name="btn_toggle_theme"

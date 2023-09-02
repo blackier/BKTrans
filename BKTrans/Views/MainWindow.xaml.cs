@@ -30,7 +30,7 @@ public partial class MainWindow : IWindow
     public MainWindow(MainWindowViewModel viewModel, INavigationService navigationService,
         IServiceProvider serviceProvider, ISnackbarService snackbarService, IContentDialogService contentDialogService)
     {
-        Wpf.Ui.Appearance.Watcher.Watch(this);
+        Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this);
 
         _viewModel = viewModel;
         DataContext = this;
@@ -107,15 +107,15 @@ public partial class MainWindow : IWindow
         // 快捷键处理
         if (wParam.ToInt64() == (int)HotKeyId.Capture)
         {
-            App.GetService<DashboardPage>()?.CaptureTrans();
+            App.GetRequiredService<DashboardPage>()?.CaptureTrans();
         }
         else if (wParam.ToInt64() == (int)HotKeyId.ShowFloatWindow)
         {
-            App.GetService<DashboardPage>()?.CaptureTransLast();
+            App.GetRequiredService<DashboardPage>()?.CaptureTransLast();
         }
         else if (wParam.ToInt64() == (int)HotKeyId.HideFloatWindow)
         {
-            App.GetService<FloatCaptureRectWindow>()?.HideWindow();
+            App.GetRequiredService<FloatCaptureRectWindow>()?.HideWindow();
         }
 
         // 因为wpfui的titlebar会自动hook系统事件，导致布局到titlebar上面的
@@ -168,10 +168,10 @@ public partial class MainWindow : IWindow
 
     private void btn_toggle_theme_Click(object sender, RoutedEventArgs e)
     {
-        var currentTheme = Wpf.Ui.Appearance.Theme.GetAppTheme();
+        var currentTheme = Wpf.Ui.Appearance.ApplicationThemeManager.GetAppTheme();
 
-        Wpf.Ui.Appearance.Theme.Apply(currentTheme == Wpf.Ui.Appearance.ThemeType.Light ? Wpf.Ui.Appearance.ThemeType.Dark : Wpf.Ui.Appearance.ThemeType.Light);
-        App.GetService<DashboardPage>()?.OnSwitchTheme();
+        Wpf.Ui.Appearance.ApplicationThemeManager.Apply(currentTheme == Wpf.Ui.Appearance.ApplicationTheme.Light ? Wpf.Ui.Appearance.ApplicationTheme.Dark : Wpf.Ui.Appearance.ApplicationTheme.Light);
+        App.GetRequiredService<DashboardPage>()?.OnSwitchTheme();
     }
 
     private void tray_MenuItem_Click(object sender, RoutedEventArgs e)
@@ -180,21 +180,21 @@ public partial class MainWindow : IWindow
         switch (trayType)
         {
             case MainWindowViewModel.TrayType.Capture:
-                App.GetService<DashboardPage>()?.CaptureTrans();
+                App.GetRequiredService<DashboardPage>()?.CaptureTrans();
                 break;
             case MainWindowViewModel.TrayType.Trans:
-                App.GetService<DashboardPage>()?.CaptureTransLast();
+                App.GetRequiredService<DashboardPage>()?.CaptureTransLast();
                 break;
             case MainWindowViewModel.TrayType.ShowFloatWindow:
-                App.GetService<FloatCaptureRectWindow>()?.ShowWindow();
+                App.GetRequiredService<FloatCaptureRectWindow>()?.ShowWindow();
                 break;
             case MainWindowViewModel.TrayType.HideFloatWindow:
-                App.GetService<FloatCaptureRectWindow>()?.HideWindow();
+                App.GetRequiredService<FloatCaptureRectWindow>()?.HideWindow();
                 break;
             case MainWindowViewModel.TrayType.Exit:
                 // 不能设置这两个窗体为子窗体，obs捕捉不到子窗体，手动关闭
-                App.GetService<FloatCaptureRectWindow>()?.Close();
-                App.GetService<FloatTransTextWindow>()?.Close();
+                App.GetRequiredService<FloatCaptureRectWindow>()?.Close();
+                App.GetRequiredService<FloatTransTextWindow>()?.Close();
                 _notifyClose = true;
                 Close();
                 break;

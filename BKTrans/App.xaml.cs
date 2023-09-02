@@ -7,12 +7,6 @@ using BKTrans.Views;
 using BKTrans.Views.Pages;
 using BKTrans.Views.Pages.Settings;
 using Serilog;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
-using Wpf.Ui.Services;
 
 namespace BKTrans;
 
@@ -67,9 +61,9 @@ public partial class App : Application
             services.AddSingleton<FloatTransTextWindow>();
         }).Build();
 
-    public static T? GetService<T>() where T : class
+    public static T GetRequiredService<T>() where T : class
     {
-        return _host.Services.GetService(typeof(T)) as T ?? null;
+        return _host.Services.GetRequiredService<T>();
     }
     private async void OnStartup(object sender, StartupEventArgs e)
     {
@@ -173,7 +167,7 @@ public partial class App : Application
 
     public static bool NavigateTo(Type pageType)
     {
-        var navigationService = GetService<INavigationService>();
+        var navigationService = GetRequiredService<INavigationService>();
 
         if (navigationService == null)
             return false;
@@ -183,7 +177,7 @@ public partial class App : Application
 
     public static void NavigateGoBack()
     {
-        var navigationService = GetService<INavigationService>();
+        var navigationService = GetRequiredService<INavigationService>();
 
         if (navigationService == null)
             return;
@@ -203,13 +197,13 @@ public partial class App : Application
 
     public static void SnackbarSuccess(string message)
     {
-        var snackbarService = GetService<ISnackbarService>();
+        var snackbarService = GetRequiredService<ISnackbarService>();
         snackbarService.Show("成功", message, Wpf.Ui.Controls.ControlAppearance.Success);
     }
 
     public static void SnackbarError(string message)
     {
-        var snackbarService = GetService<ISnackbarService>();
+        var snackbarService = GetRequiredService<ISnackbarService>();
         snackbarService.Show("失败", message, Wpf.Ui.Controls.ControlAppearance.Danger, timeout: TimeSpan.FromSeconds(1.5));
     }
 }

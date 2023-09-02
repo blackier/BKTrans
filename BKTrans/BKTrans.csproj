@@ -57,6 +57,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BKTrans.Misc\BKTrans.Misc.csproj" />
+    <ProjectReference Include="..\ThirdParty\wpfui\src\Wpf.Ui.Tray\Wpf.Ui.Tray.csproj" />
     <ProjectReference Include="..\ThirdParty\wpfui\src\Wpf.Ui\Wpf.Ui.csproj" />
   </ItemGroup>
 
