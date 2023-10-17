@@ -51,8 +51,8 @@
             Content="检查更新"
             NavigateUri="https://github.com/blackier/BKTrans/releases" />
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-            <ui:Hyperlink Content="Github 仓库" NavigateUri="https://github.com/blackier/BKTrans" />
-            <ui:Hyperlink Content="许可协议" NavigateUri="https://github.com/blackier/BKTrans/blob/master/LICENSE" />
+            <ui:HyperlinkButton Content="Github 仓库" NavigateUri="https://github.com/blackier/BKTrans" />
+            <ui:HyperlinkButton Content="许可协议" NavigateUri="https://github.com/blackier/BKTrans/blob/master/LICENSE" />
         </StackPanel>
     </StackPanel>
 </Page>
