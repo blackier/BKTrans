@@ -7,6 +7,15 @@ using BKTrans.Views;
 using BKTrans.Views.Pages;
 using BKTrans.Views.Pages.Settings;
 using Serilog;
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace BKTrans;
 
