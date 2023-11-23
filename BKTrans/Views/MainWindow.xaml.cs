@@ -46,7 +46,7 @@ public partial class MainWindow : IWindow
         contentDialogService.SetContentPresenter(RootContentDialog);
 
         NavigationView.SetServiceProvider(serviceProvider);
-        NavigationView.Loaded += (_, _) => NavigationView.Navigate(typeof(DashboardPage));
+        NavigationView.Loaded += (_, _) => NavigationView.Navigate(typeof(MainPage));
     }
 
     public void BringToForeground()
@@ -107,11 +107,11 @@ public partial class MainWindow : IWindow
         // 快捷键处理
         if (wParam.ToInt64() == (int)HotKeyId.Capture)
         {
-            App.GetRequiredService<DashboardPage>()?.CaptureTrans();
+            App.GetRequiredService<MainPage>()?.CaptureTrans();
         }
         else if (wParam.ToInt64() == (int)HotKeyId.ShowFloatWindow)
         {
-            App.GetRequiredService<DashboardPage>()?.CaptureTransLast();
+            App.GetRequiredService<MainPage>()?.CaptureTransLast();
         }
         else if (wParam.ToInt64() == (int)HotKeyId.HideFloatWindow)
         {
@@ -171,7 +171,7 @@ public partial class MainWindow : IWindow
         var currentTheme = Wpf.Ui.Appearance.ApplicationThemeManager.GetAppTheme();
 
         Wpf.Ui.Appearance.ApplicationThemeManager.Apply(currentTheme == Wpf.Ui.Appearance.ApplicationTheme.Light ? Wpf.Ui.Appearance.ApplicationTheme.Dark : Wpf.Ui.Appearance.ApplicationTheme.Light);
-        App.GetRequiredService<DashboardPage>()?.OnSwitchTheme();
+        App.GetRequiredService<MainPage>()?.OnSwitchTheme();
     }
 
     private void tray_MenuItem_Click(object sender, RoutedEventArgs e)
@@ -180,10 +180,10 @@ public partial class MainWindow : IWindow
         switch (trayType)
         {
             case MainWindowViewModel.TrayType.Capture:
-                App.GetRequiredService<DashboardPage>()?.CaptureTrans();
+                App.GetRequiredService<MainPage>()?.CaptureTrans();
                 break;
             case MainWindowViewModel.TrayType.Trans:
-                App.GetRequiredService<DashboardPage>()?.CaptureTransLast();
+                App.GetRequiredService<MainPage>()?.CaptureTransLast();
                 break;
             case MainWindowViewModel.TrayType.ShowFloatWindow:
                 App.GetRequiredService<FloatCaptureRectWindow>()?.ShowWindow();

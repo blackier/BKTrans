@@ -24,7 +24,7 @@ using static BKTrans.ViewModels.Pages.DashboardViewModel;
 
 namespace BKTrans.Views.Pages;
 
-public partial class DashboardPage : wpfui.INavigableView<DashboardViewModel>
+public partial class MainPage : wpfui.INavigableView<DashboardViewModel>
 {
     private RectangleF _captureRect;
     private Bitmap _captureBmp;
@@ -44,7 +44,7 @@ public partial class DashboardPage : wpfui.INavigableView<DashboardViewModel>
 
     public DashboardViewModel ViewModel { get { return _viewModel; } }
 
-    public DashboardPage(DashboardViewModel viewModel, FloatCaptureRectWindow floatCaptureRectWindow)
+    public MainPage(DashboardViewModel viewModel, FloatCaptureRectWindow floatCaptureRectWindow)
     {
         _viewModel = viewModel;
         DataContext = this;
