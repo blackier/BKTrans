@@ -7,7 +7,7 @@
 		<UseWindowsForms>true</UseWindowsForms>
 		<Platforms>x64;x86</Platforms>
 		<ApplicationIcon>BKTrans.ico</ApplicationIcon>
-		<Version>0.2.0</Version>
+		<Version>0.3.0</Version>
 		<Copyright>Copyright © 2021-2023 (GPLv3)</Copyright>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
