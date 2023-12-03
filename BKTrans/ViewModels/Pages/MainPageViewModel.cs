@@ -247,7 +247,7 @@ public partial class MainPageViewModel : ObservableObject
 
     public async Task<TransResult> OCR(Bitmap img)
     {
-        TransResultItem ocr_result_item = new();
+        TransResultItem ocrResultItem = new();
         BKOCRBase ocrClient = null;
         BKBaseSetting ocrSetting = null;
         foreach (var ocrType in OcrTypes)
@@ -256,7 +256,7 @@ public partial class MainPageViewModel : ObservableObject
             {
                 _settings.GetOCRSetting(ocrType.Text.ToEnum(BKTransMap.OCRType.baidu)).language = FromTypesSelectedItem;
 
-                ocr_result_item.tool = ocrType.Text;
+                ocrResultItem.tool = ocrType.Text;
                 ocrClient = BKTransMap.CreateBKOCRClient(ocrType.Text.ToEnum(BKTransMap.OCRType.baidu));
                 ocrSetting = _settings.GetOCRSetting(ocrType.Text.ToEnum(BKTransMap.OCRType.baidu));
                 break;
@@ -267,14 +267,14 @@ public partial class MainPageViewModel : ObservableObject
         await Task.Run(() => ocrClient.OCR(ocrSetting, img, out ocrResult));
         try
         {
-            ocr_result_item.result = ocrClient.ParseResult(ocrResult);
+            ocrResultItem.result = ocrClient.ParseResult(ocrResult);
         }
         catch
         {
-            ocr_result_item.result = "OCR翻译失败，打开程序界面查看原因。";
+            ocrResultItem.result = "OCR翻译失败，打开程序界面查看原因。";
 
         }
-        return new TransResult() { ocr_result = new() { ocr_result_item } };
+        return new TransResult() { ocr_result = new() { ocrResultItem } };
     }
 
     public record ReplaceTextItem
@@ -333,20 +333,20 @@ public partial class MainPageViewModel : ObservableObject
         {
             if (transType.IsChecked)
             {
-                TransResultItem trans_result_item = new();
-                trans_result_item.tool = transType.Text;
+                TransResultItem transResultItem = new();
+                transResultItem.tool = transType.Text;
+                result.trans_result.Add(transResultItem);
+
                 _settings.UpdateTransSetting(transType.Text.ToEnum(BKTransMap.TransType.baidu), FromTypesSelectedItem, ToTypesSelectedItem);
                 transTasks.Add(Task.Run(() =>
                 {
-                    trans_result_item.result = BKTransMap.CreateBKTransClient(transType.Text.ToEnum(BKTransMap.TransType.baidu))
-                                                         .Trans(_settings.GetTransSetting(transType.Text.ToEnum(BKTransMap.TransType.baidu)), text);
-                    result.trans_result.Add(trans_result_item);
+                    transResultItem.result = BKTransMap.CreateBKTransClient(transType.Text.ToEnum(BKTransMap.TransType.baidu))
+                                                .Trans(_settings.GetTransSetting(transType.Text.ToEnum(BKTransMap.TransType.baidu)), text);
                 }));
             }
         }
 
-        var transtasks = Task.WhenAll(transTasks);
-        await Task.Run(() => transtasks.Wait());
+        await Task.WhenAll(transTasks);
         return result;
     }
 

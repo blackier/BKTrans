@@ -282,7 +282,7 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
 
         string transResultText = "";
         TransResult transResult = await _viewModel.TransText(srctext);
-        foreach (var result in (await _viewModel.TransText(srctext)).trans_result)
+        foreach (var result in transResult.trans_result)
         {
             transResultText += result.result;
             transResultText += _textSpliteString;
@@ -345,7 +345,7 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
                 _autoCaptrueTransStart = true;
                 break;
             }
-            newcaptruebmp.Dispose();
+            newcaptruebmp?.Dispose();
 
             if (_autoCaptrueTransStart)
                 Dispatcher.InvokeAsync(() => DoCaptureOCR(true, true, false));
