@@ -31,6 +31,20 @@
             <ui:TitleBar.Icon>
                 <ui:ImageIcon Source="pack://application:,,,/BKTrans.ico" />
             </ui:TitleBar.Icon>
+            <ui:TitleBar.Header>
+                <ui:Button
+                    x:Name="btn_toggle_theme"
+                    Width="32"
+                    Height="32"
+                    VerticalAlignment="Top"
+                    Background="{x:Null}"
+                    BorderBrush="{x:Null}"
+                    Click="btn_toggle_theme_Click">
+                    <ui:Button.Icon>
+                        <ui:SymbolIcon Symbol="PaintBrush24" />
+                    </ui:Button.Icon>
+                </ui:Button>
+            </ui:TitleBar.Header>
         </ui:TitleBar>
         <tray:NotifyIcon
             FocusOnLeftClick="True"
@@ -42,44 +56,28 @@
                     <ui:MenuItem
                         Click="tray_MenuItem_Click"
                         Header="截取"
-                        Tag="0" />
+                        Tag="Capture" />
                     <ui:MenuItem
                         Click="tray_MenuItem_Click"
                         Header="翻译"
-                        Tag="1" />
+                        Tag="Trans" />
                     <Separator />
                     <ui:MenuItem
                         Click="tray_MenuItem_Click"
                         Header="显示浮窗"
-                        Tag="2" />
+                        Tag="ShowFloatWindow" />
                     <ui:MenuItem
                         Click="tray_MenuItem_Click"
                         Header="隐藏浮窗"
-                        Tag="3" />
+                        Tag="HideFloatWindow" />
                     <Separator />
                     <ui:MenuItem
                         Click="tray_MenuItem_Click"
                         Header="退出"
-                        Tag="4" />
+                        Tag="Exit" />
                 </ContextMenu>
             </tray:NotifyIcon.Menu>
         </tray:NotifyIcon>
-
-        <ui:Button
-            x:Name="btn_toggle_theme"
-            Width="32"
-            Height="32"
-            Margin="0,0,135,0"
-            Padding="0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Background="{x:Null}"
-            BorderBrush="{x:Null}"
-            Click="btn_toggle_theme_Click">
-            <ui:Button.Icon>
-                <ui:SymbolIcon Symbol="PaintBrush24" />
-            </ui:Button.Icon>
-        </ui:Button>
 
         <ui:NavigationView
             x:Name="NavigationView"

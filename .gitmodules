@@ -4,3 +4,6 @@
 [submodule "wpfui"]
 	path = ThirdParty/wpfui
 	url = https://github.com/lepoco/wpfui.git
+[submodule "BKAssembly"]
+	path = BKAssembly
+	url = https://github.com/blackier/BKAssembly.git

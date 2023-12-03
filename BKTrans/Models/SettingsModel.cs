@@ -1,6 +1,7 @@
-﻿using BKTrans.Misc;
+﻿using BKTrans.Kernel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -93,34 +94,35 @@ public class SettingsModel
             similar_chars = new();
         }
 
-        public void UpdateTransSetting(string trans_type, string from, string to)
+        public void UpdateTransSetting(BKTransMap.TransType transType, BKTransMap.LangType from, BKTransMap.LangType to)
         {
-            GetTransSetting(trans_type).from = from;
-            GetTransSetting(trans_type).to = to;
+            GetTransSetting(transType).from = from;
+            GetTransSetting(transType).to = to;
         }
 
-        public BKTransSetting GetTransSetting(string tans_type)
+        public BKTransSetting GetTransSetting(BKTransMap.TransType transType)
         {
-            if (tans_type == "baidu")
-                return trans_baidu;
-
-            if (tans_type == "caiyun")
-                return trans_caiyun;
-
-            if (tans_type == "google")
-                return trans_google;
-
+            switch (transType)
+            {
+                case BKTransMap.TransType.baidu:
+                    return trans_baidu;
+                case BKTransMap.TransType.caiyun:
+                    return trans_caiyun;
+                case BKTransMap.TransType.google:
+                    return trans_google;
+            }
             return new();
         }
 
-        public BKOCRSetting GetOCRSetting(string ocr_type)
+        public BKOCRSetting GetOCRSetting(BKTransMap.OCRType ocrType)
         {
-            if (ocr_type == "baidu")
-                return ocr_baidu;
-
-            if (ocr_type == "microsoft")
-                return ocr_microsoft;
-
+            switch (ocrType)
+            {
+                case BKTransMap.OCRType.baidu:
+                    return ocr_baidu;
+                case BKTransMap.OCRType.microsoft:
+                    return ocr_microsoft;
+            }
             return new();
         }
     }
@@ -141,13 +143,17 @@ public class SettingsModel
             {
                 _settings = BKMisc.JsonDeserialize<Settings>(BKMisc.LoadTextFile(_settingsFilePath));
             }
-            catch
+            catch (Exception e)
             {
+                Debug.Print(e.ToString());
             }
             // 因为可能会修改支持的翻译类型
             // 做下比较，先做差值再合并
-            List<string> newOcrType = _settings.ocr_types.Select(type => type.Text).Intersect(BKTransMap.OCRType).Union(BKTransMap.OCRType).ToList();
-            List<string> newTransType = _settings.trans_types.Select(type => type.Text).Intersect(BKTransMap.TransType).Union(BKTransMap.TransType).ToList();
+            List<string> ocrTypeList = BKTransMap.OCRTypeList.Select(t => t.ToString()).ToList();
+            List<string> newOcrType = _settings.ocr_types.Select(type => type.Text).Intersect(ocrTypeList).Union(ocrTypeList).ToList();
+
+            List<string> transTypeList = BKTransMap.TransTypeList.Select(t => t.ToString()).ToList();
+            List<string> newTransType = _settings.trans_types.Select(type => type.Text).Intersect(transTypeList).Union(transTypeList).ToList();
 
             _settings.ocr_types = newOcrType.Select(type => new CheckBoxItem() { IsChecked = _settings.ocr_types.Exists(t => t.Text == type && t.IsChecked), Text = type }).ToList();
             _settings.trans_types = newTransType.Select(type => new CheckBoxItem() { IsChecked = _settings.trans_types.Exists(t => t.Text == type && t.IsChecked), Text = type }).ToList();

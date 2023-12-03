@@ -1,6 +1,5 @@
-﻿using BKTrans.Misc;
+﻿using BKTrans.Kernel;
 using BKTrans.Models;
-using BKTrans.Services.Contracts;
 using BKTrans.ViewModels;
 using BKTrans.Views.Pages;
 using System;
@@ -21,7 +20,7 @@ using WinRT;
 
 namespace BKTrans.Views;
 
-public partial class MainWindow : IWindow
+public partial class MainWindow
 {
     private bool _notifyClose = false;
 
@@ -94,14 +93,6 @@ public partial class MainWindow : IWindow
         SettingsModel.SaveSettings();
     }
 
-    public enum WM
-    {
-        NCHITTEST = 0x0084,
-        NCMOUSELEAVE = 0x02A2,
-        NCLBUTTONDOWN = 0x00A1,
-        NCLBUTTONUP = 0x00A2,
-    }
-    private bool _isThemeBtnClickedDown;
     private IntPtr HwndSourceHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
         // 快捷键处理
@@ -118,52 +109,7 @@ public partial class MainWindow : IWindow
             App.GetRequiredService<FloatCaptureRectWindow>()?.HideWindow();
         }
 
-        // 因为wpfui的titlebar会自动hook系统事件，导致布局到titlebar上面的
-        // 主题切换按钮点击时是没法获取到事件无法点击的，所以这里先一步hook处理。
-        // TODO: 后面可以完善成比较标准的button
-        var message = (WM)msg;
-        if (message is not (WM.NCLBUTTONDOWN or WM.NCLBUTTONUP))
-            return IntPtr.Zero;
-
-        switch (message)
-        {
-            case WM.NCLBUTTONDOWN when IsMouseOverElement(btn_toggle_theme, lParam):
-                _isThemeBtnClickedDown = true;
-                handled = true;
-                return IntPtr.Zero;
-
-            case WM.NCLBUTTONUP when _isThemeBtnClickedDown && IsMouseOverElement(btn_toggle_theme, lParam): // Left button clicked up
-                btn_toggle_theme.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
-                _isThemeBtnClickedDown = false;
-                handled = true;
-                return IntPtr.Zero;
-
-            default:
-                break;
-        }
-
         return IntPtr.Zero;
-    }
-
-    public bool IsMouseOverElement(UIElement element, IntPtr lParam)
-    {
-        if (lParam == IntPtr.Zero)
-            return false;
-
-        var mousePosScreen = new System.Windows.Point(Get_X_LParam(lParam), Get_Y_LParam(lParam));
-        var bounds = new Rect(new System.Windows.Point(), element.RenderSize);
-        var mousePosRelative = element.PointFromScreen(mousePosScreen);
-        return bounds.Contains(mousePosRelative);
-    }
-
-    private static int Get_X_LParam(IntPtr lParam)
-    {
-        return (short)(lParam.ToInt32() & 0xFFFF);
-    }
-
-    private static int Get_Y_LParam(IntPtr lParam)
-    {
-        return (short)(lParam.ToInt32() >> 16);
     }
 
     private void btn_toggle_theme_Click(object sender, RoutedEventArgs e)
@@ -176,7 +122,7 @@ public partial class MainWindow : IWindow
 
     private void tray_MenuItem_Click(object sender, RoutedEventArgs e)
     {
-        var trayType = (MainWindowViewModel.TrayType)Enum.Parse(typeof(MainWindowViewModel.TrayType), (sender as MenuItem).Tag as string);
+        var trayType = EnumExtensions.TryParse((sender as MenuItem).Tag as string, MainWindowViewModel.TrayType.Trans);
         switch (trayType)
         {
             case MainWindowViewModel.TrayType.Capture:

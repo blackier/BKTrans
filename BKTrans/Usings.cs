@@ -1,4 +1,10 @@
-﻿global using CommunityToolkit.Mvvm.ComponentModel;
+﻿global using BKAssembly;
+global using BKAssembly.Extensions;
+global using BKAssembly.WinForms;
+global using BKAssembly.WinForms.Extensions;
+global using BKAssembly.WPF;
+global using BKAssembly.WPF.Extensions;
+global using CommunityToolkit.Mvvm.ComponentModel;
 global using CommunityToolkit.Mvvm.Input;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;

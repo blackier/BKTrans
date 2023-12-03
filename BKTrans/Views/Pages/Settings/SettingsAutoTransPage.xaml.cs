@@ -51,7 +51,7 @@ public partial class SettingsAutoTransPage : wpfui.INavigableView<SettingsAutoTr
         int unit = 10;
         if (e.Delta < 0)
             unit = -unit;
-        int interval = int.Parse(textbox_auto_captrue_trans_interval.Text);
+        int interval =  textbox_auto_captrue_trans_interval.Text.ToInt();
         if (interval + unit < 100)
             return;
         textbox_auto_captrue_trans_interval.Text = (interval + unit).ToString();
@@ -64,7 +64,7 @@ public partial class SettingsAutoTransPage : wpfui.INavigableView<SettingsAutoTr
         int unit = 1;
         if (e.Delta < 0)
             unit = -unit;
-        int interval = int.Parse(textbox_auto_captrue_trans_countdown.Text);
+        int interval = textbox_auto_captrue_trans_countdown.Text.ToInt();
         if (interval + unit < 0)
             return;
         textbox_auto_captrue_trans_countdown.Text = (interval + unit).ToString();
@@ -77,7 +77,7 @@ public partial class SettingsAutoTransPage : wpfui.INavigableView<SettingsAutoTr
         float unit = 0.01f;
         if (e.Delta < 0)
             unit = -unit;
-        float interval = float.Parse(textbox_auto_captrue_trans_similarity.Text);
+        float interval = textbox_auto_captrue_trans_similarity.Text.ToFloat();
         if (interval + unit > 1)
             return;
         if (interval + unit < 0.5f)

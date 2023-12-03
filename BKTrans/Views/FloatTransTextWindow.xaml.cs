@@ -1,4 +1,4 @@
-﻿using BKTrans.Misc;
+﻿using BKTrans.Kernel;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -47,7 +47,7 @@ public partial class FloatTransTextWindow : Window
         IntPtr hWnd = wih.Handle;
         if (!pos.IsEmpty)
         {
-            _ = BKWindowsAPI.MoveWindow(hWnd, pos.Left, pos.Top, pos.Width, pos.Height, false);
+            BKWindowsAPI.MoveWindow(hWnd, pos.Left, pos.Top, pos.Width, pos.Height, false);
         }
     }
 

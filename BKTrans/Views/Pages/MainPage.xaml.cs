@@ -1,5 +1,5 @@
 ﻿using BKTrans.Controls;
-using BKTrans.Misc;
+using BKTrans.Kernel;
 using BKTrans.ViewModels.Pages;
 using Serilog;
 using System;
@@ -20,11 +20,11 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
-using static BKTrans.ViewModels.Pages.DashboardViewModel;
+using static BKTrans.ViewModels.Pages.MainPageViewModel;
 
 namespace BKTrans.Views.Pages;
 
-public partial class MainPage : wpfui.INavigableView<DashboardViewModel>
+public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
 {
     private RectangleF _captureRect;
     private Bitmap _captureBmp;
@@ -39,12 +39,12 @@ public partial class MainPage : wpfui.INavigableView<DashboardViewModel>
 
     static int _autoCaptrueTransDebugNum = 0;
 
-    private DashboardViewModel _viewModel;
+    private MainPageViewModel _viewModel;
     private ILogger _transLogger;
 
-    public DashboardViewModel ViewModel { get { return _viewModel; } }
+    public MainPageViewModel ViewModel { get { return _viewModel; } }
 
-    public MainPage(DashboardViewModel viewModel, FloatCaptureRectWindow floatCaptureRectWindow)
+    public MainPage(MainPageViewModel viewModel, FloatCaptureRectWindow floatCaptureRectWindow)
     {
         _viewModel = viewModel;
         DataContext = this;
@@ -58,9 +58,7 @@ public partial class MainPage : wpfui.INavigableView<DashboardViewModel>
 
         // 翻译日志
         _transLogger = new LoggerConfiguration()
-            .WriteTo.File(
-                "logs/trans_.log",
-                rollingInterval: RollingInterval.Day)
+            .WriteTo.File("logs/trans_.log", rollingInterval: RollingInterval.Day)
             .CreateLogger();
         _transLogger.Information("logger init");
 
@@ -209,6 +207,7 @@ public partial class MainPage : wpfui.INavigableView<DashboardViewModel>
     {
         bool floatwindowVisible = _floatTextWindow.IsVisible;
         HideWindow();
+        // 需要延迟下，否则界面未完全隐藏
         _ = Task.Delay(250).ContinueWith(t => { Dispatcher.InvokeAsync(() => DoCaptureOCR(false, floatwindowVisible)); });
     }
 
@@ -332,7 +331,7 @@ public partial class MainPage : wpfui.INavigableView<DashboardViewModel>
             if (newcaptruebmp == null)
                 break;
 
-            float similarity = BKMisc.BitmapDHashCompare(newcaptruebmp, (Bitmap)_captureBmp.Clone());
+            float similarity = newcaptruebmp.DHashCompare((Bitmap)_captureBmp.Clone());
 
             _autoCaptrueTransDebugNum++;
             if (similarity < _viewModel.AutoCaptrueTransSimilarity)

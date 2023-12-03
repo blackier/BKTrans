@@ -1,4 +1,4 @@
-﻿using BKTrans.Misc;
+﻿using BKTrans.Kernel;
 using BKTrans.Models;
 using BKTrans.ViewModels.Pages;
 using BKTrans.ViewModels.Pages.Settings;
@@ -68,7 +68,7 @@ public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRRe
             Title = "警告",
             Content = "删除后不可恢复，是否删除？",
             PrimaryButtonText = "删除",
-            PrimaryButtonAppearance = Wpf.Ui.Controls.ControlAppearance.Danger,
+            PrimaryButtonAppearance = wpfui.ControlAppearance.Danger,
             CloseButtonText = "取消",
         };
 
@@ -112,7 +112,7 @@ public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRRe
 
     private void datagrid_ocr_replace_menuitem_Click(object sender, RoutedEventArgs e)
     {
-        var sortType = (SettingsOCRReplaceViewModel.SortType)Enum.Parse(typeof(SettingsOCRReplaceViewModel.SortType), (sender as MenuItem).Tag as string);
+        var sortType = ((sender as MenuItem).DataContext as SortTypeInfo).sortType;
         var ocrReplace = datagrid_ocr_replace.ItemsSource as List<OCRReplace>;
         switch (sortType)
         {
@@ -138,14 +138,14 @@ public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRRe
     {
         if (rowContainer != null)
         {
-            DataGridCellsPresenter presenter = BKUIHelpers.FindChild<DataGridCellsPresenter>(rowContainer);
+            DataGridCellsPresenter presenter = rowContainer.FindChild<DataGridCellsPresenter>();
             if (presenter == null)
             {
                 /* if the row has been virtualized away, call its ApplyTemplate() method 
                  * to build its visual tree in order for the DataGridCellsPresenter
                  * and the DataGridCells to be created */
                 rowContainer.ApplyTemplate();
-                presenter = BKUIHelpers.FindChild<DataGridCellsPresenter>(rowContainer);
+                presenter = rowContainer.FindChild<DataGridCellsPresenter>();
             }
             if (presenter != null)
             {
@@ -182,6 +182,12 @@ public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRRe
             e.Handled = true;
         }
     }
-    #endregion 事件处理
 
+    private void menuitem_ocr_sort_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        //https://stackoverflow.com/questions/22090490/context-menu-binding-with-itemsource-is-not-working
+        //简单处理
+        (sender as MenuItem).ItemsSource = ViewModel.SortTypeItems;
+    }
+    #endregion 事件处理
 }

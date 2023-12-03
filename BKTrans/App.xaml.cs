@@ -1,5 +1,4 @@
 ﻿using BKTrans.Services;
-using BKTrans.Services.Contracts;
 using BKTrans.ViewModels;
 using BKTrans.ViewModels.Pages;
 using BKTrans.ViewModels.Pages.Settings;
@@ -40,7 +39,7 @@ public partial class App : Application
             services.AddHostedService<BKTrans.Services.ApplicationHostService>();
 
             // Main window container with navigation
-            services.AddSingleton<IWindow, MainWindow>();
+            services.AddSingleton<MainWindow>();
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<ISnackbarService, SnackbarService>();
@@ -49,7 +48,7 @@ public partial class App : Application
 
             // Top-level pages
             services.AddSingleton<MainPage>();
-            services.AddSingleton<DashboardViewModel>();
+            services.AddSingleton<MainPageViewModel>();
             services.AddTransient<SettingsPage>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<AboutPage>();
@@ -80,9 +79,7 @@ public partial class App : Application
             return;
 
         _appLogger = new LoggerConfiguration()
-            .WriteTo.File(
-                "logs/app_.log",
-                rollingInterval: RollingInterval.Day)
+            .WriteTo.File("logs/app_.log", rollingInterval: RollingInterval.Day)
             .CreateLogger();
         _appLogger.Information("Application Startup");
 
@@ -91,6 +88,7 @@ public partial class App : Application
         TaskScheduler.UnobservedTaskException += OnTaskSchedulerUnobservedTaskException;
 
         await _host.StartAsync();
+        GetRequiredService<MainWindow>().Show();
     }
 
     private async void OnExit(object sender, ExitEventArgs e)

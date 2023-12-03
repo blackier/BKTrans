@@ -1,5 +1,4 @@
-﻿using BKTrans.Misc;
-using Microsoft.Xaml.Behaviors;
+﻿using Microsoft.Xaml.Behaviors;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,22 +25,24 @@ public class DataGridBehavior : Behavior<DataGrid>
     #region DragEnded
     public static readonly RoutedEvent DragEndedEvent =
         EventManager.RegisterRoutedEvent("DragEnded", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(DataGridBehavior));
+
     public static void AddDragEndedHandler(DependencyObject d, RoutedEventHandler handler)
     {
         UIElement uie = d as UIElement;
         if (uie != null)
-            uie.AddHandler(DataGridBehavior.DragEndedEvent, handler);
+            uie.AddHandler(DragEndedEvent, handler);
     }
+
     public static void RemoveDragEndedHandler(DependencyObject d, RoutedEventHandler handler)
     {
         UIElement uie = d as UIElement;
         if (uie != null)
-            uie.RemoveHandler(DataGridBehavior.DragEndedEvent, handler);
+            uie.RemoveHandler(DragEndedEvent, handler);
     }
 
     private void RaiseDragEndedEvent()
     {
-        var args = new RoutedEventArgs(DataGridBehavior.DragEndedEvent);
+        var args = new RoutedEventArgs(DragEndedEvent);
         AssociatedObject.RaiseEvent(args);
     }
     #endregion
@@ -99,7 +100,7 @@ public class DataGridBehavior : Behavior<DataGrid>
     {
         if (isEditing) return;
 
-        var row = BKUIHelpers.TryFindFromPoint<DataGridRow>((UIElement)sender, e.GetPosition(AssociatedObject));
+        var row = (sender as UIElement).FindElementFromPoint<DataGridRow>(e.GetPosition(AssociatedObject));
         if (row == null || row.IsEditing || row.DataContext == CollectionView.NewItemPlaceholder) return;
 
         //set flag that indicates we're capturing mouse movements
@@ -167,7 +168,7 @@ public class DataGridBehavior : Behavior<DataGrid>
 
         //make sure the row under the grid is being selected
         var position = e.GetPosition(AssociatedObject);
-        var row = BKUIHelpers.TryFindFromPoint<DataGridRow>(AssociatedObject, position);
+        var row = AssociatedObject.FindElementFromPoint<DataGridRow>(position);
         if (row != null) AssociatedObject.SelectedItem = row.Item;
     }
 }

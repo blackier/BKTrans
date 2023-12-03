@@ -1,4 +1,4 @@
-﻿using BKTrans.Misc;
+﻿using BKTrans.Kernel;
 using BKTrans.Models;
 using System;
 using System.Collections.Generic;
@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace BKTrans.ViewModels.Pages.Settings;
 
+public record SortTypeInfo(string name, SettingsOCRReplaceViewModel.SortType sortType);
 public partial class SettingsOCRReplaceViewModel : ObservableObject
 {
 
@@ -20,6 +21,14 @@ public partial class SettingsOCRReplaceViewModel : ObservableObject
         ByLength,
         ByLengthDesc
     }
+
+    public List<SortTypeInfo> SortTypeItems = new()
+    {
+        new("字符顺序", SortType.ByChar),
+        new("字符倒序", SortType.ByCharDesc),
+        new("长度顺序", SortType.ByLength),
+        new("长度倒序", SortType.ByLengthDesc),
+    };
 
     #region ocr替换
     public List<string> OcrReplace

@@ -1,4 +1,4 @@
-﻿using BKTrans.Misc;
+﻿using BKTrans.Kernel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

@@ -1,5 +1,5 @@
 ﻿using BKTrans.Controls;
-using BKTrans.Misc;
+using BKTrans.Kernel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -65,7 +65,7 @@ public partial class FloatCaptureRectWindow : Window
     {
         Dispatcher.Invoke(() =>
         {
-            var p = BKMisc.ScreenScaling();
+            var p = WindowsExtensions.ScreenScaling();
             Left = rect.X / p;
             Top = rect.Y / p;
             Width = rect.Width / p + gridcolumn_btn.Width.Value;
@@ -76,7 +76,7 @@ public partial class FloatCaptureRectWindow : Window
 
     public RectangleF GetTextRect()
     {
-        var p = BKMisc.ScreenScaling();
+        var p = WindowsExtensions.ScreenScaling();
         return new RectangleF((float)(Left * p), (float)(Top * p), (float)((Width - gridcolumn_btn.Width.Value) * p), (float)((Height / 2 * p)));
     }
     public void SetText(string t)
@@ -140,6 +140,7 @@ public partial class FloatCaptureRectWindow : Window
             IntPtr hWnd = wih.Handle;
             if (!newPosition.IsEmpty)
             {
+                // 偶然测试出来，直接move不用担心数据出错
                 _ = BKWindowsAPI.MoveWindow(hWnd, newPosition.Left, newPosition.Top, newPosition.Width, newPosition.Height, false);
             }
             //AddHistoryRect();
@@ -217,7 +218,7 @@ public partial class FloatCaptureRectWindow : Window
             Height = preRect.Height;
 
             System.Windows.Point position = btn_undo.PointToScreen(new System.Windows.Point(0d, 0d));
-            BKWindowsAPI.SetCursorPos((int)(position.X + btn_undo.Width/2), (int)(position.Y + btn_undo.Height / 2));
+            BKWindowsAPI.SetCursorPos((int)(position.X + btn_undo.Width / 2), (int)(position.Y + btn_undo.Height / 2));
         }
     }
 
@@ -243,14 +244,18 @@ public partial class FloatCaptureRectWindow : Window
         {
             content_transresult.Content = null;
             _floatTransTextWindow.ChangeContent(_transResultTextControl, isCheck);
-            _floatTransTextWindow.MoveWindow(new Rectangle(BKMisc.PointToPoint(content_transresult.PointToScreen(new())), BKMisc.SizeToSize(content_transresult.RenderSize)));
+            _floatTransTextWindow.MoveWindow(new Rectangle(content_transresult.PointToScreen(new()).ToDrawingPoint(), content_transresult.RenderSize.ToDrawingSize()));
             _floatTransTextWindow.ShowWindow();
-            _floatTransTextWindow.MoveWindow(new Rectangle(BKMisc.PointToPoint(content_transresult.PointToScreen(new())), BKMisc.SizeToSize(content_transresult.RenderSize)));
+            _floatTransTextWindow.MoveWindow(new Rectangle(content_transresult.PointToScreen(new()).ToDrawingPoint(), content_transresult.RenderSize.ToDrawingSize()));
 
             _transResultTextControl.InitDragAdorner((RectangleF change) =>
             {
                 var p = 1;
-                var newPosition = new Rectangle((int)(_floatTransTextWindow.Left * p + change.X), (int)(_floatTransTextWindow.Top * p + change.Y), (int)(_floatTransTextWindow.Width * p + change.Width), (int)(_floatTransTextWindow.Height * p + change.Height));
+                var newPosition = new Rectangle(
+                    (int)(_floatTransTextWindow.Left * p + change.X),
+                    (int)(_floatTransTextWindow.Top * p + change.Y),
+                    (int)(_floatTransTextWindow.Width * p + change.Width),
+                    (int)(_floatTransTextWindow.Height * p + change.Height));
                 _floatTransTextWindow.MoveWindow(newPosition);
             });
         }

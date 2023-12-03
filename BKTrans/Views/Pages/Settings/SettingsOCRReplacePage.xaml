@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:vc="clr-namespace:BKTrans.ValueConverters"
+    xmlns:vm="clr-namespace:BKTrans.ViewModels.Pages.Settings"
     Title="Settings OCR Replace Page"
     d:DataContext="{d:DesignInstance local:SettingsOCRReplacePage,
                                      IsDesignTimeCreatable=False}"
@@ -120,23 +121,15 @@
                     </DataGrid.Columns>
                     <DataGrid.ContextMenu>
                         <ContextMenu>
-                            <ui:MenuItem Header="排序">
-                                <ui:MenuItem
-                                    Click="datagrid_ocr_replace_menuitem_Click"
-                                    Header="字符顺序"
-                                    Tag="0" />
-                                <ui:MenuItem
-                                    Click="datagrid_ocr_replace_menuitem_Click"
-                                    Header="字符倒序"
-                                    Tag="1" />
-                                <ui:MenuItem
-                                    Click="datagrid_ocr_replace_menuitem_Click"
-                                    Header="长度顺序"
-                                    Tag="2" />
-                                <ui:MenuItem
-                                    Click="datagrid_ocr_replace_menuitem_Click"
-                                    Header="长度倒序"
-                                    Tag="3" />
+                            <ui:MenuItem
+                                x:Name="menuitem_ocr_sort"
+                                Header="排序"
+                                IsVisibleChanged="menuitem_ocr_sort_IsVisibleChanged">
+                                <ui:MenuItem.ItemTemplate>
+                                    <DataTemplate DataType="vm:SortTypeInfo">
+                                        <ui:MenuItem Click="datagrid_ocr_replace_menuitem_Click" Header="{Binding name}" />
+                                    </DataTemplate>
+                                </ui:MenuItem.ItemTemplate>
                             </ui:MenuItem>
                         </ContextMenu>
                     </DataGrid.ContextMenu>

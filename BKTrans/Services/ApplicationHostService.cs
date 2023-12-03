@@ -3,7 +3,6 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
-using BKTrans.Services.Contracts;
 using BKTrans.Views;
 using System;
 using System.Linq;
@@ -32,7 +31,7 @@ public class ApplicationHostService : IHostedService
     /// <param name="cancellationToken">Indicates that the start process has been aborted.</param>
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await HandleActivationAsync();
+        await Task.CompletedTask;
     }
 
     /// <summary>
@@ -41,22 +40,6 @@ public class ApplicationHostService : IHostedService
     /// <param name="cancellationToken">Indicates that the shutdown process should no longer be graceful.</param>
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        await Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Creates main window during activation.
-    /// </summary>
-    private async Task HandleActivationAsync()
-    {
-        await Task.CompletedTask;
-
-        if (!Application.Current.Windows.OfType<MainWindow>().Any())
-        {
-            var mainWindow = _serviceProvider.GetService(typeof(IWindow)) as IWindow;
-            mainWindow?.Show();
-        }
-
         await Task.CompletedTask;
     }
 }

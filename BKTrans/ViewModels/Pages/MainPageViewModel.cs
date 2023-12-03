@@ -1,4 +1,4 @@
-﻿using BKTrans.Misc;
+﻿using BKTrans.Kernel;
 using BKTrans.Models;
 using System;
 using System.Collections.Generic;
@@ -9,23 +9,23 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Windows.Forms.VisualStyles;
-using static BKTrans.ViewModels.Pages.DashboardViewModel.TransResult;
+using static BKTrans.ViewModels.Pages.MainPageViewModel.TransResult;
 
 namespace BKTrans.ViewModels.Pages;
 
-public partial class DashboardViewModel : ObservableObject
+public partial class MainPageViewModel : ObservableObject
 {
     private readonly SettingsModel.Settings _settings;
 
     #region 翻译属性
     [ObservableProperty]
-    private List<string> _fromTypes;
+    private List<BKTransMap.LangType> _fromTypes;
     [ObservableProperty]
-    private string _fromTypesSelectedItem;
+    private BKTransMap.LangType _fromTypesSelectedItem;
     [ObservableProperty]
-    private List<string> _toTypes;
+    private List<BKTransMap.LangType> _toTypes;
     [ObservableProperty]
-    private string _toTypesSelectedItem;
+    private BKTransMap.LangType _toTypesSelectedItem;
     #endregion 翻译属性
 
     #region ocr替换
@@ -169,7 +169,7 @@ public partial class DashboardViewModel : ObservableObject
         public List<TransResultItem> trans_result { get; set; }
     };
 
-    public DashboardViewModel()
+    public MainPageViewModel()
     {
         _settings = SettingsModel.LoadSettings();
         UpdateLanguageTypeMap();
@@ -193,23 +193,23 @@ public partial class DashboardViewModel : ObservableObject
             _settings.ocr_types[0].IsChecked = true;
         }
 
-        string ocrType = BKTransMap.OCRType[ocrSelect];
-        List<string> ocrItemsSource = BKTransMap.CreateBKOCRClient(ocrType).GetLangType();
+        BKTransMap.OCRType ocrType = BKTransMap.OCRTypeList[ocrSelect];
+        List<BKTransMap.LangType> ocrItemsSource = BKTransMap.CreateBKOCRClient(ocrType).GetLangType();
 
-        List<string> transItemsSource = new();
-        foreach (var type in _settings.trans_types)
+        List<BKTransMap.LangType> transItemsSource = new();
+        foreach (var transType in _settings.trans_types)
         {
-            if (type.IsChecked)
+            if (transType.IsChecked)
             {
                 if (transItemsSource.Count == 0)
-                    transItemsSource = BKTransMap.CreateBKTransClient(type.Text).GetLangType();
+                    transItemsSource = BKTransMap.CreateBKTransClient(transType.Text.ToEnum(BKTransMap.TransType.baidu)).GetLangType();
                 else
-                    transItemsSource = transItemsSource.Intersect(BKTransMap.CreateBKTransClient(type.Text).GetLangType()).ToList();
+                    transItemsSource = transItemsSource.Intersect(BKTransMap.CreateBKTransClient(transType.Text.ToEnum(BKTransMap.TransType.baidu)).GetLangType()).ToList();
             }
         }
         if (transItemsSource.Count == 0)
         {
-            transItemsSource = BKTransMap.CreateBKTransClient(BKTransMap.TransType[0]).GetLangType();
+            transItemsSource = BKTransMap.CreateBKTransClient(BKTransMap.TransTypeList[0]).GetLangType();
             _settings.trans_types[0].IsChecked = true;
         }
         transItemsSource = transItemsSource.Intersect(ocrItemsSource).ToList();
@@ -219,20 +219,22 @@ public partial class DashboardViewModel : ObservableObject
 
         // 如果文本翻译选了好几个
         // 那么统一设置成和第一个相同的
-        string from = "";
-        string to = "";
-        foreach (var type in _settings.trans_types)
+        BKTransMap.LangType from = BKTransMap.LangType.ja;
+        BKTransMap.LangType to = BKTransMap.LangType.zh_cn;
+        bool existSelectTransType = false;
+        foreach (var transType in _settings.trans_types)
         {
-            if (type.IsChecked)
+            if (transType.IsChecked)
             {
-                if (string.IsNullOrEmpty(from) || string.IsNullOrEmpty(to))
+                if (!existSelectTransType)
                 {
-                    from = _settings.GetTransSetting(type.Text).from;
-                    to = _settings.GetTransSetting(type.Text).to;
+                    from = _settings.GetTransSetting(transType.Text.ToEnum(BKTransMap.TransType.baidu)).from;
+                    to = _settings.GetTransSetting(transType.Text.ToEnum(BKTransMap.TransType.baidu)).to;
+                    existSelectTransType = true;
                 }
                 else
                 {
-                    _settings.UpdateTransSetting(type.Text, from, to);
+                    _settings.UpdateTransSetting(transType.Text.ToEnum(BKTransMap.TransType.baidu), from, to);
                 }
             }
         }
@@ -247,16 +249,16 @@ public partial class DashboardViewModel : ObservableObject
     {
         TransResultItem ocr_result_item = new();
         BKOCRBase ocrClient = null;
-        BKSetting ocrSetting = null;
-        foreach (var type in OcrTypes)
+        BKBaseSetting ocrSetting = null;
+        foreach (var ocrType in OcrTypes)
         {
-            if (type.IsChecked)
+            if (ocrType.IsChecked)
             {
-                _settings.GetOCRSetting(type.Text).language = FromTypesSelectedItem;
+                _settings.GetOCRSetting(ocrType.Text.ToEnum(BKTransMap.OCRType.baidu)).language = FromTypesSelectedItem;
 
-                ocr_result_item.tool = type.Text;
-                ocrClient = BKTransMap.CreateBKOCRClient(type.Text);
-                ocrSetting = _settings.GetOCRSetting(type.Text);
+                ocr_result_item.tool = ocrType.Text;
+                ocrClient = BKTransMap.CreateBKOCRClient(ocrType.Text.ToEnum(BKTransMap.OCRType.baidu));
+                ocrSetting = _settings.GetOCRSetting(ocrType.Text.ToEnum(BKTransMap.OCRType.baidu));
                 break;
             }
         }
@@ -327,16 +329,17 @@ public partial class DashboardViewModel : ObservableObject
         List<Task> transTasks = new();
         TransResult result = new TransResult() { trans_result = new() };
 
-        foreach (var type in TransTypes)
+        foreach (var transType in TransTypes)
         {
-            if (type.IsChecked)
+            if (transType.IsChecked)
             {
                 TransResultItem trans_result_item = new();
-                trans_result_item.tool = type.Text;
-                _settings.UpdateTransSetting(type.Text, FromTypesSelectedItem, ToTypesSelectedItem);
+                trans_result_item.tool = transType.Text;
+                _settings.UpdateTransSetting(transType.Text.ToEnum(BKTransMap.TransType.baidu), FromTypesSelectedItem, ToTypesSelectedItem);
                 transTasks.Add(Task.Run(() =>
                 {
-                    trans_result_item.result = BKTransMap.CreateBKTransClient(type.Text).Trans(_settings.GetTransSetting(type.Text), text);
+                    trans_result_item.result = BKTransMap.CreateBKTransClient(transType.Text.ToEnum(BKTransMap.TransType.baidu))
+                                                         .Trans(_settings.GetTransSetting(transType.Text.ToEnum(BKTransMap.TransType.baidu)), text);
                     result.trans_result.Add(trans_result_item);
                 }));
             }
