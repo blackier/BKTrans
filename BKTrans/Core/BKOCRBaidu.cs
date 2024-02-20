@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Windows.Media.Ocr;
 
-namespace BKTrans.Kernel;
+namespace BKTrans.Core;
 
 public class BKOCRBaidu : BKOCRBase
 {

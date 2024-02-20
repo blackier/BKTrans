@@ -8,7 +8,7 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BKTrans.Kernel;
+namespace BKTrans.Core;
 
 public class BKTransGoogle : BKTransBase
 {

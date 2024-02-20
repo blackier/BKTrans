@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BKTrans.Kernel;
+namespace BKTrans.Core;
 
 public class BKBaseSetting
 {

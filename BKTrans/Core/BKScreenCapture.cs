@@ -2,7 +2,7 @@
 using ShareX.ScreenCaptureLib;
 using System.Drawing;
 
-namespace BKTrans.Kernel;
+namespace BKTrans.Core;
 
 public class BKScreenCapture
 {

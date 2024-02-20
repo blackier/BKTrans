@@ -93,8 +93,9 @@ public partial class App : Application
 
     private async void OnExit(object sender, ExitEventArgs e)
     {
-        await _host.StopAsync();
+        BKPythonEngine.Shutdown();
 
+        await _host.StopAsync();
         _host.Dispose();
     }
 

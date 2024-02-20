@@ -11,7 +11,7 @@ using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 using Windows.Storage.Streams;
 
-namespace BKTrans.Kernel;
+namespace BKTrans.Core;
 
 public class BKOCRMicrosoft : BKOCRBase
 {

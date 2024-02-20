@@ -1,4 +1,4 @@
-﻿using BKTrans.Kernel;
+﻿using BKTrans.Core;
 using BKTrans.Models;
 using BKTrans.ViewModels;
 using BKTrans.Views.Pages;

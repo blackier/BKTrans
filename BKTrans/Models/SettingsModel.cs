@@ -1,4 +1,4 @@
-﻿using BKTrans.Kernel;
+﻿using BKTrans.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -50,6 +50,7 @@ public class SettingsModel
         // ocr参数
         public BKOCRBaidu.SettingBaiduOCR ocr_baidu { get; set; }
         public BKOCRMicrosoft.SettingMiscrosoftOCR ocr_microsoft { get; set; }
+        public BKOCREasy.SettingEasyOCR ocr_easy { get; set; }
         // 翻译参数
         public BKTransBaidu.SettingBaiduTrans trans_baidu { get; set; }
         public BKTransCaiyun.SettingCaiyunTrans trans_caiyun { get; set; }
@@ -77,6 +78,7 @@ public class SettingsModel
 
             ocr_baidu = new();
             ocr_microsoft = new();
+            ocr_easy = new();
             trans_baidu = new();
             trans_caiyun = new();
             trans_google = new();
@@ -122,6 +124,8 @@ public class SettingsModel
                     return ocr_baidu;
                 case BKTransMap.OCRType.microsoft:
                     return ocr_microsoft;
+                case BKTransMap.OCRType.easy:
+                    return ocr_easy;
             }
             return new();
         }

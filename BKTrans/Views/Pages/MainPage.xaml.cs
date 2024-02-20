@@ -1,5 +1,5 @@
 ﻿using BKTrans.Controls;
-using BKTrans.Kernel;
+using BKTrans.Core;
 using BKTrans.ViewModels.Pages;
 using Serilog;
 using System;

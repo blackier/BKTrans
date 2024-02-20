@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace BKTrans.Kernel;
+namespace BKTrans.Core;
 
 public class BKTransMap
 {
@@ -30,7 +30,9 @@ public class BKTransMap
     public enum OCRType
     {
         baidu = 0,
-        microsoft
+        microsoft,
+        manga,
+        easy
     }
     public readonly static List<OCRType> OCRTypeList = EnumExtensions.GetTypeList<OCRType>().ToList();
 
@@ -52,6 +54,10 @@ public class BKTransMap
                 return new BKOCRBaidu();
             case OCRType.microsoft:
                 return new BKOCRMicrosoft();
+            case OCRType.manga:
+                return new BKOCRManga();
+            case OCRType.easy:
+                return new BKOCREasy();
             default:
                 return new BKOCRBaidu();
         }

@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace BKTrans.Kernel;
+namespace BKTrans.Core;
 
 public class BKTransBaidu : BKTransBase
 {
