@@ -65,7 +65,7 @@ public partial class FloatCaptureRectWindow : Window
     {
         Dispatcher.Invoke(() =>
         {
-            var p = WindowsExtensions.ScreenScaling();
+            var p = WindowExtensions.ScreenScaling();
             Left = rect.X / p;
             Top = rect.Y / p;
             Width = rect.Width / p + gridcolumn_btn.Width.Value;
@@ -76,7 +76,7 @@ public partial class FloatCaptureRectWindow : Window
 
     public RectangleF GetTextRect()
     {
-        var p = WindowsExtensions.ScreenScaling();
+        var p = WindowExtensions.ScreenScaling();
         return new RectangleF((float)(Left * p), (float)(Top * p), (float)((Width - gridcolumn_btn.Width.Value) * p), (float)((Height / 2 * p)));
     }
     public void SetText(string t)
@@ -100,13 +100,11 @@ public partial class FloatCaptureRectWindow : Window
     {
         Dispatcher.Invoke(() =>
         {
-            Topmost = false;
-            Show();
-            Activate();
             if (_transResultTextControl.TextButtonIsChecked)
                 _floatTransTextWindow.ShowWindow();
-            // 切换明暗主题时，会让置顶失效，不清楚原因，需要重新置顶
-            Dispatcher.InvokeAsync(() => { Topmost = true; Activate(); });
+            Topmost = true;
+            Show();
+            Activate();
         });
     }
 
@@ -119,9 +117,6 @@ public partial class FloatCaptureRectWindow : Window
         });
     }
 
-    #region 事件处理
-
-    #region 窗体事件
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         // 设置拖拽
@@ -151,9 +146,7 @@ public partial class FloatCaptureRectWindow : Window
     {
         _floatTransTextWindow.Close();
     }
-    #endregion 窗体事件
 
-    #region 控件事件
     private void btn_capture_Click(object sender, RoutedEventArgs e)
     {
         if (_onButtonClick != null)
@@ -270,6 +263,4 @@ public partial class FloatCaptureRectWindow : Window
     {
         _floatTransTextWindow.DragMove();
     }
-    #endregion 控件事件
-    #endregion 事件处理
 }

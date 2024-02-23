@@ -27,10 +27,8 @@
             x:Name="TitleBar"
             Title="BKTrans"
             Grid.Row="0"
-            Padding="6,0,0,6">
-            <ui:TitleBar.Icon>
-                <ui:ImageIcon Source="pack://application:,,,/BKTrans.ico" />
-            </ui:TitleBar.Icon>
+            Padding="6,0,0,6"
+            Icon="{ui:ImageIcon 'pack://application:,,,/BKTrans.ico'}">
             <ui:TitleBar.Header>
                 <ui:Button
                     x:Name="btn_toggle_theme"
@@ -39,11 +37,8 @@
                     VerticalAlignment="Top"
                     Background="{x:Null}"
                     BorderBrush="{x:Null}"
-                    Click="btn_toggle_theme_Click">
-                    <ui:Button.Icon>
-                        <ui:SymbolIcon Symbol="PaintBrush24" />
-                    </ui:Button.Icon>
-                </ui:Button>
+                    Click="btn_toggle_theme_Click"
+                    Icon="{ui:SymbolIcon PaintBrush24}" />
             </ui:TitleBar.Header>
         </ui:TitleBar>
         <tray:NotifyIcon
@@ -81,7 +76,6 @@
 
         <ui:NavigationView
             x:Name="NavigationView"
-            EnableDebugMessages="True"
             IsBackButtonVisible="Visible"
             OpenPaneLength="0"
             PaneDisplayMode="Top"

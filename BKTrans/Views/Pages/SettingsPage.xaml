@@ -40,28 +40,33 @@
             IsPaneToggleVisible="False"
             PaneDisplayMode="LeftFluent">
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem
-                    Content="翻译配置"
-                    Icon="{ui:SymbolIcon Translate24}"
-                    TargetPageType="{x:Type pages:SettingsTransPage}" />
-                <ui:NavigationViewItem
-                    Content="OCR替换"
-                    Icon="{ui:SymbolIcon ScanText24}"
-                    TargetPageType="{x:Type pages:SettingsOCRReplacePage}" />
-                <ui:NavigationViewItem
-                    Content="自动翻译"
-                    Icon="{ui:SymbolIcon ArrowSync24}"
-                    TargetPageType="{x:Type pages:SettingsAutoTransPage}" />
+                <ui:NavigationViewItem Icon="{ui:SymbolIcon Translate24}" TargetPageType="{x:Type pages:SettingsTransPage}">
+                    <ui:NavigationViewItem.Content>
+                        <TextBlock FontSize="12" Text="翻译配置" />
+                    </ui:NavigationViewItem.Content>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Icon="{ui:SymbolIcon ScanText24}" TargetPageType="{x:Type pages:SettingsOCRReplacePage}">
+                    <ui:NavigationViewItem.Content>
+                        <TextBlock FontSize="12" Text="OCR替换" />
+                    </ui:NavigationViewItem.Content>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Icon="{ui:SymbolIcon ArrowSync24}" TargetPageType="{x:Type pages:SettingsAutoTransPage}">
+                    <ui:NavigationViewItem.Content>
+                        <TextBlock FontSize="12" Text="自动翻译" />
+                    </ui:NavigationViewItem.Content>
+                </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
-                <ui:NavigationViewItem
-                    Content="快捷键"
-                    Icon="{ui:SymbolIcon Keyboard24}"
-                    TargetPageType="{x:Type pages:SettingsShortcutsPage}" />
-                <ui:NavigationViewItem
-                    Content="关于"
-                    Icon="{ui:SymbolIcon Info24}"
-                    TargetPageType="{x:Type local:AboutPage}" />
+                <ui:NavigationViewItem Icon="{ui:SymbolIcon Keyboard24}" TargetPageType="{x:Type pages:SettingsShortcutsPage}">
+                    <ui:NavigationViewItem.Content>
+                        <TextBlock FontSize="12" Text="快捷键" />
+                    </ui:NavigationViewItem.Content>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Icon="{ui:SymbolIcon Info24}" TargetPageType="{x:Type local:AboutPage}">
+                    <ui:NavigationViewItem.Content>
+                        <TextBlock FontSize="12" Text="关于" />
+                    </ui:NavigationViewItem.Content>
+                </ui:NavigationViewItem>
             </ui:NavigationView.FooterMenuItems>
         </ui:NavigationView>
     </Grid>

@@ -5,6 +5,7 @@
     xmlns:local="clr-namespace:BKTrans"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Exit="OnExit"
+    ShutdownMode="OnMainWindowClose"
     Startup="OnStartup">
     <Application.Resources>
         <ResourceDictionary>

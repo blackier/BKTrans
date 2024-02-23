@@ -30,10 +30,12 @@ public partial class FloatTransTextWindow : Window
 
     public void ShowWindow()
     {
-        Topmost = false;
-        Show();
-        Activate();
-        Dispatcher.InvokeAsync(() => { Topmost = true; Activate(); });
+        Dispatcher.InvokeAsync(() =>
+        {
+            Topmost = true;
+            Show();
+            Activate();
+        });
     }
 
     public void HideWindow()
@@ -43,11 +45,9 @@ public partial class FloatTransTextWindow : Window
 
     public void MoveWindow(Rectangle pos)
     {
-        WindowInteropHelper wih = new(this);
-        IntPtr hWnd = wih.Handle;
         if (!pos.IsEmpty)
         {
-            BKWindowsAPI.MoveWindow(hWnd, pos.Left, pos.Top, pos.Width, pos.Height, false);
+            BKWindowsAPI.MoveWindow(this.Handle(), pos.Left, pos.Top, pos.Width, pos.Height, false);
         }
     }
 

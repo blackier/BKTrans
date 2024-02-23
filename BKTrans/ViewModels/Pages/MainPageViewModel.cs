@@ -5,10 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Documents;
-using System.Windows.Forms.VisualStyles;
 using static BKTrans.ViewModels.Pages.MainPageViewModel.TransResult;
 
 namespace BKTrans.ViewModels.Pages;
@@ -32,7 +29,6 @@ public partial class MainPageViewModel : ObservableObject
     public List<string> OcrReplace
     {
         get => _settings.ocr_replace.Keys.ToList();
-        set { }
     }
     public string OcrReplaceSelectedItem
     {

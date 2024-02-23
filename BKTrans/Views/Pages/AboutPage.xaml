@@ -17,18 +17,6 @@
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d">
-    <Page.Resources>
-        <i:EventTrigger
-            x:Key="TextBoxUpdateSource"
-            x:Shared="False"
-            EventName="Click"
-            SourceName="btn_save">
-            <i:ChangePropertyAction
-                PropertyName="TextBoxUpdateSource"
-                TargetObject="{Binding RelativeSource={RelativeSource AncestorType={x:Type Page}}}"
-                Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
-        </i:EventTrigger>
-    </Page.Resources>
     <StackPanel
         Margin="0,-100,0,0"
         HorizontalAlignment="Center"

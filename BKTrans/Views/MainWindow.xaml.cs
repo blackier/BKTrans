@@ -16,7 +16,6 @@ using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
-using WinRT;
 
 namespace BKTrans.Views;
 
@@ -72,7 +71,7 @@ public partial class MainWindow
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         // 热键注册
-        IntPtr handle = new WindowInteropHelper(this).EnsureHandle();
+        IntPtr handle = this.Handle();
         bool is_succeess = false;
         is_succeess = BKHotKey.Register(handle, (int)HotKeyId.Capture, (uint)BKHotKey.Modifiers.norepeat, (uint)Keys.F2);
         is_succeess = BKHotKey.Register(handle, (int)HotKeyId.ShowFloatWindow, (uint)(BKHotKey.Modifiers.shift | BKHotKey.Modifiers.alt | BKHotKey.Modifiers.norepeat), (uint)Keys.X);
@@ -116,7 +115,9 @@ public partial class MainWindow
     {
         var currentTheme = Wpf.Ui.Appearance.ApplicationThemeManager.GetAppTheme();
 
-        Wpf.Ui.Appearance.ApplicationThemeManager.Apply(currentTheme == Wpf.Ui.Appearance.ApplicationTheme.Light ? Wpf.Ui.Appearance.ApplicationTheme.Dark : Wpf.Ui.Appearance.ApplicationTheme.Light);
+        Wpf.Ui.Appearance.ApplicationThemeManager.Apply(
+            currentTheme == Wpf.Ui.Appearance.ApplicationTheme.Light ? Wpf.Ui.Appearance.ApplicationTheme.Dark
+                                                                     : Wpf.Ui.Appearance.ApplicationTheme.Light);
         App.GetRequiredService<MainPage>()?.OnSwitchTheme();
     }
 
@@ -138,9 +139,6 @@ public partial class MainWindow
                 App.GetRequiredService<FloatCaptureRectWindow>()?.HideWindow();
                 break;
             case MainWindowViewModel.TrayType.Exit:
-                // 不能设置这两个窗体为子窗体，obs捕捉不到子窗体，手动关闭
-                App.GetRequiredService<FloatCaptureRectWindow>()?.Close();
-                App.GetRequiredService<FloatTransTextWindow>()?.Close();
                 _notifyClose = true;
                 Close();
                 break;
