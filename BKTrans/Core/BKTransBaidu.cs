@@ -11,19 +11,20 @@ namespace BKTrans.Core;
 
 public class BKTransBaidu : BKTransBase
 {
-    private readonly static Dictionary<BKTransMap.LangType, string> LangMap = new()
-    {
-        {BKTransMap.LangType.zh_cn,  "zh"},
-        {BKTransMap.LangType.ja,     "jp"},
-        {BKTransMap.LangType.en_us,  "en"},
-        {BKTransMap.LangType.ko,     "kor"},
-        {BKTransMap.LangType.fr,     "fra"},
-        {BKTransMap.LangType.de,     "de"},
-        {BKTransMap.LangType.ru,     "ru"},
-        {BKTransMap.LangType.es,     "spa"},
-        {BKTransMap.LangType.pt,     "pt"},
-        {BKTransMap.LangType.it,     "it"},
-    };
+    private static readonly Dictionary<BKTransMap.LangType, string> LangMap =
+        new()
+        {
+            { BKTransMap.LangType.zh_cn, "zh" },
+            { BKTransMap.LangType.ja, "jp" },
+            { BKTransMap.LangType.en_us, "en" },
+            { BKTransMap.LangType.ko, "kor" },
+            { BKTransMap.LangType.fr, "fra" },
+            { BKTransMap.LangType.de, "de" },
+            { BKTransMap.LangType.ru, "ru" },
+            { BKTransMap.LangType.es, "spa" },
+            { BKTransMap.LangType.pt, "pt" },
+            { BKTransMap.LangType.it, "it" },
+        };
 
     [Serializable]
     public class SettingBaiduTrans : BKTransSetting
@@ -72,9 +73,15 @@ public class BKTransBaidu : BKTransBase
                 setting.salt = string.Format("{0}", (new Random()).Next(100000, 999999));
             }
             // 发起请求
-            string contentString = string.Format("q={0}&from={1}&to={2}&appid={3}&salt={4}&sign={5}",
-                            HttpUtility.UrlEncode(srcText), LangMap[setting.from], LangMap[setting.to], setting.appid, setting.salt,
-                            BKMisc.CalculMD5(setting.appid + srcText + setting.salt + setting.secretkey));
+            string contentString = string.Format(
+                "q={0}&from={1}&to={2}&appid={3}&salt={4}&sign={5}",
+                HttpUtility.UrlEncode(srcText),
+                LangMap[setting.from],
+                LangMap[setting.to],
+                setting.appid,
+                setting.salt,
+                BKMisc.CalculMD5(setting.appid + srcText + setting.salt + setting.secretkey)
+            );
 
             HttpRequestMessage transReqMsg = new HttpRequestMessage(HttpMethod.Post, _translateUri)
             {
@@ -99,7 +106,6 @@ public class BKTransBaidu : BKTransBase
 
                 result = transResultText;
             }
-
         } while (false);
 
         return result;

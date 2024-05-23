@@ -1,9 +1,9 @@
-﻿using Python.Runtime;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Python.Runtime;
 
 namespace BKAssembly;
 
@@ -11,6 +11,7 @@ public class BKPythonEngine : IDisposable
 {
     static Lazy<BKPythonEngine> _instance;
     nint _threadState { get; set; }
+
     private BKPythonEngine(string pythonDll)
     {
         // https://github.com/pythonnet/pythonnet/wiki/Threading

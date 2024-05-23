@@ -1,9 +1,9 @@
-﻿using BKTrans.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BKTrans.Models;
 
 namespace BKTrans.ViewModels.Pages;
 
@@ -19,7 +19,12 @@ public partial class SettingsAutoTransViewModel : ObservableObject
         set
         {
             int.TryParse(value, out int auto_captrue_trans_interval);
-            SetProperty(_settings.auto_captrue_trans_interval, auto_captrue_trans_interval, _settings, (s, v) => s.auto_captrue_trans_interval = v);
+            SetProperty(
+                _settings.auto_captrue_trans_interval,
+                auto_captrue_trans_interval,
+                _settings,
+                (s, v) => s.auto_captrue_trans_interval = v
+            );
         }
     }
 
@@ -29,7 +34,12 @@ public partial class SettingsAutoTransViewModel : ObservableObject
         set
         {
             int.TryParse(value, out int auto_captrue_trans_countdown);
-            SetProperty(_settings.auto_captrue_trans_countdown, auto_captrue_trans_countdown, _settings, (s, v) => s.auto_captrue_trans_countdown = v);
+            SetProperty(
+                _settings.auto_captrue_trans_countdown,
+                auto_captrue_trans_countdown,
+                _settings,
+                (s, v) => s.auto_captrue_trans_countdown = v
+            );
         }
     }
 
@@ -39,7 +49,12 @@ public partial class SettingsAutoTransViewModel : ObservableObject
         set
         {
             float.TryParse(value, out float auto_captrue_trans_similarity);
-            SetProperty(_settings.auto_captrue_trans_similarity, auto_captrue_trans_similarity, _settings, (s, v) => s.auto_captrue_trans_similarity = v);
+            SetProperty(
+                _settings.auto_captrue_trans_similarity,
+                auto_captrue_trans_similarity,
+                _settings,
+                (s, v) => s.auto_captrue_trans_similarity = v
+            );
         }
     }
 

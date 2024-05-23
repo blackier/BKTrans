@@ -1,22 +1,18 @@
-﻿using ShareX.HelpersLib;
+﻿using System.Drawing;
+using ShareX.HelpersLib;
 using ShareX.ScreenCaptureLib;
-using System.Drawing;
 
 namespace BKTrans.Core;
 
 public class BKScreenCapture
 {
-
     public struct DataStruct
     {
         public Bitmap captureBmp;
         public RectangleF captureRect;
     }
 
-    public BKScreenCapture()
-    {
-
-    }
+    public BKScreenCapture() { }
 
     public DataStruct CaptureRegion()
     {
@@ -26,7 +22,13 @@ public class BKScreenCapture
         screenshot.CaptureCursor = false;
 
         Bitmap canvas = screenshot.CaptureFullscreen();
-        using (RegionCaptureForm form = new RegionCaptureForm(RegionCaptureMode.Default, new RegionCaptureOptions(), canvas))
+        using (
+            RegionCaptureForm form = new RegionCaptureForm(
+                RegionCaptureMode.Default,
+                new RegionCaptureOptions(),
+                canvas
+            )
+        )
         {
             form.ShowDialog();
 
@@ -36,7 +38,10 @@ public class BKScreenCapture
         if (RegionCaptureForm.LastRegionFillPath != null)
         {
             Rectangle screenRectangle = CaptureHelpers.GetScreenBounds();
-            result.captureRect = RectangleF.Intersect(RegionCaptureForm.LastRegionFillPath.GetBounds(), new RectangleF(0, 0, screenRectangle.Width, screenRectangle.Height));
+            result.captureRect = RectangleF.Intersect(
+                RegionCaptureForm.LastRegionFillPath.GetBounds(),
+                new RectangleF(0, 0, screenRectangle.Width, screenRectangle.Height)
+            );
         }
         canvas?.Dispose();
         return result;
@@ -72,5 +77,4 @@ public class BKScreenCapture
 
         return result;
     }
-
 }

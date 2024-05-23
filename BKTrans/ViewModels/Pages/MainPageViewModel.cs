@@ -1,11 +1,11 @@
-﻿using BKTrans.Core;
-using BKTrans.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using BKTrans.Core;
+using BKTrans.Models;
 using static BKTrans.ViewModels.Pages.MainPageViewModel.TransResult;
 
 namespace BKTrans.ViewModels.Pages;
@@ -17,10 +17,13 @@ public partial class MainPageViewModel : ObservableObject
     #region 翻译属性
     [ObservableProperty]
     private List<BKTransMap.LangType> _fromTypes;
+
     [ObservableProperty]
     private BKTransMap.LangType _fromTypesSelectedItem;
+
     [ObservableProperty]
     private List<BKTransMap.LangType> _toTypes;
+
     [ObservableProperty]
     private BKTransMap.LangType _toTypesSelectedItem;
     #endregion 翻译属性
@@ -33,10 +36,7 @@ public partial class MainPageViewModel : ObservableObject
     public string OcrReplaceSelectedItem
     {
         get => _settings.ocr_replace_select;
-        set
-        {
-            SetProperty(_settings.ocr_replace_select, value, _settings, (s, v) => s.ocr_replace_select = v);
-        }
+        set { SetProperty(_settings.ocr_replace_select, value, _settings, (s, v) => s.ocr_replace_select = v); }
     }
     public bool OcrReplaceIsChanged
     {
@@ -78,6 +78,7 @@ public partial class MainPageViewModel : ObservableObject
         }
         set { }
     }
+
     /// <summary>
     /// 支持的翻译类型
     /// </summary>
@@ -122,7 +123,12 @@ public partial class MainPageViewModel : ObservableObject
         get => _settings.auto_captrue_trans_countdown;
         set
         {
-            SetProperty(_settings.auto_captrue_trans_countdown, value, _settings, (s, v) => s.auto_captrue_trans_countdown = v);
+            SetProperty(
+                _settings.auto_captrue_trans_countdown,
+                value,
+                _settings,
+                (s, v) => s.auto_captrue_trans_countdown = v
+            );
         }
     }
     public int AutoCaptrueTransInterval
@@ -130,7 +136,12 @@ public partial class MainPageViewModel : ObservableObject
         get => _settings.auto_captrue_trans_interval;
         set
         {
-            SetProperty(_settings.auto_captrue_trans_interval, value, _settings, (s, v) => s.auto_captrue_trans_interval = v);
+            SetProperty(
+                _settings.auto_captrue_trans_interval,
+                value,
+                _settings,
+                (s, v) => s.auto_captrue_trans_interval = v
+            );
         }
     }
     public float AutoCaptrueTransSimilarity
@@ -138,7 +149,12 @@ public partial class MainPageViewModel : ObservableObject
         get => _settings.auto_captrue_trans_similarity;
         set
         {
-            SetProperty(_settings.auto_captrue_trans_similarity, value, _settings, (s, v) => s.auto_captrue_trans_similarity = v);
+            SetProperty(
+                _settings.auto_captrue_trans_similarity,
+                value,
+                _settings,
+                (s, v) => s.auto_captrue_trans_similarity = v
+            );
         }
     }
     #endregion
@@ -147,10 +163,7 @@ public partial class MainPageViewModel : ObservableObject
     public bool AutoTransOCRResult
     {
         get => _settings.auto_trans_ocr_result;
-        set
-        {
-            SetProperty(_settings.auto_trans_ocr_result, value, _settings, (s, v) => s.auto_trans_ocr_result = v);
-        }
+        set { SetProperty(_settings.auto_trans_ocr_result, value, _settings, (s, v) => s.auto_trans_ocr_result = v); }
     }
 
     // 翻译记录
@@ -161,6 +174,7 @@ public partial class MainPageViewModel : ObservableObject
             public string tool { get; set; }
             public string result { get; set; }
         }
+
         public List<TransResultItem> ocr_result { get; set; }
         public List<TransResultItem> trans_result { get; set; }
     };
@@ -198,9 +212,17 @@ public partial class MainPageViewModel : ObservableObject
             if (transType.IsChecked)
             {
                 if (transItemsSource.Count == 0)
-                    transItemsSource = BKTransMap.CreateBKTransClient(transType.Text.ToEnum(BKTransMap.TransType.baidu)).GetLangType();
+                    transItemsSource = BKTransMap
+                        .CreateBKTransClient(transType.Text.ToEnum(BKTransMap.TransType.baidu))
+                        .GetLangType();
                 else
-                    transItemsSource = transItemsSource.Intersect(BKTransMap.CreateBKTransClient(transType.Text.ToEnum(BKTransMap.TransType.baidu)).GetLangType()).ToList();
+                    transItemsSource = transItemsSource
+                        .Intersect(
+                            BKTransMap
+                                .CreateBKTransClient(transType.Text.ToEnum(BKTransMap.TransType.baidu))
+                                .GetLangType()
+                        )
+                        .ToList();
             }
         }
         if (transItemsSource.Count == 0)
@@ -268,7 +290,6 @@ public partial class MainPageViewModel : ObservableObject
         catch
         {
             ocrResultItem.result = "OCR翻译失败，打开程序界面查看原因。";
-
         }
         return new TransResult() { ocr_result = new() { ocrResultItem } };
     }
@@ -278,6 +299,7 @@ public partial class MainPageViewModel : ObservableObject
         public string src { get; set; }
         public string dst { get; set; }
     }
+
     public List<ReplaceTextItem> OCRRepalce(string srcText)
     {
         // 量少，简单的替换
@@ -312,7 +334,6 @@ public partial class MainPageViewModel : ObservableObject
                 }
                 // 删掉多余的一个插入
                 replaceTextArrTemp.RemoveAt(replaceTextArrTemp.Count - 1);
-
             }
             replaceTextArr = replaceTextArrTemp;
         }
@@ -333,12 +354,19 @@ public partial class MainPageViewModel : ObservableObject
                 transResultItem.tool = transType.Text;
                 result.trans_result.Add(transResultItem);
 
-                _settings.UpdateTransSetting(transType.Text.ToEnum(BKTransMap.TransType.baidu), FromTypesSelectedItem, ToTypesSelectedItem);
-                transTasks.Add(Task.Run(() =>
-                {
-                    transResultItem.result = BKTransMap.CreateBKTransClient(transType.Text.ToEnum(BKTransMap.TransType.baidu))
-                                                .Trans(_settings.GetTransSetting(transType.Text.ToEnum(BKTransMap.TransType.baidu)), text);
-                }));
+                _settings.UpdateTransSetting(
+                    transType.Text.ToEnum(BKTransMap.TransType.baidu),
+                    FromTypesSelectedItem,
+                    ToTypesSelectedItem
+                );
+                transTasks.Add(
+                    Task.Run(() =>
+                    {
+                        transResultItem.result = BKTransMap
+                            .CreateBKTransClient(transType.Text.ToEnum(BKTransMap.TransType.baidu))
+                            .Trans(_settings.GetTransSetting(transType.Text.ToEnum(BKTransMap.TransType.baidu)), text);
+                    })
+                );
             }
         }
 
@@ -351,7 +379,9 @@ public partial class MainPageViewModel : ObservableObject
         if (string.IsNullOrEmpty(replace_src))
             return;
 
-        _settings.ocr_replace[_settings.ocr_replace_select].Add(new() { replace_src = replace_src, replace_dst = replace_dst });
+        _settings
+            .ocr_replace[_settings.ocr_replace_select]
+            .Add(new() { replace_src = replace_src, replace_dst = replace_dst });
     }
 
     public List<string> GetSimilarChars(string similarChar)

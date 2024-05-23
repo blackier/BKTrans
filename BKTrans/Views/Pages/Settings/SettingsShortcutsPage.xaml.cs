@@ -1,11 +1,11 @@
-﻿using BKTrans.Models;
-using BKTrans.ViewModels.Pages;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using BKTrans.Models;
+using BKTrans.ViewModels.Pages;
 
 namespace BKTrans.Views.Pages.Settings;
 
@@ -14,10 +14,12 @@ namespace BKTrans.Views.Pages.Settings;
 /// </summary>
 public partial class SettingsShortcutsPage : wpfui.INavigableView<SettingsShortcutsViewModel>
 {
-
     private SettingsShortcutsViewModel _viewModel;
 
-    public SettingsShortcutsViewModel ViewModel { get { return _viewModel; } }
+    public SettingsShortcutsViewModel ViewModel
+    {
+        get { return _viewModel; }
+    }
 
     public SettingsShortcutsPage(SettingsShortcutsViewModel viewModel)
     {

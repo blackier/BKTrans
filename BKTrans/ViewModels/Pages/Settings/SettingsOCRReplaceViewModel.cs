@@ -1,19 +1,19 @@
-﻿using BKTrans.Core;
-using BKTrans.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using System.Threading.Tasks;
+using BKTrans.Core;
+using BKTrans.Models;
 
 namespace BKTrans.ViewModels.Pages.Settings;
 
 public record SortTypeInfo(string name, SettingsOCRReplaceViewModel.SortType sortType);
+
 public partial class SettingsOCRReplaceViewModel : ObservableObject
 {
-
     public enum SortType
     {
         ByChar,
@@ -22,13 +22,14 @@ public partial class SettingsOCRReplaceViewModel : ObservableObject
         ByLengthDesc
     }
 
-    public List<SortTypeInfo> SortTypeItems = new()
-    {
-        new("字符顺序", SortType.ByChar),
-        new("字符倒序", SortType.ByCharDesc),
-        new("长度顺序", SortType.ByLength),
-        new("长度倒序", SortType.ByLengthDesc),
-    };
+    public List<SortTypeInfo> SortTypeItems =
+        new()
+        {
+            new("字符顺序", SortType.ByChar),
+            new("字符倒序", SortType.ByCharDesc),
+            new("长度顺序", SortType.ByLength),
+            new("长度倒序", SortType.ByLengthDesc),
+        };
 
     #region ocr替换
     public List<string> OcrReplace
@@ -52,17 +53,22 @@ public partial class SettingsOCRReplaceViewModel : ObservableObject
         get => _settings.ocr_replace[_settings.ocr_replace_select].ToList();
         set
         {
-            SetProperty(_settings.ocr_replace[_settings.ocr_replace_select], value, _settings, (s, v) => s.ocr_replace[_settings.ocr_replace_select] = v);
+            SetProperty(
+                _settings.ocr_replace[_settings.ocr_replace_select],
+                value,
+                _settings,
+                (s, v) => s.ocr_replace[_settings.ocr_replace_select] = v
+            );
         }
     }
 
     #endregion ocr替换
 
     private readonly SettingsModel.Settings _settings;
+
     public SettingsOCRReplaceViewModel()
     {
         _settings = SettingsModel.LoadSettings();
-
     }
 
     public void DeleteOcrSeletedItem()

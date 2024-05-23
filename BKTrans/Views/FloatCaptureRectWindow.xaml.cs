@@ -1,6 +1,4 @@
-﻿using BKTrans.Controls;
-using BKTrans.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -11,6 +9,8 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Interop;
 using System.Windows.Threading;
+using BKTrans.Controls;
+using BKTrans.Core;
 
 namespace BKTrans.Views;
 
@@ -28,6 +28,7 @@ public partial class FloatCaptureRectWindow : Window
     private Action<ButtonType, object> _onButtonClick;
     private TransResultTextControl _transResultTextControl;
     private FloatTransTextWindow _floatTransTextWindow;
+
     public FloatCaptureRectWindow(FloatTransTextWindow floatTransTextWindow)
     {
         InitializeComponent();
@@ -77,15 +78,20 @@ public partial class FloatCaptureRectWindow : Window
     public RectangleF GetTextRect()
     {
         var p = WindowExtensions.ScreenScaling();
-        return new RectangleF((float)(Left * p), (float)(Top * p), (float)((Width - gridcolumn_btn.Width.Value) * p), (float)((Height / 2 * p)));
+        return new RectangleF(
+            (float)(Left * p),
+            (float)(Top * p),
+            (float)((Width - gridcolumn_btn.Width.Value) * p),
+            (float)((Height / 2 * p))
+        );
     }
+
     public void SetText(string t)
     {
         Dispatcher.Invoke(() =>
         {
             _transResultTextControl.Text = t;
         });
-
     }
 
     public void SetAutoTransStatus(bool start)
@@ -121,27 +127,44 @@ public partial class FloatCaptureRectWindow : Window
     {
         // 设置拖拽
         AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(rectangele_capture);
-        adornerLayer.Add(new BKDragAdorner(rectangele_capture, (RectangleF change) =>
-        {
-            //Left += change.X;
-            //Top += change.Y;
-            //Width += change.Width;
-            //Height += change.Height;
+        adornerLayer.Add(
+            new BKDragAdorner(
+                rectangele_capture,
+                (RectangleF change) =>
+                {
+                    //Left += change.X;
+                    //Top += change.Y;
+                    //Width += change.Width;
+                    //Height += change.Height;
 
-            var p = 1;
-            var newPosition = new Rectangle((int)(Left * p + change.X), (int)(Top * p + change.Y), (int)(Width * p + change.Width), (int)(Height * p + change.Height));
+                    var p = 1;
+                    var newPosition = new Rectangle(
+                        (int)(Left * p + change.X),
+                        (int)(Top * p + change.Y),
+                        (int)(Width * p + change.Width),
+                        (int)(Height * p + change.Height)
+                    );
 
-            WindowInteropHelper wih = new(this);
-            IntPtr hWnd = wih.Handle;
-            if (!newPosition.IsEmpty)
-            {
-                // 偶然测试出来，直接move不用担心数据出错
-                _ = BKWindowsAPI.MoveWindow(hWnd, newPosition.Left, newPosition.Top, newPosition.Width, newPosition.Height, false);
-            }
-            //AddHistoryRect();
-        }));
-
+                    WindowInteropHelper wih = new(this);
+                    IntPtr hWnd = wih.Handle;
+                    if (!newPosition.IsEmpty)
+                    {
+                        // 偶然测试出来，直接move不用担心数据出错
+                        _ = BKWindowsAPI.MoveWindow(
+                            hWnd,
+                            newPosition.Left,
+                            newPosition.Top,
+                            newPosition.Width,
+                            newPosition.Height,
+                            false
+                        );
+                    }
+                    //AddHistoryRect();
+                }
+            )
+        );
     }
+
     private void Window_Closing(object sender, CancelEventArgs e)
     {
         _floatTransTextWindow.Close();
@@ -161,7 +184,8 @@ public partial class FloatCaptureRectWindow : Window
 
     private void btn_hide_Click(object sender, RoutedEventArgs e)
     {
-        grid_textbox.Visibility = grid_textbox.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+        grid_textbox.Visibility =
+            grid_textbox.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
         if (!_transResultTextControl.TextButtonIsChecked)
             _transResultTextControl.TextVisibility = grid_textbox.Visibility;
 
@@ -227,6 +251,7 @@ public partial class FloatCaptureRectWindow : Window
             return;
         _transResultTextControl.FontSize = fontSize + unit;
     }
+
     private void checkbox_text_Click(object sender, RoutedEventArgs e)
     {
         _transResultTextControl.TextButtonIsChecked = !_transResultTextControl.TextButtonIsChecked;
@@ -237,20 +262,33 @@ public partial class FloatCaptureRectWindow : Window
         {
             content_transresult.Content = null;
             _floatTransTextWindow.ChangeContent(_transResultTextControl, isCheck);
-            _floatTransTextWindow.MoveWindow(new Rectangle(content_transresult.PointToScreen(new()).ToDrawingPoint(), content_transresult.RenderSize.ToDrawingSize()));
+            _floatTransTextWindow.MoveWindow(
+                new Rectangle(
+                    content_transresult.PointToScreen(new()).ToDrawingPoint(),
+                    content_transresult.RenderSize.ToDrawingSize()
+                )
+            );
             _floatTransTextWindow.ShowWindow();
-            _floatTransTextWindow.MoveWindow(new Rectangle(content_transresult.PointToScreen(new()).ToDrawingPoint(), content_transresult.RenderSize.ToDrawingSize()));
+            _floatTransTextWindow.MoveWindow(
+                new Rectangle(
+                    content_transresult.PointToScreen(new()).ToDrawingPoint(),
+                    content_transresult.RenderSize.ToDrawingSize()
+                )
+            );
 
-            _transResultTextControl.InitDragAdorner((RectangleF change) =>
-            {
-                var p = 1;
-                var newPosition = new Rectangle(
-                    (int)(_floatTransTextWindow.Left * p + change.X),
-                    (int)(_floatTransTextWindow.Top * p + change.Y),
-                    (int)(_floatTransTextWindow.Width * p + change.Width),
-                    (int)(_floatTransTextWindow.Height * p + change.Height));
-                _floatTransTextWindow.MoveWindow(newPosition);
-            });
+            _transResultTextControl.InitDragAdorner(
+                (RectangleF change) =>
+                {
+                    var p = 1;
+                    var newPosition = new Rectangle(
+                        (int)(_floatTransTextWindow.Left * p + change.X),
+                        (int)(_floatTransTextWindow.Top * p + change.Y),
+                        (int)(_floatTransTextWindow.Width * p + change.Width),
+                        (int)(_floatTransTextWindow.Height * p + change.Height)
+                    );
+                    _floatTransTextWindow.MoveWindow(newPosition);
+                }
+            );
         }
         else
         {
@@ -259,6 +297,7 @@ public partial class FloatCaptureRectWindow : Window
             content_transresult.Content = _transResultTextControl;
         }
     }
+
     private void checkbox_text_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
         _floatTransTextWindow.DragMove();

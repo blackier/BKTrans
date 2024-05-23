@@ -1,9 +1,9 @@
-﻿using BKTrans.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BKTrans.Models;
 
 namespace BKTrans.ViewModels.Pages.Settings;
 
@@ -15,10 +15,7 @@ public partial class SettingsTransViewModel : ObservableObject
     public string OcrBaiduClientID
     {
         get => _settings.ocr_baidu.client_id;
-        set
-        {
-            SetProperty(_settings.ocr_baidu.client_id, value, _settings, (s, v) => s.ocr_baidu.client_id = v);
-        }
+        set { SetProperty(_settings.ocr_baidu.client_id, value, _settings, (s, v) => s.ocr_baidu.client_id = v); }
     }
 
     public string OcrBaiduClientSecret
@@ -33,37 +30,25 @@ public partial class SettingsTransViewModel : ObservableObject
     public string TransBaiduAppID
     {
         get => _settings.trans_baidu.appid;
-        set
-        {
-            SetProperty(_settings.trans_baidu.appid, value, _settings, (s, v) => s.trans_baidu.appid = v);
-        }
+        set { SetProperty(_settings.trans_baidu.appid, value, _settings, (s, v) => s.trans_baidu.appid = v); }
     }
 
     public string TransBaiduSecretKey
     {
         get => _settings.trans_baidu.secretkey;
-        set
-        {
-            SetProperty(_settings.trans_baidu.secretkey, value, _settings, (s, v) => s.trans_baidu.secretkey = v);
-        }
+        set { SetProperty(_settings.trans_baidu.secretkey, value, _settings, (s, v) => s.trans_baidu.secretkey = v); }
     }
 
     public string TransBaiduSalt
     {
         get => _settings.trans_baidu.salt;
-        set
-        {
-            SetProperty(_settings.trans_baidu.salt, value, _settings, (s, v) => s.trans_baidu.salt = v);
-        }
+        set { SetProperty(_settings.trans_baidu.salt, value, _settings, (s, v) => s.trans_baidu.salt = v); }
     }
 
     public string TransCaiyunToken
     {
         get => _settings.trans_caiyun.token;
-        set
-        {
-            SetProperty(_settings.trans_caiyun.token, value, _settings, (s, v) => s.trans_caiyun.token = v);
-        }
+        set { SetProperty(_settings.trans_caiyun.token, value, _settings, (s, v) => s.trans_caiyun.token = v); }
     }
 
     public string TransCaiyunReqeustID
@@ -78,10 +63,7 @@ public partial class SettingsTransViewModel : ObservableObject
     public string TransGoogleApiKey
     {
         get => _settings.trans_google.api_key;
-        set
-        {
-            SetProperty(_settings.trans_google.api_key, value, _settings, (s, v) => s.trans_google.api_key = v);
-        }
+        set { SetProperty(_settings.trans_google.api_key, value, _settings, (s, v) => s.trans_google.api_key = v); }
     }
 
     #endregion api

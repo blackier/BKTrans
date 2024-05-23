@@ -1,5 +1,4 @@
-﻿using BKTrans.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -13,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using BKTrans.Core;
 
 namespace BKTrans.Views;
 

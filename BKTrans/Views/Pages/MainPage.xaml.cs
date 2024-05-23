@@ -1,8 +1,4 @@
-﻿using BKTrans.Controls;
-using BKTrans.Core;
-using BKTrans.ViewModels.Pages;
-using Serilog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -20,6 +16,10 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
+using BKTrans.Controls;
+using BKTrans.Core;
+using BKTrans.ViewModels.Pages;
+using Serilog;
 using static BKTrans.ViewModels.Pages.MainPageViewModel;
 
 namespace BKTrans.Views.Pages;
@@ -42,7 +42,10 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
     private MainPageViewModel _viewModel;
     private ILogger _transLogger;
 
-    public MainPageViewModel ViewModel { get { return _viewModel; } }
+    public MainPageViewModel ViewModel
+    {
+        get { return _viewModel; }
+    }
 
     public MainPage(MainPageViewModel viewModel, FloatCaptureRectWindow floatCaptureRectWindow)
     {
@@ -52,7 +55,9 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
         InitializeComponent();
 
         // 复制粘贴时，格式化ocr翻译的文本
-        richtextbox_source_text.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, richtextbox_source_text_CopyCommand));
+        richtextbox_source_text.CommandBindings.Add(
+            new CommandBinding(ApplicationCommands.Copy, richtextbox_source_text_CopyCommand)
+        );
         DataObject.AddCopyingHandler(richtextbox_source_text, richtextbox_source_text_Copying);
         DataObject.AddPastingHandler(richtextbox_source_text, richtextbox_source_text_Pasting);
 
@@ -77,25 +82,26 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
 
         // 翻译浮窗设置
         _floatTextWindow = floatCaptureRectWindow;
-        _floatTextWindow.RegisterCallback((FloatCaptureRectWindow.ButtonType btntype, object arg) =>
-        {
-            switch (btntype)
+        _floatTextWindow.RegisterCallback(
+            (FloatCaptureRectWindow.ButtonType btntype, object arg) =>
             {
-                case FloatCaptureRectWindow.ButtonType.Capture:
-                    _floatTextWindow.HideWindow();
-                    Dispatcher.InvokeAsync(() => DoCaptureOCR(false, true, false));
-                    break;
-                case FloatCaptureRectWindow.ButtonType.Trans:
-                    Dispatcher.InvokeAsync(() => DoCaptureOCR(true, true, false));
-                    break;
-                case FloatCaptureRectWindow.ButtonType.AutoTrans:
-                    Dispatcher.InvokeAsync(() => AutoTransSetting((bool)arg));
-                    break;
-                default:
-                    break;
+                switch (btntype)
+                {
+                    case FloatCaptureRectWindow.ButtonType.Capture:
+                        _floatTextWindow.HideWindow();
+                        Dispatcher.InvokeAsync(() => DoCaptureOCR(false, true, false));
+                        break;
+                    case FloatCaptureRectWindow.ButtonType.Trans:
+                        Dispatcher.InvokeAsync(() => DoCaptureOCR(true, true, false));
+                        break;
+                    case FloatCaptureRectWindow.ButtonType.AutoTrans:
+                        Dispatcher.InvokeAsync(() => AutoTransSetting((bool)arg));
+                        break;
+                    default:
+                        break;
+                }
             }
-
-        });
+        );
         _floatTextWindow.SetAutoTransStatus(_viewModel.AutoCaptrueTransOpen);
 
         // 页面加载时
@@ -208,7 +214,11 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
         bool floatwindowVisible = _floatTextWindow.IsVisible;
         HideWindow();
         // 需要延迟下，否则界面未完全隐藏
-        _ = Task.Delay(250).ContinueWith(t => { Dispatcher.InvokeAsync(() => DoCaptureOCR(false, floatwindowVisible)); });
+        _ = Task.Delay(250)
+            .ContinueWith(t =>
+            {
+                Dispatcher.InvokeAsync(() => DoCaptureOCR(false, floatwindowVisible));
+            });
     }
 
     public void CaptureTransLast()
@@ -268,7 +278,6 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
                 Dispatcher.Invoke(() => DoTextTrans(ocrResult));
             else
                 _transLogger.Information($"Only OCR:\n{BKMisc.JsonSerialize(ocrResult)}");
-
         } while (false);
     }
 
@@ -413,8 +422,10 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
                                 break;
                             }
                         }
-                        else if (r.ContentStart.CompareTo(richTextBox.Selection.Start) < 0
-                            && r.ContentEnd.CompareTo(richTextBox.Selection.Start) > 0)
+                        else if (
+                            r.ContentStart.CompareTo(richTextBox.Selection.Start) < 0
+                            && r.ContentEnd.CompareTo(richTextBox.Selection.Start) > 0
+                        )
                         {
                             if (r.ContentEnd.CompareTo(richTextBox.Selection.End) > 0)
                             {
@@ -441,6 +452,7 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
 
     private string copyText = "";
     private bool dropCopy = false;
+
     private void richtextbox_source_text_Copying(object sender, DataObjectCopyingEventArgs e)
     {
         dropCopy = e.IsDragDrop;
@@ -473,6 +485,7 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
         textbox_ocr_replace_dst.Text = "";
         flyout_add_ocr_replace.IsOpen = true;
     }
+
     private void richtextbox_source_text_ContextMenuOpening(object sender, ContextMenuEventArgs e)
     {
         string selectText = GetInlineText(richtextbox_source_text);

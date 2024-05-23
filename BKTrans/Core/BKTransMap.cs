@@ -24,7 +24,8 @@ public class BKTransMap
         pt,
         it,
     }
-    public readonly static List<LangType> LangTypeList = EnumExtensions.GetTypeList<LangType>().ToList();
+
+    public static readonly List<LangType> LangTypeList = EnumExtensions.GetTypeList<LangType>().ToList();
 
     [JsonConverter(typeof(BKJsonStringEnumConverter<LangType>))]
     public enum OCRType
@@ -34,7 +35,8 @@ public class BKTransMap
         manga,
         easy
     }
-    public readonly static List<OCRType> OCRTypeList = EnumExtensions.GetTypeList<OCRType>().ToList();
+
+    public static readonly List<OCRType> OCRTypeList = EnumExtensions.GetTypeList<OCRType>().ToList();
 
     [JsonConverter(typeof(BKJsonStringEnumConverter<LangType>))]
     public enum TransType
@@ -44,8 +46,8 @@ public class BKTransMap
         google,
         deepl,
     }
-    public readonly static List<TransType> TransTypeList = EnumExtensions.GetTypeList<TransType>().ToList();
 
+    public static readonly List<TransType> TransTypeList = EnumExtensions.GetTypeList<TransType>().ToList();
 
     public static BKOCRBase CreateBKOCRClient(OCRType ocrType)
     {

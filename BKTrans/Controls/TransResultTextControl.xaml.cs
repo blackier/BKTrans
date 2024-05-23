@@ -22,11 +22,34 @@ namespace BKTrans.Controls;
 /// </summary>
 public partial class TransResultTextControl : UserControl
 {
-    public String Text { get { return textbox_transtext.Text; } set { textbox_transtext.Text = value; } }
-    public Visibility TextVisibility { get { return textbox_transtext.Visibility; } set { textbox_transtext.Visibility = value; } }
-    public new double FontSize { get { return textbox_transtext.FontSize; } set { textbox_transtext.FontSize = value; } }
-    public Visibility ButtonsVisibility { set { btn_drag.Visibility = value; btn_hide.Visibility = value; } }
-    public bool TextButtonIsChecked { get { return checkbox_text.IsChecked ?? false; } set { checkbox_text.IsChecked = value; } }
+    public String Text
+    {
+        get { return textbox_transtext.Text; }
+        set { textbox_transtext.Text = value; }
+    }
+    public Visibility TextVisibility
+    {
+        get { return textbox_transtext.Visibility; }
+        set { textbox_transtext.Visibility = value; }
+    }
+    public new double FontSize
+    {
+        get { return textbox_transtext.FontSize; }
+        set { textbox_transtext.FontSize = value; }
+    }
+    public Visibility ButtonsVisibility
+    {
+        set
+        {
+            btn_drag.Visibility = value;
+            btn_hide.Visibility = value;
+        }
+    }
+    public bool TextButtonIsChecked
+    {
+        get { return checkbox_text.IsChecked ?? false; }
+        set { checkbox_text.IsChecked = value; }
+    }
 
     public event RoutedEventHandler TextButtonClick;
     public event MouseWheelEventHandler TextButtonMouseWheel;
@@ -50,21 +73,31 @@ public partial class TransResultTextControl : UserControl
 
     private void checkbox_text_Click(object sender, RoutedEventArgs e)
     {
-        if (TextButtonClick != null) { TextButtonClick(sender, e); }
+        if (TextButtonClick != null)
+        {
+            TextButtonClick(sender, e);
+        }
     }
 
     private void checkbox_text_MouseWheel(object sender, MouseWheelEventArgs e)
     {
-        if (TextButtonMouseWheel != null) { TextButtonMouseWheel(sender, e); }
+        if (TextButtonMouseWheel != null)
+        {
+            TextButtonMouseWheel(sender, e);
+        }
     }
 
     private void btn_drag_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (DragButtonPreviewMouseLeftButtonDown != null) { DragButtonPreviewMouseLeftButtonDown(sender, e); }
+        if (DragButtonPreviewMouseLeftButtonDown != null)
+        {
+            DragButtonPreviewMouseLeftButtonDown(sender, e);
+        }
     }
 
     private void btn_hide_Click(object sender, RoutedEventArgs e)
     {
-        _dragAdorner.Visibility = _dragAdorner.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+        _dragAdorner.Visibility =
+            _dragAdorner.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
     }
 }

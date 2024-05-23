@@ -13,19 +13,20 @@ namespace BKTrans.Core;
 
 public class BKOCRBaidu : BKOCRBase
 {
-    private readonly static Dictionary<BKTransMap.LangType, string> LangMap = new()
-    {
-        {BKTransMap.LangType.zh_cn,  "CHN_ENG"},
-        {BKTransMap.LangType.ja,     "JAP"},
-        {BKTransMap.LangType.en_us,  "ENG"},
-        {BKTransMap.LangType.ko,     "KOR"},
-        {BKTransMap.LangType.fr,     "FRE"},
-        {BKTransMap.LangType.de,     "GER"},
-        {BKTransMap.LangType.ru,     "RUS"},
-        {BKTransMap.LangType.es,     "SPA"},
-        {BKTransMap.LangType.pt,     "POR"},
-        {BKTransMap.LangType.it,     "ITA"},
-    };
+    private static readonly Dictionary<BKTransMap.LangType, string> LangMap =
+        new()
+        {
+            { BKTransMap.LangType.zh_cn, "CHN_ENG" },
+            { BKTransMap.LangType.ja, "JAP" },
+            { BKTransMap.LangType.en_us, "ENG" },
+            { BKTransMap.LangType.ko, "KOR" },
+            { BKTransMap.LangType.fr, "FRE" },
+            { BKTransMap.LangType.de, "GER" },
+            { BKTransMap.LangType.ru, "RUS" },
+            { BKTransMap.LangType.es, "SPA" },
+            { BKTransMap.LangType.pt, "POR" },
+            { BKTransMap.LangType.it, "ITA" },
+        };
 
     public class SettingBaiduOCR : BKOCRSetting
     {
@@ -114,8 +115,12 @@ public class BKOCRBaidu : BKOCRBase
         bool retIsSuccess = false;
         do
         {
-            string contentString = string.Format("grant_type={0}&client_id={1}&client_secret={2}",
-               _setting.grant_type, _setting.client_id, _setting.client_secret);
+            string contentString = string.Format(
+                "grant_type={0}&client_id={1}&client_secret={2}",
+                _setting.grant_type,
+                _setting.client_id,
+                _setting.client_secret
+            );
 
             HttpRequestMessage akReqMsg = new HttpRequestMessage(HttpMethod.Post, _akOauthUri)
             {
@@ -127,9 +132,11 @@ public class BKOCRBaidu : BKOCRBase
 
             using (JsonDocument jdocAkResult = JsonDocument.Parse(akRes.Content.ReadAsStringAsync().Result))
             {
-
                 var rootElem = jdocAkResult.RootElement;
-                if (rootElem.TryGetProperty("error", out JsonElement errorElement) || !rootElem.TryGetProperty("access_token", out JsonElement tokenElement))
+                if (
+                    rootElem.TryGetProperty("error", out JsonElement errorElement)
+                    || !rootElem.TryGetProperty("access_token", out JsonElement tokenElement)
+                )
                 {
                     break;
                 }
@@ -149,9 +156,16 @@ public class BKOCRBaidu : BKOCRBase
         string ocrResult;
         do
         {
-            string contentString = string.Format("image={0}&language_type={1}", HttpUtility.UrlEncode(_ocrSrcImage.ToBase64()), LangMap[_setting.language]);
+            string contentString = string.Format(
+                "image={0}&language_type={1}",
+                HttpUtility.UrlEncode(_ocrSrcImage.ToBase64()),
+                LangMap[_setting.language]
+            );
 
-            HttpRequestMessage ocrReqMsg = new HttpRequestMessage(HttpMethod.Post, _generalBasicUri + "?access_token=" + _accessToken)
+            HttpRequestMessage ocrReqMsg = new HttpRequestMessage(
+                HttpMethod.Post,
+                _generalBasicUri + "?access_token=" + _accessToken
+            )
             {
                 Content = new StringContent(contentString, Encoding.UTF8, "application/x-www-form-urlencoded")
             };
@@ -160,9 +174,7 @@ public class BKOCRBaidu : BKOCRBase
             HttpResponseMessage ocrRes = ocrReq.Send(ocrReqMsg);
 
             ocrResult = ocrRes.Content.ReadAsStringAsync().Result;
-
         } while (false);
         return ocrResult;
     }
-
 }

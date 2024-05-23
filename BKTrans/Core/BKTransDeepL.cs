@@ -12,19 +12,20 @@ namespace BKTrans.Core;
 
 public class BKTransDeepL : BKTransBase
 {
-    private readonly static Dictionary<BKTransMap.LangType, string> LangMap = new()
-    {
-        {BKTransMap.LangType.zh_cn,  "ZH"},
-        {BKTransMap.LangType.ja,     "JA"},
-        {BKTransMap.LangType.en_us,  "EN"},
-        {BKTransMap.LangType.ko,     "KO"},
-        {BKTransMap.LangType.fr,     "FR"},
-        {BKTransMap.LangType.de,     "DE"},
-        {BKTransMap.LangType.ru,     "RU"},
-        {BKTransMap.LangType.es,     "ES"},
-        {BKTransMap.LangType.pt,     "PT"},
-        {BKTransMap.LangType.it,     "IT"},
-    };
+    private static readonly Dictionary<BKTransMap.LangType, string> LangMap =
+        new()
+        {
+            { BKTransMap.LangType.zh_cn, "ZH" },
+            { BKTransMap.LangType.ja, "JA" },
+            { BKTransMap.LangType.en_us, "EN" },
+            { BKTransMap.LangType.ko, "KO" },
+            { BKTransMap.LangType.fr, "FR" },
+            { BKTransMap.LangType.de, "DE" },
+            { BKTransMap.LangType.ru, "RU" },
+            { BKTransMap.LangType.es, "ES" },
+            { BKTransMap.LangType.pt, "PT" },
+            { BKTransMap.LangType.it, "IT" },
+        };
 
     [Serializable]
     public class SettingDeepLTrans : BKTransSetting
@@ -99,7 +100,6 @@ public class BKTransDeepL : BKTransBase
 
                 result = transResultText;
             }
-
         } while (false);
         return result;
     }

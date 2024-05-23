@@ -1,12 +1,4 @@
-﻿using BKTrans.Services;
-using BKTrans.ViewModels;
-using BKTrans.ViewModels.Pages;
-using BKTrans.ViewModels.Pages.Settings;
-using BKTrans.Views;
-using BKTrans.Views.Pages;
-using BKTrans.Views.Pages.Settings;
-using Serilog;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +7,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using BKTrans.Services;
+using BKTrans.ViewModels;
+using BKTrans.ViewModels.Pages;
+using BKTrans.ViewModels.Pages.Settings;
+using BKTrans.Views;
+using BKTrans.Views.Pages;
+using BKTrans.Views.Pages.Settings;
+using Serilog;
 
 namespace BKTrans;
 
@@ -30,49 +30,56 @@ public partial class App : Application
 
     private static Serilog.ILogger _appLogger;
 
-    private static readonly IHost _host = Host
-        .CreateDefaultBuilder()
-        .ConfigureAppConfiguration(c => { c.SetBasePath(AppContext.BaseDirectory); })
-        .ConfigureServices((context, services) =>
+    private static readonly IHost _host = Host.CreateDefaultBuilder()
+        .ConfigureAppConfiguration(c =>
         {
-            // App Host
-            services.AddHostedService<BKTrans.Services.ApplicationHostService>();
+            c.SetBasePath(AppContext.BaseDirectory);
+        })
+        .ConfigureServices(
+            (context, services) =>
+            {
+                // App Host
+                services.AddHostedService<BKTrans.Services.ApplicationHostService>();
 
-            // Main window container with navigation
-            services.AddSingleton<MainWindow>();
-            services.AddSingleton<MainWindowViewModel>();
-            services.AddSingleton<INavigationService, NavigationService>();
-            services.AddSingleton<ISnackbarService, SnackbarService>();
-            services.AddSingleton<IContentDialogService, ContentDialogService>();
-            services.AddSingleton<WindowsProviderService>();
+                // Main window container with navigation
+                services.AddSingleton<MainWindow>();
+                services.AddSingleton<MainWindowViewModel>();
+                services.AddSingleton<INavigationService, NavigationService>();
+                services.AddSingleton<ISnackbarService, SnackbarService>();
+                services.AddSingleton<IContentDialogService, ContentDialogService>();
+                services.AddSingleton<WindowsProviderService>();
 
-            // Top-level pages
-            services.AddSingleton<MainPage>();
-            services.AddSingleton<MainPageViewModel>();
-            services.AddTransient<SettingsPage>();
-            services.AddTransient<SettingsViewModel>();
-            services.AddTransient<AboutPage>();
-            services.AddTransient<AboutViewModel>();
+                // Top-level pages
+                services.AddSingleton<MainPage>();
+                services.AddSingleton<MainPageViewModel>();
+                services.AddTransient<SettingsPage>();
+                services.AddTransient<SettingsViewModel>();
+                services.AddTransient<AboutPage>();
+                services.AddTransient<AboutViewModel>();
 
-            // settings pages
-            services.AddTransient<SettingsTransPage>();
-            services.AddTransient<SettingsTransViewModel>();
-            services.AddTransient<SettingsOCRReplacePage>();
-            services.AddTransient<SettingsOCRReplaceViewModel>();
-            services.AddTransient<SettingsAutoTransPage>();
-            services.AddTransient<SettingsAutoTransViewModel>();
-            services.AddTransient<SettingsShortcutsPage>();
-            services.AddTransient<SettingsShortcutsViewModel>();
+                // settings pages
+                services.AddTransient<SettingsTransPage>();
+                services.AddTransient<SettingsTransViewModel>();
+                services.AddTransient<SettingsOCRReplacePage>();
+                services.AddTransient<SettingsOCRReplaceViewModel>();
+                services.AddTransient<SettingsAutoTransPage>();
+                services.AddTransient<SettingsAutoTransViewModel>();
+                services.AddTransient<SettingsShortcutsPage>();
+                services.AddTransient<SettingsShortcutsViewModel>();
 
-            // Windows
-            services.AddSingleton<FloatCaptureRectWindow>();
-            services.AddSingleton<FloatTransTextWindow>();
-        }).Build();
+                // Windows
+                services.AddSingleton<FloatCaptureRectWindow>();
+                services.AddSingleton<FloatTransTextWindow>();
+            }
+        )
+        .Build();
 
-    public static T GetRequiredService<T>() where T : class
+    public static T GetRequiredService<T>()
+        where T : class
     {
         return _host.Services.GetRequiredService<T>();
     }
+
     private async void OnStartup(object sender, StartupEventArgs e)
     {
         if (SingleInstance())
@@ -148,14 +155,13 @@ public partial class App : Application
         if (isOwned)
         {
             // Spawn a thread which will be waiting for our event
-            var thread = new Thread(
-                () =>
+            var thread = new Thread(() =>
+            {
+                while (_eventWaitHandle.WaitOne())
                 {
-                    while (_eventWaitHandle.WaitOne())
-                    {
-                        Current.Dispatcher.BeginInvoke(() => ((MainWindow)Current.MainWindow).BringToForeground());
-                    }
-                });
+                    Current.Dispatcher.BeginInvoke(() => ((MainWindow)Current.MainWindow).BringToForeground());
+                }
+            });
 
             // It is important mark it as background otherwise it will prevent app from exiting.
             thread.IsBackground = true;
@@ -212,6 +218,11 @@ public partial class App : Application
     public static void SnackbarError(string message)
     {
         var snackbarService = GetRequiredService<ISnackbarService>();
-        snackbarService.Show("失败", message, Wpf.Ui.Controls.ControlAppearance.Danger, timeout: TimeSpan.FromSeconds(1.5));
+        snackbarService.Show(
+            "失败",
+            message,
+            Wpf.Ui.Controls.ControlAppearance.Danger,
+            timeout: TimeSpan.FromSeconds(1.5)
+        );
     }
 }

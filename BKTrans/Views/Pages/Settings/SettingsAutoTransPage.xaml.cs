@@ -1,11 +1,11 @@
-﻿using BKTrans.Models;
-using BKTrans.ViewModels.Pages;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using BKTrans.Models;
+using BKTrans.ViewModels.Pages;
 
 namespace BKTrans.Views.Pages.Settings;
 
@@ -14,18 +14,17 @@ namespace BKTrans.Views.Pages.Settings;
 /// </summary>
 public partial class SettingsAutoTransPage : wpfui.INavigableView<SettingsAutoTransViewModel>
 {
-
     public object TextBoxUpdateSource
     {
-        set
-        {
-            BindingOperations.GetBindingExpression(value as TextBox, TextBox.TextProperty).UpdateSource();
-        }
+        set { BindingOperations.GetBindingExpression(value as TextBox, TextBox.TextProperty).UpdateSource(); }
     }
 
     private SettingsAutoTransViewModel _viewModel;
 
-    public SettingsAutoTransViewModel ViewModel { get { return _viewModel; } }
+    public SettingsAutoTransViewModel ViewModel
+    {
+        get { return _viewModel; }
+    }
 
     public SettingsAutoTransPage(SettingsAutoTransViewModel viewModel)
     {
@@ -33,6 +32,7 @@ public partial class SettingsAutoTransPage : wpfui.INavigableView<SettingsAutoTr
         DataContext = this;
         InitializeComponent();
     }
+
     #region 事件处理
     protected void btn_save_Click(object sender, RoutedEventArgs e)
     {
@@ -44,20 +44,26 @@ public partial class SettingsAutoTransPage : wpfui.INavigableView<SettingsAutoTr
         App.NavigateGoBack();
     }
 
-    private void textbox_auto_captrue_trans_interval_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+    private void textbox_auto_captrue_trans_interval_MouseWheel(
+        object sender,
+        System.Windows.Input.MouseWheelEventArgs e
+    )
     {
         if (e.Delta == 0)
             return;
         int unit = 10;
         if (e.Delta < 0)
             unit = -unit;
-        int interval =  textbox_auto_captrue_trans_interval.Text.ToInt();
+        int interval = textbox_auto_captrue_trans_interval.Text.ToInt();
         if (interval + unit < 100)
             return;
         textbox_auto_captrue_trans_interval.Text = (interval + unit).ToString();
     }
 
-    private void textbox_auto_captrue_trans_countdown_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+    private void textbox_auto_captrue_trans_countdown_MouseWheel(
+        object sender,
+        System.Windows.Input.MouseWheelEventArgs e
+    )
     {
         if (e.Delta == 0)
             return;
@@ -70,7 +76,10 @@ public partial class SettingsAutoTransPage : wpfui.INavigableView<SettingsAutoTr
         textbox_auto_captrue_trans_countdown.Text = (interval + unit).ToString();
     }
 
-    private void textbox_auto_captrue_trans_similarity_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+    private void textbox_auto_captrue_trans_similarity_MouseWheel(
+        object sender,
+        System.Windows.Input.MouseWheelEventArgs e
+    )
     {
         if (e.Delta == 0)
             return;

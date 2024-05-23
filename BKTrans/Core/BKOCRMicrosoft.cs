@@ -15,19 +15,20 @@ namespace BKTrans.Core;
 
 public class BKOCRMicrosoft : BKOCRBase
 {
-    private readonly static Dictionary<BKTransMap.LangType, string> LangMap = new()
-    {
-        {BKTransMap.LangType.zh_cn,  "zh-cn"},
-        {BKTransMap.LangType.ja,     "ja"},
-        {BKTransMap.LangType.en_us,  "en-us"},
-        {BKTransMap.LangType.ko,     "ko"},
-        {BKTransMap.LangType.fr,     "fra"},
-        {BKTransMap.LangType.de,     "de"},
-        {BKTransMap.LangType.ru,     "ru"},
-        {BKTransMap.LangType.es,     "es"},
-        {BKTransMap.LangType.pt,     "pt"},
-        {BKTransMap.LangType.it,     "it"},
-    };
+    private static readonly Dictionary<BKTransMap.LangType, string> LangMap =
+        new()
+        {
+            { BKTransMap.LangType.zh_cn, "zh-cn" },
+            { BKTransMap.LangType.ja, "ja" },
+            { BKTransMap.LangType.en_us, "en-us" },
+            { BKTransMap.LangType.ko, "ko" },
+            { BKTransMap.LangType.fr, "fra" },
+            { BKTransMap.LangType.de, "de" },
+            { BKTransMap.LangType.ru, "ru" },
+            { BKTransMap.LangType.es, "es" },
+            { BKTransMap.LangType.pt, "pt" },
+            { BKTransMap.LangType.it, "it" },
+        };
 
     public class SettingMiscrosoftOCR : BKOCRSetting
     {
@@ -38,10 +39,7 @@ public class BKOCRMicrosoft : BKOCRBase
         }
     }
 
-    public BKOCRMicrosoft()
-    {
-
-    }
+    public BKOCRMicrosoft() { }
 
     public override List<BKTransMap.LangType> GetLangType()
     {
@@ -82,17 +80,27 @@ public class BKOCRMicrosoft : BKOCRBase
 
                 string separator = " ";
 
-                if (language.LanguageTag.StartsWith("zh", StringComparison.OrdinalIgnoreCase) || // Chinese
-                    language.LanguageTag.StartsWith("ja", StringComparison.OrdinalIgnoreCase) || // Japanese
-                    language.LanguageTag.StartsWith("ko", StringComparison.OrdinalIgnoreCase)) // Korean
+                if (
+                    language.LanguageTag.StartsWith("zh", StringComparison.OrdinalIgnoreCase)
+                    || // Chinese
+                    language.LanguageTag.StartsWith("ja", StringComparison.OrdinalIgnoreCase)
+                    || // Japanese
+                    language.LanguageTag.StartsWith("ko", StringComparison.OrdinalIgnoreCase)
+                ) // Korean
                 {
                     // If CJK language then remove spaces between words.
-                    result = string.Join(separator, ocrResult.Lines.Select(line => string.Concat(line.Words.Select(word => word.Text))));
+                    result = string.Join(
+                        separator,
+                        ocrResult.Lines.Select(line => string.Concat(line.Words.Select(word => word.Text)))
+                    );
                 }
                 else if (language.LayoutDirection == LanguageLayoutDirection.Rtl)
                 {
                     // If RTL language then reverse order of words.
-                    result = string.Join(separator, ocrResult.Lines.Select(line => string.Join(" ", line.Words.Reverse().Select(word => word.Text))));
+                    result = string.Join(
+                        separator,
+                        ocrResult.Lines.Select(line => string.Join(" ", line.Words.Reverse().Select(word => word.Text)))
+                    );
                 }
                 else
                 {

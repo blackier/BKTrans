@@ -1,5 +1,4 @@
-﻿using Microsoft.Xaml.Behaviors;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using Microsoft.Xaml.Behaviors;
 
 namespace BKTrans.Behaviors;
 
@@ -23,8 +23,12 @@ public class DataGridBehavior : Behavior<DataGrid>
     public bool IsEditing => isEditing;
 
     #region DragEnded
-    public static readonly RoutedEvent DragEndedEvent =
-        EventManager.RegisterRoutedEvent("DragEnded", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(DataGridBehavior));
+    public static readonly RoutedEvent DragEndedEvent = EventManager.RegisterRoutedEvent(
+        "DragEnded",
+        RoutingStrategy.Bubble,
+        typeof(RoutedEventHandler),
+        typeof(DataGridBehavior)
+    );
 
     public static void AddDragEndedHandler(DependencyObject d, RoutedEventHandler handler)
     {
@@ -48,8 +52,11 @@ public class DataGridBehavior : Behavior<DataGrid>
     #endregion
 
     #region Popup
-    public static readonly DependencyProperty PopupProperty =
-        DependencyProperty.Register("Popup", typeof(System.Windows.Controls.Primitives.Popup), typeof(DataGridBehavior));
+    public static readonly DependencyProperty PopupProperty = DependencyProperty.Register(
+        "Popup",
+        typeof(System.Windows.Controls.Primitives.Popup),
+        typeof(DataGridBehavior)
+    );
     public System.Windows.Controls.Primitives.Popup Popup
     {
         get { return (System.Windows.Controls.Primitives.Popup)GetValue(PopupProperty); }
@@ -88,7 +95,8 @@ public class DataGridBehavior : Behavior<DataGrid>
     {
         isEditing = true;
         //in case we are in the middle of a drag/drop operation, cancel it...
-        if (isDragging) ResetDragDrop();
+        if (isDragging)
+            ResetDragDrop();
     }
 
     private void OnEndEdit(object sender, DataGridCellEditEndingEventArgs e)
@@ -98,10 +106,12 @@ public class DataGridBehavior : Behavior<DataGrid>
 
     private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (isEditing) return;
+        if (isEditing)
+            return;
 
         var row = (sender as UIElement).FindElementFromPoint<DataGridRow>(e.GetPosition(AssociatedObject));
-        if (row == null || row.IsEditing || row.DataContext == CollectionView.NewItemPlaceholder) return;
+        if (row == null || row.IsEditing || row.DataContext == CollectionView.NewItemPlaceholder)
+            return;
 
         //set flag that indicates we're capturing mouse movements
         isDragging = true;
@@ -169,6 +179,7 @@ public class DataGridBehavior : Behavior<DataGrid>
         //make sure the row under the grid is being selected
         var position = e.GetPosition(AssociatedObject);
         var row = AssociatedObject.FindElementFromPoint<DataGridRow>(position);
-        if (row != null) AssociatedObject.SelectedItem = row.Item;
+        if (row != null)
+            AssociatedObject.SelectedItem = row.Item;
     }
 }

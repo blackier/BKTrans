@@ -13,7 +13,11 @@ internal class ColllectionElementIndexConverter : IMultiValueConverter
 {
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values.Length >= 2 && /*values.All(x => x is not null) &&*/ values[1] is IList items)
+        if (
+            values.Length >= 2
+            && /*values.All(x => x is not null) &&*/
+            values[1] is IList items
+        )
         {
             return items.IndexOf(values[0]);
         }

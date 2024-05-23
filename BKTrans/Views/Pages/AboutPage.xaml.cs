@@ -1,10 +1,10 @@
-﻿using BKTrans.ViewModels.Pages;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using BKTrans.ViewModels.Pages;
 
 namespace BKTrans.Views.Pages;
 
@@ -15,7 +15,10 @@ public partial class AboutPage : wpfui.INavigableView<AboutViewModel>
 {
     private AboutViewModel _viewModel;
 
-    public AboutViewModel ViewModel { get { return _viewModel; } }
+    public AboutViewModel ViewModel
+    {
+        get { return _viewModel; }
+    }
 
     public AboutPage(AboutViewModel viewModel)
     {

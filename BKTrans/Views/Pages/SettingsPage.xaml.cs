@@ -1,13 +1,13 @@
-﻿using BKTrans.ViewModels.Pages;
-using BKTrans.Views.Pages.Settings;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using BKTrans.ViewModels.Pages;
+using BKTrans.Views.Pages.Settings;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BKTrans.Views.Pages;
 
@@ -16,18 +16,17 @@ namespace BKTrans.Views.Pages;
 /// </summary>
 public partial class SettingsPage : wpfui.INavigableView<SettingsViewModel>
 {
-
     public object TextBoxUpdateSource
     {
-        set
-        {
-            BindingOperations.GetBindingExpression(value as TextBox, TextBox.TextProperty).UpdateSource();
-        }
+        set { BindingOperations.GetBindingExpression(value as TextBox, TextBox.TextProperty).UpdateSource(); }
     }
 
     private SettingsViewModel _viewModel;
 
-    public SettingsViewModel ViewModel { get { return _viewModel; } }
+    public SettingsViewModel ViewModel
+    {
+        get { return _viewModel; }
+    }
 
     public SettingsPage(SettingsViewModel viewModel, IServiceProvider serviceProvider)
     {

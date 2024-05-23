@@ -1,9 +1,4 @@
-﻿using BKTrans.Core;
-using BKTrans.Models;
-using BKTrans.ViewModels.Pages;
-using BKTrans.ViewModels.Pages.Settings;
-using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime;
@@ -15,6 +10,11 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using BKTrans.Core;
+using BKTrans.Models;
+using BKTrans.ViewModels.Pages;
+using BKTrans.ViewModels.Pages.Settings;
+using Microsoft.Win32;
 using static BKTrans.Models.SettingsModel;
 
 namespace BKTrans.Views.Pages.Settings;
@@ -24,18 +24,17 @@ namespace BKTrans.Views.Pages.Settings;
 /// </summary>
 public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRReplaceViewModel>
 {
-
     public object TextBoxUpdateSource
     {
-        set
-        {
-            BindingOperations.GetBindingExpression(value as TextBox, TextBox.TextProperty).UpdateSource();
-        }
+        set { BindingOperations.GetBindingExpression(value as TextBox, TextBox.TextProperty).UpdateSource(); }
     }
 
     private SettingsOCRReplaceViewModel _viewModel;
 
-    public SettingsOCRReplaceViewModel ViewModel { get { return _viewModel; } }
+    public SettingsOCRReplaceViewModel ViewModel
+    {
+        get { return _viewModel; }
+    }
 
     public SettingsOCRReplacePage(SettingsOCRReplaceViewModel viewModel)
     {
@@ -43,6 +42,7 @@ public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRRe
         DataContext = this;
         InitializeComponent();
     }
+
     #region 事件处理
     protected void btn_save_Click(object sender, RoutedEventArgs e)
     {
@@ -78,7 +78,6 @@ public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRRe
         _viewModel.DeleteOcrSeletedItem();
     }
 
-
     private void btn_ocr_replace_import_Click(object sender, RoutedEventArgs e)
     {
         OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -89,7 +88,9 @@ public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRRe
             if (importOcrRepace != null)
             {
                 var currentOcrReplace = datagrid_ocr_replace.ItemsSource as List<OCRReplace>;
-                datagrid_ocr_replace.ItemsSource = currentOcrReplace.UnionBy(importOcrRepace, r => r.replace_src).ToList();
+                datagrid_ocr_replace.ItemsSource = currentOcrReplace
+                    .UnionBy(importOcrRepace, r => r.replace_src)
+                    .ToList();
                 App.SnackbarSuccess("导入成功，去重合入。");
             }
             else
@@ -141,7 +142,7 @@ public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRRe
             DataGridCellsPresenter presenter = rowContainer.FindChild<DataGridCellsPresenter>();
             if (presenter == null)
             {
-                /* if the row has been virtualized away, call its ApplyTemplate() method 
+                /* if the row has been virtualized away, call its ApplyTemplate() method
                  * to build its visual tree in order for the DataGridCellsPresenter
                  * and the DataGridCells to be created */
                 rowContainer.ApplyTemplate();
@@ -176,7 +177,8 @@ public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRRe
 
             // https://blog.magnusmontin.net/2013/11/08/how-to-programmatically-select-and-focus-a-row-or-cell-in-a-datagrid-in-wpf/
             datagrid_ocr_replace.UpdateLayout();
-            DataGridRow row = datagrid_ocr_replace.ItemContainerGenerator.ContainerFromIndex(selectIndex) as DataGridRow;
+            DataGridRow row =
+                datagrid_ocr_replace.ItemContainerGenerator.ContainerFromIndex(selectIndex) as DataGridRow;
             if (row != null)
                 GetCell(datagrid_ocr_replace, row, 1)?.Focus();
             e.Handled = true;

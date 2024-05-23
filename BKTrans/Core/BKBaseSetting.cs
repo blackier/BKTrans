@@ -14,7 +14,7 @@ public class BKBaseSetting
 
 public class BKTransSetting : BKBaseSetting
 {
-    public  BKTransMap.LangType from { get; set; }
+    public BKTransMap.LangType from { get; set; }
     public BKTransMap.LangType to { get; set; }
 }
 

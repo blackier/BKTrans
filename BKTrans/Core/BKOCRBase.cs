@@ -9,7 +9,6 @@ namespace BKTrans.Core;
 
 public abstract class BKOCRBase
 {
-
     public abstract List<BKTransMap.LangType> GetLangType();
 
     public abstract bool OCR(BKBaseSetting setting, Bitmap image, out string result);

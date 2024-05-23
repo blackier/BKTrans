@@ -1,5 +1,4 @@
-﻿using Python.Runtime;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -9,16 +8,18 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Python.Runtime;
 
 namespace BKTrans.Core;
 
 public class BKOCREasy : BKOCRBase
 {
-    private readonly static Dictionary<BKTransMap.LangType, string[]> LangMap = new()
-    {
-        { BKTransMap.LangType.ja,    new string[]{ "ja", "en" } },
-        { BKTransMap.LangType.zh_cn, new string[]{ "ch_sim", "en" } }
-    };
+    private static readonly Dictionary<BKTransMap.LangType, string[]> LangMap =
+        new()
+        {
+            { BKTransMap.LangType.ja, new string[] { "ja", "en" } },
+            { BKTransMap.LangType.zh_cn, new string[] { "ch_sim", "en" } }
+        };
 
     public class SettingEasyOCR : BKOCRSetting
     {
@@ -36,6 +37,7 @@ public class BKOCREasy : BKOCRBase
         nint _threadState { get; set; }
 
         BKTransMap.LangType? _langType = null;
+
         public EasyOCR()
         {
             BKPythonEngine.Initialize();
@@ -44,6 +46,7 @@ public class BKOCREasy : BKOCRBase
                 _easy_ocr = Py.Import("easyocr");
             }
         }
+
         public string OCR(Bitmap image, BKTransMap.LangType langType)
         {
             string result = "";
@@ -61,7 +64,9 @@ public class BKOCREasy : BKOCRBase
             return result;
         }
     }
+
     private static Lazy<EasyOCR> _easyOCR = new();
+
     public BKOCREasy()
     {
         // https://github.com/JaidedAI/EasyOCR

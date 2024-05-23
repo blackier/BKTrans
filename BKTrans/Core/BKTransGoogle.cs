@@ -12,19 +12,20 @@ namespace BKTrans.Core;
 
 public class BKTransGoogle : BKTransBase
 {
-    private readonly static Dictionary<BKTransMap.LangType, string> LangMap = new()
-    {
-        {BKTransMap.LangType.zh_cn,  "zh"},
-        {BKTransMap.LangType.ja,     "ja"},
-        {BKTransMap.LangType.en_us,  "en"},
-        {BKTransMap.LangType.ko,     "ko"},
-        {BKTransMap.LangType.fr,     "fr"},
-        {BKTransMap.LangType.de,     "de"},
-        {BKTransMap.LangType.ru,     "ru"},
-        {BKTransMap.LangType.es,     "es"},
-        {BKTransMap.LangType.pt,     "pt"},
-        {BKTransMap.LangType.it,     "it"},
-    };
+    private static readonly Dictionary<BKTransMap.LangType, string> LangMap =
+        new()
+        {
+            { BKTransMap.LangType.zh_cn, "zh" },
+            { BKTransMap.LangType.ja, "ja" },
+            { BKTransMap.LangType.en_us, "en" },
+            { BKTransMap.LangType.ko, "ko" },
+            { BKTransMap.LangType.fr, "fr" },
+            { BKTransMap.LangType.de, "de" },
+            { BKTransMap.LangType.ru, "ru" },
+            { BKTransMap.LangType.es, "es" },
+            { BKTransMap.LangType.pt, "pt" },
+            { BKTransMap.LangType.it, "it" },
+        };
 
     [Serializable]
     public class SettingGoogleTrans : BKTransSetting
@@ -74,7 +75,10 @@ public class BKTransGoogle : BKTransBase
 
             string oo = jobjContent.ToJsonString();
 
-            HttpRequestMessage transReqMsg = new HttpRequestMessage(HttpMethod.Post, $"{_translateUri}?key={setting.api_key}")
+            HttpRequestMessage transReqMsg = new HttpRequestMessage(
+                HttpMethod.Post,
+                $"{_translateUri}?key={setting.api_key}"
+            )
             {
                 Content = new StringContent(jobjContent.ToJsonString(), Encoding.UTF8, "application/json")
             };
@@ -99,7 +103,6 @@ public class BKTransGoogle : BKTransBase
 
                 result = transResultText;
             }
-
         } while (false);
         return result;
     }

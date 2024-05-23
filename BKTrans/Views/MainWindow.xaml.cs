@@ -1,8 +1,4 @@
-﻿using BKTrans.Core;
-using BKTrans.Models;
-using BKTrans.ViewModels;
-using BKTrans.Views.Pages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -16,6 +12,10 @@ using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
+using BKTrans.Core;
+using BKTrans.Models;
+using BKTrans.ViewModels;
+using BKTrans.Views.Pages;
 
 namespace BKTrans.Views;
 
@@ -24,9 +24,18 @@ public partial class MainWindow
     private bool _notifyClose = false;
 
     private MainWindowViewModel _viewModel;
-    public MainWindowViewModel ViewModel { get { return _viewModel; } }
-    public MainWindow(MainWindowViewModel viewModel, INavigationService navigationService,
-        IServiceProvider serviceProvider, ISnackbarService snackbarService, IContentDialogService contentDialogService)
+    public MainWindowViewModel ViewModel
+    {
+        get { return _viewModel; }
+    }
+
+    public MainWindow(
+        MainWindowViewModel viewModel,
+        INavigationService navigationService,
+        IServiceProvider serviceProvider,
+        ISnackbarService snackbarService,
+        IContentDialogService contentDialogService
+    )
     {
         Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this);
 
@@ -68,14 +77,30 @@ public partial class MainWindow
         ShowFloatWindow = 0xB002,
         HideFloatWindow = 0xB003
     }
+
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         // 热键注册
         IntPtr handle = this.Handle();
         bool is_succeess = false;
-        is_succeess = BKHotKey.Register(handle, (int)HotKeyId.Capture, (uint)BKHotKey.Modifiers.norepeat, (uint)Keys.F2);
-        is_succeess = BKHotKey.Register(handle, (int)HotKeyId.ShowFloatWindow, (uint)(BKHotKey.Modifiers.shift | BKHotKey.Modifiers.alt | BKHotKey.Modifiers.norepeat), (uint)Keys.X);
-        is_succeess = BKHotKey.Register(handle, (int)HotKeyId.HideFloatWindow, (uint)(BKHotKey.Modifiers.shift | BKHotKey.Modifiers.alt | BKHotKey.Modifiers.norepeat), (uint)Keys.Z);
+        is_succeess = BKHotKey.Register(
+            handle,
+            (int)HotKeyId.Capture,
+            (uint)BKHotKey.Modifiers.norepeat,
+            (uint)Keys.F2
+        );
+        is_succeess = BKHotKey.Register(
+            handle,
+            (int)HotKeyId.ShowFloatWindow,
+            (uint)(BKHotKey.Modifiers.shift | BKHotKey.Modifiers.alt | BKHotKey.Modifiers.norepeat),
+            (uint)Keys.X
+        );
+        is_succeess = BKHotKey.Register(
+            handle,
+            (int)HotKeyId.HideFloatWindow,
+            (uint)(BKHotKey.Modifiers.shift | BKHotKey.Modifiers.alt | BKHotKey.Modifiers.norepeat),
+            (uint)Keys.Z
+        );
         if (!is_succeess)
         {
             Dispatcher.InvokeAsync(() => App.SnackbarError("热键注册失败"));
@@ -116,8 +141,10 @@ public partial class MainWindow
         var currentTheme = Wpf.Ui.Appearance.ApplicationThemeManager.GetAppTheme();
 
         Wpf.Ui.Appearance.ApplicationThemeManager.Apply(
-            currentTheme == Wpf.Ui.Appearance.ApplicationTheme.Light ? Wpf.Ui.Appearance.ApplicationTheme.Dark
-                                                                     : Wpf.Ui.Appearance.ApplicationTheme.Light);
+            currentTheme == Wpf.Ui.Appearance.ApplicationTheme.Light
+                ? Wpf.Ui.Appearance.ApplicationTheme.Dark
+                : Wpf.Ui.Appearance.ApplicationTheme.Light
+        );
         App.GetRequiredService<MainPage>()?.OnSwitchTheme();
     }
 

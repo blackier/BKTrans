@@ -1,5 +1,4 @@
-﻿using Python.Runtime;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -9,16 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Python.Runtime;
 
 namespace BKTrans.Core;
 
 public class BKOCRManga : BKOCRBase
 {
-    private readonly static Dictionary<BKTransMap.LangType, string> LangMap = new()
-    {
-        {BKTransMap.LangType.ja,    "ja"},
-        {BKTransMap.LangType.zh_cn, "zh"},
-    };
+    private static readonly Dictionary<BKTransMap.LangType, string> LangMap =
+        new() { { BKTransMap.LangType.ja, "ja" }, { BKTransMap.LangType.zh_cn, "zh" }, };
 
     public class SettingMangaOCR : BKOCRSetting
     {
@@ -34,6 +31,7 @@ public class BKOCRManga : BKOCRBase
         dynamic _manga_ocr { get; set; }
         dynamic _mocr { get; set; }
         nint _threadState { get; set; }
+
         public MangaOCR()
         {
             BKPythonEngine.Initialize();
@@ -55,7 +53,9 @@ public class BKOCRManga : BKOCRBase
             return result;
         }
     }
+
     private static Lazy<MangaOCR> _mangeOCR = new();
+
     public BKOCRManga()
     {
         // https://github.com/kha-white/manga-ocr

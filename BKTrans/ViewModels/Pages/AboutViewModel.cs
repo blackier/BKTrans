@@ -1,10 +1,10 @@
-﻿using BKTrans.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using BKTrans.Models;
 
 namespace BKTrans.ViewModels.Pages;
 
@@ -14,6 +14,7 @@ public partial class AboutViewModel : ObservableObject
     private string _version;
 
     private readonly SettingsModel.Settings _settings;
+
     public AboutViewModel()
     {
         _settings = SettingsModel.LoadSettings();

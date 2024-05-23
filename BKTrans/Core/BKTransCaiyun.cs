@@ -12,12 +12,13 @@ namespace BKTrans.Core;
 
 public class BKTransCaiyun : BKTransBase
 {
-    private readonly static Dictionary<BKTransMap.LangType, string> LangMap = new()
-    {
-        {BKTransMap.LangType.zh_cn, "zh"},
-        {BKTransMap.LangType.ja,    "ja"},
-        {BKTransMap.LangType.en_us, "en"},
-    };
+    private static readonly Dictionary<BKTransMap.LangType, string> LangMap =
+        new()
+        {
+            { BKTransMap.LangType.zh_cn, "zh" },
+            { BKTransMap.LangType.ja, "ja" },
+            { BKTransMap.LangType.en_us, "en" },
+        };
 
     [Serializable]
     public class SettingCaiyunTrans : BKTransSetting
@@ -74,9 +75,7 @@ public class BKTransCaiyun : BKTransBase
             HttpRequestMessage transReqMsg = new HttpRequestMessage(HttpMethod.Post, _translateUri)
             {
                 Content = new StringContent(jobjContent.ToJsonString(), Encoding.UTF8, "application/json"),
-                Headers = {
-                    { "X-Authorization", "token " + setting.token }
-                }
+                Headers = { { "X-Authorization", "token " + setting.token } }
             };
 
             HttpClient transReq = BKHttpClient.DefaultHttpClient;
@@ -93,7 +92,6 @@ public class BKTransCaiyun : BKTransBase
 
                 result = trasn_result.ToString();
             }
-
         } while (false);
         return result;
     }
