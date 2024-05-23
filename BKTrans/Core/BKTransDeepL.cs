@@ -10,31 +10,31 @@ using System.Threading.Tasks;
 
 namespace BKTrans.Core;
 
-public class BKTransGoogle : BKTransBase
+public class BKTransDeepL : BKTransBase
 {
     private readonly static Dictionary<BKTransMap.LangType, string> LangMap = new()
     {
-        {BKTransMap.LangType.zh_cn,  "zh"},
-        {BKTransMap.LangType.ja,     "ja"},
-        {BKTransMap.LangType.en_us,  "en"},
-        {BKTransMap.LangType.ko,     "ko"},
-        {BKTransMap.LangType.fr,     "fr"},
-        {BKTransMap.LangType.de,     "de"},
-        {BKTransMap.LangType.ru,     "ru"},
-        {BKTransMap.LangType.es,     "es"},
-        {BKTransMap.LangType.pt,     "pt"},
-        {BKTransMap.LangType.it,     "it"},
+        {BKTransMap.LangType.zh_cn,  "ZH"},
+        {BKTransMap.LangType.ja,     "JA"},
+        {BKTransMap.LangType.en_us,  "EN"},
+        {BKTransMap.LangType.ko,     "KO"},
+        {BKTransMap.LangType.fr,     "FR"},
+        {BKTransMap.LangType.de,     "DE"},
+        {BKTransMap.LangType.ru,     "RU"},
+        {BKTransMap.LangType.es,     "ES"},
+        {BKTransMap.LangType.pt,     "PT"},
+        {BKTransMap.LangType.it,     "IT"},
     };
 
     [Serializable]
-    public class SettingGoogleTrans : BKTransSetting
+    public class SettingDeepLTrans : BKTransSetting
     {
-        public string api_key { get; set; }
+        public string auth_key { get; set; }
 
-        public SettingGoogleTrans()
+        public SettingDeepLTrans()
         {
-            name = "google";
-            api_key = "";
+            name = "deepl";
+            auth_key = "";
             from = BKTransMap.LangType.ja;
             to = BKTransMap.LangType.zh_cn;
         }
@@ -42,10 +42,10 @@ public class BKTransGoogle : BKTransBase
 
     private string _translateUri;
 
-    public BKTransGoogle()
+    public BKTransDeepL()
     {
-        // https://cloud.google.com/translate/docs/basic/translating-text?hl=zh-cn
-        _translateUri = "https://translation.googleapis.com/language/translate/v2";
+        // https://developers.deepl.com/docs/v/zh/api-reference/translate
+        _translateUri = "https://api-free.deepl.com/v2/translate";
     }
 
     public override List<BKTransMap.LangType> GetLangType()
@@ -55,29 +55,29 @@ public class BKTransGoogle : BKTransBase
 
     public override string Trans(BKBaseSetting setting_, string srcText)
     {
-        SettingGoogleTrans setting = (SettingGoogleTrans)setting_;
+        SettingDeepLTrans setting = (SettingDeepLTrans)setting_;
         string result = "";
         do
         {
-            if (string.IsNullOrEmpty(setting.api_key))
+            if (string.IsNullOrEmpty(setting.auth_key))
             {
-                result = "api key is empty.";
+                result = "auth key is empty.";
                 break;
             }
 
             // 请求
             JsonObject jobjContent = new();
-            jobjContent.Add("q", new JsonArray(srcText));
-            jobjContent.Add("source", LangMap[setting.from]);
-            jobjContent.Add("target", LangMap[setting.to]);
-            jobjContent.Add("key", setting.api_key);
+            jobjContent.Add("text", new JsonArray(srcText));
+            jobjContent.Add("source_lang", LangMap[setting.from]);
+            jobjContent.Add("target_lang", LangMap[setting.to]);
 
             string oo = jobjContent.ToJsonString();
 
-            HttpRequestMessage transReqMsg = new HttpRequestMessage(HttpMethod.Post, $"{_translateUri}?key={setting.api_key}")
+            HttpRequestMessage transReqMsg = new HttpRequestMessage(HttpMethod.Post, $"{_translateUri}")
             {
                 Content = new StringContent(jobjContent.ToJsonString(), Encoding.UTF8, "application/json")
             };
+            transReqMsg.Headers.Add("Authorization", setting.auth_key);
 
             HttpClient transReq = BKHttpClient.DefaultHttpClient;
             HttpResponseMessage ocrRes = transReq.Send(transReqMsg);
@@ -88,14 +88,14 @@ public class BKTransGoogle : BKTransBase
             using (JsonDocument jdocOcrResult = JsonDocument.Parse(result))
             {
                 string transResultText = "";
-                if (!jdocOcrResult.RootElement.TryGetProperty("data", out JsonElement jelemData))
+                if (!jdocOcrResult.RootElement.TryGetProperty("translations", out JsonElement jelemData))
                     break;
 
                 if (!jelemData.TryGetProperty("translations", out JsonElement jeleTranslations))
                     break;
 
                 foreach (JsonElement jeleResult in jeleTranslations.EnumerateArray())
-                    transResultText += jeleResult.GetProperty("translatedText").ToString();
+                    transResultText += jeleResult.GetProperty("text").ToString();
 
                 result = transResultText;
             }

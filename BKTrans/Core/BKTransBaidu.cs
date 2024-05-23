@@ -82,7 +82,7 @@ public class BKTransBaidu : BKTransBase
             };
 
             HttpClient transReq = BKHttpClient.DefaultHttpClient;
-            HttpResponseMessage ocrRes = transReq.SendAsync(transReqMsg).Result;
+            HttpResponseMessage ocrRes = transReq.Send(transReqMsg);
 
             result = ocrRes.Content.ReadAsStringAsync().Result;
 

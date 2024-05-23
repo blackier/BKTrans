@@ -55,6 +55,7 @@ public class SettingsModel
         public BKTransBaidu.SettingBaiduTrans trans_baidu { get; set; }
         public BKTransCaiyun.SettingCaiyunTrans trans_caiyun { get; set; }
         public BKTransGoogle.SettingGoogleTrans trans_google { get; set; }
+        public BKTransDeepL.SettingDeepLTrans trans_deepl { get; set; }
 
         // 截图翻译事件间隔
         public int auto_captrue_trans_interval { get; set; }
@@ -112,6 +113,8 @@ public class SettingsModel
                     return trans_caiyun;
                 case BKTransMap.TransType.google:
                     return trans_google;
+                case BKTransMap.TransType.deepl:
+                    return trans_deepl;
             }
             return new();
         }

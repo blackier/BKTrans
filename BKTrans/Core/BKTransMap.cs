@@ -41,7 +41,8 @@ public class BKTransMap
     {
         baidu = 0,
         caiyun,
-        google
+        google,
+        deepl,
     }
     public readonly static List<TransType> TransTypeList = EnumExtensions.GetTypeList<TransType>().ToList();
 
@@ -73,6 +74,8 @@ public class BKTransMap
                 return new BKTransCaiyun();
             case TransType.google:
                 return new BKTransGoogle();
+            case TransType.deepl:
+                return new BKTransDeepL();
             default:
                 return new BKTransBaidu();
         }

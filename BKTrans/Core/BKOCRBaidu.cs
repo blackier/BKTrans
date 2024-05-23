@@ -123,7 +123,7 @@ public class BKOCRBaidu : BKOCRBase
             };
 
             HttpClient akReq = BKHttpClient.DefaultHttpClient;
-            HttpResponseMessage akRes = akReq.SendAsync(akReqMsg).Result;
+            HttpResponseMessage akRes = akReq.Send(akReqMsg);
 
             using (JsonDocument jdocAkResult = JsonDocument.Parse(akRes.Content.ReadAsStringAsync().Result))
             {
@@ -157,7 +157,7 @@ public class BKOCRBaidu : BKOCRBase
             };
 
             HttpClient ocrReq = BKHttpClient.DefaultHttpClient;
-            HttpResponseMessage ocrRes = ocrReq.SendAsync(ocrReqMsg).Result;
+            HttpResponseMessage ocrRes = ocrReq.Send(ocrReqMsg);
 
             ocrResult = ocrRes.Content.ReadAsStringAsync().Result;
 
