@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BKTrans.Core;
 
 namespace BKTrans.Views;
 
@@ -30,12 +29,9 @@ public partial class FloatTransTextWindow : Window
 
     public void ShowWindow()
     {
-        Dispatcher.InvokeAsync(() =>
-        {
-            Topmost = true;
-            Show();
-            Activate();
-        });
+        Topmost = true;
+        Show();
+        Activate();
     }
 
     public void HideWindow()

@@ -43,7 +43,6 @@ public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRRe
         InitializeComponent();
     }
 
-    #region 事件处理
     protected void btn_save_Click(object sender, RoutedEventArgs e)
     {
         BindingOperations.GetBindingExpression(datagrid_ocr_replace, DataGrid.ItemsSourceProperty).UpdateSource();
@@ -191,5 +190,4 @@ public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRRe
         //简单处理
         (sender as MenuItem).ItemsSource = ViewModel.SortTypeItems;
     }
-    #endregion 事件处理
 }

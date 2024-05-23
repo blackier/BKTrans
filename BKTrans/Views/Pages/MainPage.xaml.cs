@@ -82,26 +82,24 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
 
         // 翻译浮窗设置
         _floatTextWindow = floatCaptureRectWindow;
-        _floatTextWindow.RegisterCallback(
-            (FloatCaptureRectWindow.ButtonType btntype, object arg) =>
+        _floatTextWindow.OnButtonClick = (FloatCaptureRectWindow.ButtonType btntype, object arg) =>
+        {
+            switch (btntype)
             {
-                switch (btntype)
-                {
-                    case FloatCaptureRectWindow.ButtonType.Capture:
-                        _floatTextWindow.HideWindow();
-                        Dispatcher.InvokeAsync(() => DoCaptureOCR(false, true, false));
-                        break;
-                    case FloatCaptureRectWindow.ButtonType.Trans:
-                        Dispatcher.InvokeAsync(() => DoCaptureOCR(true, true, false));
-                        break;
-                    case FloatCaptureRectWindow.ButtonType.AutoTrans:
-                        Dispatcher.InvokeAsync(() => AutoTransSetting((bool)arg));
-                        break;
-                    default:
-                        break;
-                }
+                case FloatCaptureRectWindow.ButtonType.Capture:
+                    _floatTextWindow.HideWindow();
+                    Dispatcher.InvokeAsync(() => DoCaptureOCR(false, true, false));
+                    break;
+                case FloatCaptureRectWindow.ButtonType.Trans:
+                    Dispatcher.InvokeAsync(() => DoCaptureOCR(true, true, false));
+                    break;
+                case FloatCaptureRectWindow.ButtonType.AutoTrans:
+                    Dispatcher.InvokeAsync(() => AutoTransSetting((bool)arg));
+                    break;
+                default:
+                    break;
             }
-        );
+        };
         _floatTextWindow.SetAutoTransStatus(_viewModel.AutoCaptrueTransOpen);
 
         // 页面加载时
@@ -122,33 +120,27 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
 
     private void SetSourceText(string srcText, List<ReplaceTextItem> replaceText = null)
     {
-        Dispatcher.Invoke(() =>
+        Paragraph paragraph_source_text = new Paragraph();
+        if (replaceText != null && replaceText.Count > 0)
         {
-            Paragraph paragraph_source_text = new Paragraph();
-            if (replaceText != null && replaceText.Count > 0)
+            foreach (var item in replaceText)
             {
-                foreach (var item in replaceText)
-                {
-                    if (string.IsNullOrEmpty(item.dst))
-                        paragraph_source_text.Inlines.Add(new Run(item.src));
-                    else
-                        paragraph_source_text.Inlines.Add(new OCRReplaceItem(item.src, item.dst));
-                }
-                paragraph_source_text.Inlines.Add(_textSpliteString);
+                if (string.IsNullOrEmpty(item.dst))
+                    paragraph_source_text.Inlines.Add(new Run(item.src));
+                else
+                    paragraph_source_text.Inlines.Add(new OCRReplaceItem(item.src, item.dst));
             }
-            paragraph_source_text.Inlines.Add(srcText);
+            paragraph_source_text.Inlines.Add(_textSpliteString);
+        }
+        paragraph_source_text.Inlines.Add(srcText);
 
-            richtextbox_source_text.Document.Blocks.Clear();
-            richtextbox_source_text.Document.Blocks.Add(paragraph_source_text);
-        });
+        richtextbox_source_text.Document.Blocks.Clear();
+        richtextbox_source_text.Document.Blocks.Add(paragraph_source_text);
     }
 
     private void SetTargetText(string targetText)
     {
-        Dispatcher.Invoke(() =>
-        {
-            textbox_target_text.Text = targetText;
-        });
+        textbox_target_text.Text = targetText;
     }
 
     private string GetSourceText()
@@ -173,14 +165,6 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
         });
         text = text.Split(_textSpliteString)[0];
         return text;
-    }
-
-    private string GetTargetText()
-    {
-        return Dispatcher.Invoke(() =>
-        {
-            return textbox_target_text.Text;
-        });
     }
 
     private void ShowWindow()
@@ -215,10 +199,10 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
         HideWindow();
         // 需要延迟下，否则界面未完全隐藏
         _ = Task.Delay(250)
-            .ContinueWith(t =>
-            {
-                Dispatcher.InvokeAsync(() => DoCaptureOCR(false, floatwindowVisible));
-            });
+            .ContinueWith(
+                _ => DoCaptureOCR(false, floatwindowVisible),
+                TaskScheduler.FromCurrentSynchronizationContext()
+            );
     }
 
     public void CaptureTransLast()
@@ -248,14 +232,9 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
                 break;
 
             var bmpData = capturedata.captureBmp;
-            if (bmpData.Height < 15 || bmpData.Width < 15)
+            if (bmpData.Height < 15 || bmpData.Width < 15 || bmpData.Height > 4096 || bmpData.Width > 4096)
             {
-                SetSourceText("截取完成，截取最短边要求至少15px...");
-                break;
-            }
-            else if (bmpData.Height > 4096 || bmpData.Width > 4096)
-            {
-                SetSourceText("截取完成，截取最长边要求不超过4096px...");
+                SetSourceText("截取失败，最短边至少15px，最长边不超过4096px");
                 break;
             }
 
@@ -275,7 +254,7 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
             SetSourceText(ocrResultText, _viewModel.OCRRepalce(ocrResultText));
 
             if (_viewModel.AutoTransOCRResult)
-                Dispatcher.Invoke(() => DoTextTrans(ocrResult));
+                DoTextTrans(ocrResult);
             else
                 _transLogger.Information($"Only OCR:\n{BKMisc.JsonSerialize(ocrResult)}");
         } while (false);
@@ -314,9 +293,6 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
         }
     }
 
-    #region 事件处理
-
-    #region 用户控件
     private void _catprueTransTimer_Tick(object sender, EventArgs e)
     {
         do
@@ -516,8 +492,4 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
         _viewModel.AddOcrReplaceItem(textbox_ocr_replace_src.Text, textbox_ocr_replace_dst.Text);
         flyout_add_ocr_replace.IsOpen = false;
     }
-
-    #endregion 用户控件
-
-    #endregion 事件处理
 }

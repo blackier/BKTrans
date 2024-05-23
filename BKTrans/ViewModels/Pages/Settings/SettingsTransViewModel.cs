@@ -11,7 +11,6 @@ public partial class SettingsTransViewModel : ObservableObject
 {
     private readonly SettingsModel.Settings _settings;
 
-    #region api
     public string OcrBaiduClientID
     {
         get => _settings.ocr_baidu.client_id;
@@ -65,8 +64,6 @@ public partial class SettingsTransViewModel : ObservableObject
         get => _settings.trans_google.api_key;
         set { SetProperty(_settings.trans_google.api_key, value, _settings, (s, v) => s.trans_google.api_key = v); }
     }
-
-    #endregion api
 
     public SettingsTransViewModel()
     {

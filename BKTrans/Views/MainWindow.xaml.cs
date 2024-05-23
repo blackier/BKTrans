@@ -50,7 +50,7 @@ public partial class MainWindow
 
         snackbarService.SetSnackbarPresenter(SnackbarPresenter);
         navigationService.SetNavigationControl(NavigationView);
-        contentDialogService.SetContentPresenter(RootContentDialog);
+        contentDialogService.SetDialogHost(RootContentDialog);
 
         NavigationView.SetServiceProvider(serviceProvider);
         NavigationView.Loaded += (_, _) => NavigationView.Navigate(typeof(MainPage));
@@ -63,11 +63,10 @@ public partial class MainWindow
             Show();
             WindowState = WindowState.Normal;
         }
-
-        Activate();
         Topmost = true;
-        Topmost = false;
+        Activate();
         Focus();
+        Topmost = false;
     }
 
     // Win32API: RegisterHotKey function

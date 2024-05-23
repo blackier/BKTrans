@@ -23,12 +23,9 @@ namespace BKTrans;
 /// </summary>
 public partial class App : Application
 {
-    private const string _uniqueEventName = "{GUID}BKTransSingleInstanceEvent";
-    private const string _uniqueMutexName = "{GUID}BKTransSingleInstanceMutex";
-    private EventWaitHandle _eventWaitHandle;
-    private Mutex _mutex;
+    private Mutex _singleInstanceMutex;
 
-    private static Serilog.ILogger _appLogger;
+    private static ILogger _appLogger;
 
     private static readonly IHost _host = Host.CreateDefaultBuilder()
         .ConfigureAppConfiguration(c =>
@@ -47,7 +44,6 @@ public partial class App : Application
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<ISnackbarService, SnackbarService>();
                 services.AddSingleton<IContentDialogService, ContentDialogService>();
-                services.AddSingleton<WindowsProviderService>();
 
                 // Top-level pages
                 services.AddSingleton<MainPage>();
@@ -124,21 +120,7 @@ public partial class App : Application
 
     private void ExceptionHandler(string exception_type, Exception e)
     {
-        string error_msg = "";
-        do
-        {
-            if (exception_type != null)
-                error_msg += exception_type + ": ";
-            if (e == null)
-                break;
-            error_msg += e.Message + "\n";
-            error_msg += e.StackTrace + "\n\n";
-            if (e.InnerException == null)
-                break;
-            error_msg += e.InnerException.Message + "\n";
-            error_msg += e.InnerException.StackTrace + "\n\n";
-        } while (false);
-        _appLogger.Error(error_msg);
+        _appLogger.Error($"{exception_type}: {e}");
         SnackbarError("程序发生异常，详情查看logs");
     }
 
@@ -146,18 +128,20 @@ public partial class App : Application
     {
         //https://stackoverflow.com/questions/14506406/wpf-single-instance-best-practices
         bool isOwned;
-        _mutex = new Mutex(true, _uniqueMutexName, out isOwned);
-        _eventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, _uniqueEventName);
+        const string uniqueEventName = "BKTransWake";
+        const string uniqueMutexName = "BKTransMutex";
+        _singleInstanceMutex = new Mutex(true, uniqueMutexName, out isOwned);
+        EventWaitHandle eventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, uniqueEventName);
 
         // So, R# would not give a warning that this variable is not used.
-        GC.KeepAlive(_mutex);
+        GC.KeepAlive(_singleInstanceMutex);
 
         if (isOwned)
         {
             // Spawn a thread which will be waiting for our event
             var thread = new Thread(() =>
             {
-                while (_eventWaitHandle.WaitOne())
+                while (eventWaitHandle.WaitOne())
                 {
                     Current.Dispatcher.BeginInvoke(() => ((MainWindow)Current.MainWindow).BringToForeground());
                 }
@@ -171,7 +155,7 @@ public partial class App : Application
         }
 
         // Notify other instance so it could bring itself to foreground.
-        _eventWaitHandle.Set();
+        eventWaitHandle.Set();
 
         // Terminate this instance.
         Shutdown();

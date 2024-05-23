@@ -25,16 +25,17 @@ public partial class FloatCaptureRectWindow : Window
     };
 
     private Stack<RectangleF> _historyRect;
-    private Action<ButtonType, object> _onButtonClick;
     private TransResultTextControl _transResultTextControl;
     private FloatTransTextWindow _floatTransTextWindow;
+
+    public delegate void OnButtonClickEvent(ButtonType buttonType, object arg);
+    public OnButtonClickEvent OnButtonClick { get; set; }
 
     public FloatCaptureRectWindow(FloatTransTextWindow floatTransTextWindow)
     {
         InitializeComponent();
 
         ShowInTaskbar = false;
-        _onButtonClick = null;
         _historyRect = new();
 
         _transResultTextControl = new TransResultTextControl();
@@ -49,11 +50,6 @@ public partial class FloatCaptureRectWindow : Window
         Loaded += new RoutedEventHandler(Window_Loaded);
     }
 
-    public void RegisterCallback(Action<ButtonType, object> OnButtonClick = null)
-    {
-        _onButtonClick = OnButtonClick;
-    }
-
     private void AddHistoryRect()
     {
         var currentRect = new RectangleF((float)Left, (float)Top, (float)Width, (float)Height);
@@ -64,15 +60,12 @@ public partial class FloatCaptureRectWindow : Window
 
     public void SetTextRect(RectangleF rect)
     {
-        Dispatcher.Invoke(() =>
-        {
-            var p = WindowExtensions.ScreenScaling();
-            Left = rect.X / p;
-            Top = rect.Y / p;
-            Width = rect.Width / p + gridcolumn_btn.Width.Value;
-            Height = (rect.Height / p) * 2;
-            AddHistoryRect();
-        });
+        var p = WindowExtensions.ScreenScaling();
+        Left = rect.X / p;
+        Top = rect.Y / p;
+        Width = rect.Width / p + gridcolumn_btn.Width.Value;
+        Height = (rect.Height / p) * 2;
+        AddHistoryRect();
     }
 
     public RectangleF GetTextRect()
@@ -86,41 +79,29 @@ public partial class FloatCaptureRectWindow : Window
         );
     }
 
-    public void SetText(string t)
+    public void SetText(string text)
     {
-        Dispatcher.Invoke(() =>
-        {
-            _transResultTextControl.Text = t;
-        });
+        _transResultTextControl.Text = text;
     }
 
     public void SetAutoTransStatus(bool start)
     {
-        Dispatcher.Invoke(() =>
-        {
-            checkbox_autotrans.IsChecked = start;
-        });
+        checkbox_autotrans.IsChecked = start;
     }
 
     public void ShowWindow()
     {
-        Dispatcher.Invoke(() =>
-        {
-            if (_transResultTextControl.TextButtonIsChecked)
-                _floatTransTextWindow.ShowWindow();
-            Topmost = true;
-            Show();
-            Activate();
-        });
+        if (_transResultTextControl.TextButtonIsChecked)
+            _floatTransTextWindow.ShowWindow();
+        Topmost = true;
+        Show();
+        Activate();
     }
 
     public void HideWindow()
     {
-        Dispatcher.Invoke(() =>
-        {
-            Hide();
-            _floatTransTextWindow.HideWindow();
-        });
+        Hide();
+        _floatTransTextWindow.HideWindow();
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -172,14 +153,12 @@ public partial class FloatCaptureRectWindow : Window
 
     private void btn_capture_Click(object sender, RoutedEventArgs e)
     {
-        if (_onButtonClick != null)
-            _onButtonClick(ButtonType.Capture, null);
+        OnButtonClick?.Invoke(ButtonType.Capture, null);
     }
 
     private void btn_trans_Click(object sender, RoutedEventArgs e)
     {
-        if (_onButtonClick != null)
-            _onButtonClick(ButtonType.Trans, null);
+        OnButtonClick?.Invoke(ButtonType.Trans, null);
     }
 
     private void btn_hide_Click(object sender, RoutedEventArgs e)
@@ -200,24 +179,20 @@ public partial class FloatCaptureRectWindow : Window
     private void checkbox_autotrans_Click(object sender, RoutedEventArgs e)
     {
         checkbox_autotrans.IsChecked = !checkbox_autotrans.IsChecked;
-        if (_onButtonClick != null)
-            _onButtonClick(ButtonType.AutoTrans, checkbox_autotrans.IsChecked);
+        OnButtonClick?.Invoke(ButtonType.AutoTrans, checkbox_autotrans.IsChecked);
     }
 
     private void btn_drag_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
         bool? autotrans_checked = checkbox_autotrans.IsChecked;
-        if (_onButtonClick != null)
-            _onButtonClick(ButtonType.AutoTrans, false);
+        if (OnButtonClick != null)
+            OnButtonClick(ButtonType.AutoTrans, false);
 
         DragMove();
         AddHistoryRect();
 
-        if (_onButtonClick != null)
-        {
-            _onButtonClick(ButtonType.GragMove, null);
-            _onButtonClick(ButtonType.AutoTrans, autotrans_checked);
-        }
+        OnButtonClick?.Invoke(ButtonType.GragMove, null);
+        OnButtonClick?.Invoke(ButtonType.AutoTrans, autotrans_checked);
     }
 
     private void btn_undo_Click(object sender, RoutedEventArgs e)

@@ -37,6 +37,4 @@ public partial class SettingsPage : wpfui.INavigableView<SettingsViewModel>
         NavigationView.SetServiceProvider(serviceProvider);
         NavigationView.Loaded += (_, _) => NavigationView.Navigate(typeof(SettingsTransPage));
     }
-    #region 事件处理
-    #endregion 事件处理
 }

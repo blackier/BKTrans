@@ -34,7 +34,6 @@ public partial class SettingsTransPage : wpfui.INavigableView<SettingsTransViewM
         InitializeComponent();
     }
 
-    #region 事件处理
     protected void btn_save_Click(object sender, RoutedEventArgs e)
     {
         SettingsModel.SaveSettings();
@@ -44,6 +43,4 @@ public partial class SettingsTransPage : wpfui.INavigableView<SettingsTransViewM
     {
         App.NavigateGoBack();
     }
-
-    #endregion 事件处理
 }
