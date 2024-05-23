@@ -43,49 +43,53 @@
                         Width="120"
                         VerticalContentAlignment="Center"
                         Content="采样间隔(ms)：" />
-                    <TextBox
+                    <ui:NumberBox
                         x:Name="textbox_auto_captrue_trans_interval"
-                        Width="auto"
                         Margin="0,2,0,2"
-                        IsReadOnly="True"
-                        MouseWheel="textbox_auto_captrue_trans_interval_MouseWheel"
-                        Text="{Binding ViewModel.AutoCaptrueTransInterval, UpdateSourceTrigger=Explicit}">
+                        ClearButtonEnabled="False"
+                        Minimum="100"
+                        SmallChange="10"
+                        Value="{Binding ViewModel.AutoCaptrueTransInterval, UpdateSourceTrigger=Explicit}">
                         <i:Interaction.Triggers>
                             <StaticResource ResourceKey="TextBoxUpdateSource" />
                         </i:Interaction.Triggers>
-                    </TextBox>
+                    </ui:NumberBox>
                 </DockPanel>
                 <DockPanel>
                     <Label
                         Width="120"
                         VerticalContentAlignment="Center"
                         Content="采样倒数：" />
-                    <TextBox
+                    <ui:NumberBox
                         x:Name="textbox_auto_captrue_trans_countdown"
                         Margin="0,2,0,2"
-                        IsReadOnly="True"
-                        MouseWheel="textbox_auto_captrue_trans_countdown_MouseWheel"
-                        Text="{Binding ViewModel.AutoCaptrueTransCountdown, UpdateSourceTrigger=Explicit}">
+                        ClearButtonEnabled="False"
+                        Minimum="0"
+                        SmallChange="1"
+                        ValidationMode="InvalidInputOverwritten"
+                        Value="{Binding ViewModel.AutoCaptrueTransCountdown, UpdateSourceTrigger=Explicit}">
                         <i:Interaction.Triggers>
                             <StaticResource ResourceKey="TextBoxUpdateSource" />
                         </i:Interaction.Triggers>
-                    </TextBox>
+                    </ui:NumberBox>
                 </DockPanel>
                 <DockPanel>
                     <Label
                         Width="120"
                         VerticalContentAlignment="Center"
                         Content="相似度临界值：" />
-                    <TextBox
+                    <ui:NumberBox
                         x:Name="textbox_auto_captrue_trans_similarity"
                         Margin="0,2,0,2"
-                        IsReadOnly="True"
-                        MouseWheel="textbox_auto_captrue_trans_similarity_MouseWheel"
-                        Text="{Binding ViewModel.AutoCaptrueTransSimilarity, UpdateSourceTrigger=Explicit}">
+                        ClearButtonEnabled="False"
+                        Maximum="1"
+                        Minimum="0.5"
+                        SmallChange="0.01"
+                        Value="{Binding ViewModel.AutoCaptrueTransSimilarity, UpdateSourceTrigger=Explicit}">
                         <i:Interaction.Triggers>
                             <StaticResource ResourceKey="TextBoxUpdateSource" />
                         </i:Interaction.Triggers>
-                    </TextBox>
+                    </ui:NumberBox>
                 </DockPanel>
             </StackPanel>
         </Grid>

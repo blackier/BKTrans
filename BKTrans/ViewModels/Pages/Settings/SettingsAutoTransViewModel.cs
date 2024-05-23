@@ -11,54 +11,48 @@ public partial class SettingsAutoTransViewModel : ObservableObject
 {
     private readonly SettingsModel.Settings _settings;
 
-    #region 自动翻译
-
-    public string AutoCaptrueTransInterval
+    public int AutoCaptrueTransInterval
     {
-        get => _settings.auto_captrue_trans_interval.ToString();
+        get => _settings.auto_captrue_trans_interval;
         set
         {
-            int.TryParse(value, out int auto_captrue_trans_interval);
             SetProperty(
                 _settings.auto_captrue_trans_interval,
-                auto_captrue_trans_interval,
+                value,
                 _settings,
                 (s, v) => s.auto_captrue_trans_interval = v
             );
         }
     }
 
-    public string AutoCaptrueTransCountdown
+    public int AutoCaptrueTransCountdown
     {
-        get => _settings.auto_captrue_trans_countdown.ToString();
+        get => _settings.auto_captrue_trans_countdown;
         set
         {
-            int.TryParse(value, out int auto_captrue_trans_countdown);
             SetProperty(
                 _settings.auto_captrue_trans_countdown,
-                auto_captrue_trans_countdown,
+                value,
                 _settings,
                 (s, v) => s.auto_captrue_trans_countdown = v
             );
         }
     }
 
-    public string AutoCaptrueTransSimilarity
+    public float AutoCaptrueTransSimilarity
     {
-        get => _settings.auto_captrue_trans_similarity.ToString();
+        get => _settings.auto_captrue_trans_similarity;
         set
         {
-            float.TryParse(value, out float auto_captrue_trans_similarity);
             SetProperty(
                 _settings.auto_captrue_trans_similarity,
-                auto_captrue_trans_similarity,
+                value,
                 _settings,
                 (s, v) => s.auto_captrue_trans_similarity = v
             );
         }
     }
 
-    #endregion 自动翻译
     public SettingsAutoTransViewModel()
     {
         _settings = SettingsModel.LoadSettings();

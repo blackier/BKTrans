@@ -33,7 +33,6 @@ public partial class SettingsAutoTransPage : wpfui.INavigableView<SettingsAutoTr
         InitializeComponent();
     }
 
-    #region 事件处理
     protected void btn_save_Click(object sender, RoutedEventArgs e)
     {
         SettingsModel.SaveSettings();
@@ -43,56 +42,4 @@ public partial class SettingsAutoTransPage : wpfui.INavigableView<SettingsAutoTr
     {
         App.NavigateGoBack();
     }
-
-    private void textbox_auto_captrue_trans_interval_MouseWheel(
-        object sender,
-        System.Windows.Input.MouseWheelEventArgs e
-    )
-    {
-        if (e.Delta == 0)
-            return;
-        int unit = 10;
-        if (e.Delta < 0)
-            unit = -unit;
-        int interval = textbox_auto_captrue_trans_interval.Text.ToInt();
-        if (interval + unit < 100)
-            return;
-        textbox_auto_captrue_trans_interval.Text = (interval + unit).ToString();
-    }
-
-    private void textbox_auto_captrue_trans_countdown_MouseWheel(
-        object sender,
-        System.Windows.Input.MouseWheelEventArgs e
-    )
-    {
-        if (e.Delta == 0)
-            return;
-        int unit = 1;
-        if (e.Delta < 0)
-            unit = -unit;
-        int interval = textbox_auto_captrue_trans_countdown.Text.ToInt();
-        if (interval + unit < 0)
-            return;
-        textbox_auto_captrue_trans_countdown.Text = (interval + unit).ToString();
-    }
-
-    private void textbox_auto_captrue_trans_similarity_MouseWheel(
-        object sender,
-        System.Windows.Input.MouseWheelEventArgs e
-    )
-    {
-        if (e.Delta == 0)
-            return;
-        float unit = 0.01f;
-        if (e.Delta < 0)
-            unit = -unit;
-        float interval = textbox_auto_captrue_trans_similarity.Text.ToFloat();
-        if (interval + unit > 1)
-            return;
-        if (interval + unit < 0.5f)
-            return;
-        textbox_auto_captrue_trans_similarity.Text = (interval + unit).ToString("0.00");
-    }
-
-    #endregion 事件处理
 }
