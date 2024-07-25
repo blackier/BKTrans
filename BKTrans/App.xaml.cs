@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using BKTrans.Services;
 using BKTrans.ViewModels;
 using BKTrans.ViewModels.Pages;
 using BKTrans.ViewModels.Pages.Settings;
@@ -15,6 +14,7 @@ using BKTrans.Views;
 using BKTrans.Views.Pages;
 using BKTrans.Views.Pages.Settings;
 using Serilog;
+using Wpf.Ui.DependencyInjection;
 
 namespace BKTrans;
 
@@ -35,8 +35,10 @@ public partial class App : Application
         .ConfigureServices(
             (context, services) =>
             {
+                _ = services.AddNavigationViewPageProvider();
+
                 // App Host
-                services.AddHostedService<BKTrans.Services.ApplicationHostService>();
+                services.AddHostedService<Services.ApplicationHostService>();
 
                 // Main window container with navigation
                 services.AddSingleton<MainWindow>();
@@ -196,7 +198,7 @@ public partial class App : Application
     public static void SnackbarSuccess(string message)
     {
         var snackbarService = GetRequiredService<ISnackbarService>();
-        snackbarService.Show("成功", message, Wpf.Ui.Controls.ControlAppearance.Success);
+        snackbarService.Show("成功", message, WpfUi.ControlAppearance.Success);
     }
 
     public static void SnackbarError(string message)
@@ -205,7 +207,7 @@ public partial class App : Application
         snackbarService.Show(
             "失败",
             message,
-            Wpf.Ui.Controls.ControlAppearance.Danger,
+            WpfUi.ControlAppearance.Danger,
             timeout: TimeSpan.FromSeconds(1.5)
         );
     }

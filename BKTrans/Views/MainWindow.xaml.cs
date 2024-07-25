@@ -23,23 +23,21 @@ public partial class MainWindow
 {
     private bool _notifyClose = false;
 
-    private MainWindowViewModel _viewModel;
     public MainWindowViewModel ViewModel
     {
-        get { return _viewModel; }
+        get;
     }
 
     public MainWindow(
         MainWindowViewModel viewModel,
         INavigationService navigationService,
-        IServiceProvider serviceProvider,
         ISnackbarService snackbarService,
         IContentDialogService contentDialogService
     )
     {
         Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this);
 
-        _viewModel = viewModel;
+        ViewModel = viewModel;
         DataContext = this;
 
         InitializeComponent();
@@ -52,7 +50,6 @@ public partial class MainWindow
         navigationService.SetNavigationControl(NavigationView);
         contentDialogService.SetDialogHost(RootContentDialog);
 
-        NavigationView.SetServiceProvider(serviceProvider);
         NavigationView.Loaded += (_, _) => NavigationView.Navigate(typeof(MainPage));
     }
 

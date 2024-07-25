@@ -46,7 +46,6 @@ public partial class MainPageViewModel : ObservableObject
             OnPropertyChanged(nameof(OcrReplaceSelectedItem));
         }
     }
-
     #endregion ocr替换
 
     #region 类型选择
@@ -76,7 +75,6 @@ public partial class MainPageViewModel : ObservableObject
             }
             return selectType.ToUpper();
         }
-        set { }
     }
 
     /// <summary>
@@ -105,7 +103,6 @@ public partial class MainPageViewModel : ObservableObject
             }
             return selectType.ToUpper();
         }
-        set { }
     }
     #endregion 类型选择
 

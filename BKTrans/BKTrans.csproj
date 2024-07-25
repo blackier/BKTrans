@@ -62,6 +62,7 @@
 		<ProjectReference Include="..\BKAssembly\BKAssembly\BKAssembly.csproj" />
 		<ProjectReference Include="..\ThirdParty\ShareX\ShareX.HelpersLib\ShareX.HelpersLib.csproj" />
 		<ProjectReference Include="..\ThirdParty\ShareX\ShareX.ScreenCaptureLib\ShareX.ScreenCaptureLib.csproj" />
+		<ProjectReference Include="..\ThirdParty\wpfui\src\Wpf.Ui.DependencyInjection\Wpf.Ui.DependencyInjection.csproj" />
 		<ProjectReference Include="..\ThirdParty\wpfui\src\Wpf.Ui.Tray\Wpf.Ui.Tray.csproj" />
 		<ProjectReference Include="..\ThirdParty\wpfui\src\Wpf.Ui\Wpf.Ui.csproj" />
 	</ItemGroup>

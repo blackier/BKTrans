@@ -13,23 +13,18 @@ namespace BKTrans.Views.Pages.Settings;
 /// <summary>
 /// Interaction logic for Settings.xaml
 /// </summary>
-public partial class SettingsTransPage : wpfui.INavigableView<SettingsTransViewModel>
+public partial class SettingsTransPage : INavigableView<SettingsTransViewModel>
 {
     public object TextBoxUpdateSource
     {
         set { BindingOperations.GetBindingExpression(value as TextBox, TextBox.TextProperty).UpdateSource(); }
     }
 
-    private SettingsTransViewModel _viewModel;
-
-    public SettingsTransViewModel ViewModel
-    {
-        get { return _viewModel; }
-    }
+    public SettingsTransViewModel ViewModel { get; }
 
     public SettingsTransPage(SettingsTransViewModel viewModel)
     {
-        _viewModel = viewModel;
+        ViewModel = viewModel;
         DataContext = this;
         InitializeComponent();
     }

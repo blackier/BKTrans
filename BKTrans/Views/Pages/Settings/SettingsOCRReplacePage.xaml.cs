@@ -22,23 +22,18 @@ namespace BKTrans.Views.Pages.Settings;
 /// <summary>
 /// Interaction logic for Settings.xaml
 /// </summary>
-public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRReplaceViewModel>
+public partial class SettingsOCRReplacePage : INavigableView<SettingsOCRReplaceViewModel>
 {
     public object TextBoxUpdateSource
     {
         set { BindingOperations.GetBindingExpression(value as TextBox, TextBox.TextProperty).UpdateSource(); }
     }
 
-    private SettingsOCRReplaceViewModel _viewModel;
-
-    public SettingsOCRReplaceViewModel ViewModel
-    {
-        get { return _viewModel; }
-    }
+    public SettingsOCRReplaceViewModel ViewModel { get; }
 
     public SettingsOCRReplacePage(SettingsOCRReplaceViewModel viewModel)
     {
-        _viewModel = viewModel;
+        ViewModel = viewModel;
         DataContext = this;
         InitializeComponent();
     }
@@ -56,25 +51,25 @@ public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRRe
 
     private void btn_ocr_replace_new_Click(object sender, RoutedEventArgs e)
     {
-        _viewModel.NewOcrReplace(textbox_ocr_replace_new.Text);
+        ViewModel.NewOcrReplace(textbox_ocr_replace_new.Text);
         textbox_ocr_replace_new.Text = "";
     }
 
     private async void btn_ocr_replace_delete_Click(object sender, RoutedEventArgs e)
     {
-        var uiMessageBox = new wpfui.MessageBox
+        var uiMessageBox = new WpfUi.MessageBox
         {
             Title = "警告",
             Content = "删除后不可恢复，是否删除？",
             PrimaryButtonText = "删除",
-            PrimaryButtonAppearance = wpfui.ControlAppearance.Danger,
+            PrimaryButtonAppearance = WpfUi.ControlAppearance.Danger,
             CloseButtonText = "取消",
         };
 
-        if (await uiMessageBox.ShowDialogAsync() != wpfui.MessageBoxResult.Primary)
+        if (await uiMessageBox.ShowDialogAsync() != WpfUi.MessageBoxResult.Primary)
             return;
 
-        _viewModel.DeleteOcrSeletedItem();
+        ViewModel.DeleteOcrSeletedItem();
     }
 
     private void btn_ocr_replace_import_Click(object sender, RoutedEventArgs e)
@@ -83,7 +78,7 @@ public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRRe
         openFileDialog.Filter = "Json(*.json)|*.json|Text(*.txt)|*txt";
         if (openFileDialog.ShowDialog() == true)
         {
-            List<OCRReplace> importOcrRepace = _viewModel.LoadOCRReplace(openFileDialog.FileName);
+            List<OCRReplace> importOcrRepace = ViewModel.LoadOCRReplace(openFileDialog.FileName);
             if (importOcrRepace != null)
             {
                 var currentOcrReplace = datagrid_ocr_replace.ItemsSource as List<OCRReplace>;
@@ -105,7 +100,7 @@ public partial class SettingsOCRReplacePage : wpfui.INavigableView<SettingsOCRRe
         saveFileDialog.Filter = "Json(*.json)|*.json|Text(*.txt)|*txt";
         if (saveFileDialog.ShowDialog() == true)
         {
-            _viewModel.SaveOCRReplace(saveFileDialog.FileName, datagrid_ocr_replace.ItemsSource as List<OCRReplace>);
+            ViewModel.SaveOCRReplace(saveFileDialog.FileName, datagrid_ocr_replace.ItemsSource as List<OCRReplace>);
             App.SnackbarSuccess("导出成功，文件路径：" + saveFileDialog.FileName);
         }
     }

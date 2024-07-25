@@ -46,7 +46,7 @@
                     IsEditable="True"
                     IsReadOnly="True"
                     ItemsSource="{Binding ViewModel.OcrTypes}"
-                    Text="{Binding ViewModel.OcrTypesSelectedText}">
+                    Text="{Binding ViewModel.OcrTypesSelectedText, Mode=OneWay}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <CheckBox
@@ -102,11 +102,7 @@
                     </RichTextBox.ContextMenu>
                     <FlowDocument FontFamily="微软雅黑" FontSize="16" />
                 </RichTextBox>
-                <ui:Flyout
-                    x:Name="flyout_add_ocr_replace"
-                    HorizontalOffset="-50"
-                    Placement="Mouse"
-                    VerticalOffset="-50">
+                <ui:Flyout x:Name="flyout_add_ocr_replace" Placement="Mouse">
                     <StackPanel Width="160">
                         <ui:TextBox
                             x:Name="textbox_ocr_replace_src"
@@ -150,7 +146,7 @@
                         IsEditable="True"
                         IsReadOnly="True"
                         ItemsSource="{Binding ViewModel.TransTypes}"
-                        Text="{Binding ViewModel.TransTypesSelectedText}">
+                        Text="{Binding ViewModel.TransTypesSelectedText, Mode=OneWay}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <CheckBox

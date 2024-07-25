@@ -8,7 +8,7 @@
     xmlns:local="clr-namespace:BKTrans.Views.Pages.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    xmlns:vc="clr-namespace:BKTrans.ValueConverters"
+    xmlns:converters="clr-namespace:BKTrans.Converters"
     xmlns:vm="clr-namespace:BKTrans.ViewModels.Pages.Settings"
     Title="Settings OCR Replace Page"
     d:DataContext="{d:DesignInstance local:SettingsOCRReplacePage,
@@ -31,7 +31,7 @@
                 TargetObject="{Binding RelativeSource={RelativeSource AncestorType={x:Type Page}}}"
                 Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
         </i:EventTrigger>
-        <vc:ColllectionElementIndexConverter x:Key="ColllectionElementIndexConverter" />
+        <converters:ColllectionElementIndexConverter x:Key="ColllectionElementIndexConverter" />
     </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>

@@ -11,4 +11,6 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
 global using Wpf.Ui;
 global using Wpf.Ui.Extensions;
-global using wpfui = Wpf.Ui.Controls;
+global using Wpf.Ui.Abstractions;
+global using Wpf.Ui.Abstractions.Controls;
+global using WpfUi = Wpf.Ui.Controls;

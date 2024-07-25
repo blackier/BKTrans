@@ -12,18 +12,13 @@ namespace BKTrans.Views.Pages.Settings;
 /// <summary>
 /// Interaction logic for Settings.xaml
 /// </summary>
-public partial class SettingsShortcutsPage : wpfui.INavigableView<SettingsShortcutsViewModel>
+public partial class SettingsShortcutsPage : INavigableView<SettingsShortcutsViewModel>
 {
-    private SettingsShortcutsViewModel _viewModel;
-
-    public SettingsShortcutsViewModel ViewModel
-    {
-        get { return _viewModel; }
-    }
+    public SettingsShortcutsViewModel ViewModel { get; }
 
     public SettingsShortcutsPage(SettingsShortcutsViewModel viewModel)
     {
-        _viewModel = viewModel;
+        ViewModel = viewModel;
         DataContext = this;
         InitializeComponent();
     }

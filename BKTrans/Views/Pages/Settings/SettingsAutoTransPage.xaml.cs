@@ -12,7 +12,7 @@ namespace BKTrans.Views.Pages.Settings;
 /// <summary>
 /// Interaction logic for Settings.xaml
 /// </summary>
-public partial class SettingsAutoTransPage : wpfui.INavigableView<SettingsAutoTransViewModel>
+public partial class SettingsAutoTransPage : INavigableView<SettingsAutoTransViewModel>
 {
     public object TextBoxUpdateSource
     {
@@ -21,14 +21,11 @@ public partial class SettingsAutoTransPage : wpfui.INavigableView<SettingsAutoTr
 
     private SettingsAutoTransViewModel _viewModel;
 
-    public SettingsAutoTransViewModel ViewModel
-    {
-        get { return _viewModel; }
-    }
+    public SettingsAutoTransViewModel ViewModel { get; }
 
     public SettingsAutoTransPage(SettingsAutoTransViewModel viewModel)
     {
-        _viewModel = viewModel;
+        ViewModel = viewModel;
         DataContext = this;
         InitializeComponent();
     }

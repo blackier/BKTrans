@@ -3,18 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Text;
-using System.Text.Encodings.Web;
-using System.Text.Unicode;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Threading;
 using BKTrans.Controls;
 using BKTrans.Core;
@@ -24,7 +19,7 @@ using static BKTrans.ViewModels.Pages.MainPageViewModel;
 
 namespace BKTrans.Views.Pages;
 
-public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
+public partial class MainPage : INavigableView<MainPageViewModel>
 {
     private RectangleF _captureRect;
     private Bitmap _captureBmp;
@@ -35,21 +30,17 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
     private int _autoCaptrueTransCountdown;
     private bool _autoCaptrueTransStart;
 
-    private string _textSpliteString = "\n+++===+++===+++\n";
+    private const string _textSpliteString = "\n+++===+++===+++\n";
 
     static int _autoCaptrueTransDebugNum = 0;
 
-    private MainPageViewModel _viewModel;
     private ILogger _transLogger;
 
-    public MainPageViewModel ViewModel
-    {
-        get { return _viewModel; }
-    }
+    public MainPageViewModel ViewModel { get; }
 
     public MainPage(MainPageViewModel viewModel, FloatCaptureRectWindow floatCaptureRectWindow)
     {
-        _viewModel = viewModel;
+        ViewModel = viewModel;
         DataContext = this;
 
         InitializeComponent();
@@ -68,12 +59,12 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
         _transLogger.Information("logger init");
 
         // 自动截图翻译
-        _autoCaptrueTransCountdown = _viewModel.AutoCaptrueTransCountdown;
+        _autoCaptrueTransCountdown = ViewModel.AutoCaptrueTransCountdown;
         _autoCaptrueTransStart = false;
         _autoCaptrueTransTimer = new();
         _autoCaptrueTransTimer.Tick += _catprueTransTimer_Tick;
-        _autoCaptrueTransTimer.Interval = new TimeSpan(0, 0, 0, 0, _viewModel.AutoCaptrueTransInterval);
-        if (_viewModel.AutoCaptrueTransOpen)
+        _autoCaptrueTransTimer.Interval = new TimeSpan(0, 0, 0, 0, ViewModel.AutoCaptrueTransInterval);
+        if (ViewModel.AutoCaptrueTransOpen)
             _autoCaptrueTransTimer.Start();
 
         // 设置支持语言列表
@@ -100,7 +91,7 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
                     break;
             }
         };
-        _floatTextWindow.SetAutoTransStatus(_viewModel.AutoCaptrueTransOpen);
+        _floatTextWindow.SetAutoTransStatus(ViewModel.AutoCaptrueTransOpen);
 
         // 页面加载时
         Loaded += OnLoaded;
@@ -109,7 +100,7 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         // 加载时重新读取一遍ocr替换
-        _viewModel.OcrReplaceIsChanged = true;
+        ViewModel.OcrReplaceIsChanged = true;
     }
 
     public void OnSwitchTheme()
@@ -183,14 +174,14 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
         if (start)
         {
             _autoCaptrueTransTimer.Start();
-            _viewModel.AutoCaptrueTransOpen = true;
+            ViewModel.AutoCaptrueTransOpen = true;
         }
         else
         {
             _autoCaptrueTransTimer.Stop();
-            _viewModel.AutoCaptrueTransOpen = false;
+            ViewModel.AutoCaptrueTransOpen = false;
         }
-        _floatTextWindow.SetAutoTransStatus(_viewModel.AutoCaptrueTransOpen);
+        _floatTextWindow.SetAutoTransStatus(ViewModel.AutoCaptrueTransOpen);
     }
 
     public void CaptureTrans()
@@ -242,7 +233,7 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
             _captureBmp = bmpData;
             SetSourceText("截取完成，等待OCR翻译...");
 
-            TransResult ocrResult = await _viewModel.OCR(bmpData);
+            TransResult ocrResult = await ViewModel.OCR(bmpData);
             if (ocrResult.ocr_result.Count == 0 || string.IsNullOrEmpty(ocrResult.ocr_result[0].result))
             {
                 SetSourceText("");
@@ -251,9 +242,9 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
             }
             string ocrResultText = ocrResult.ocr_result[0].result;
 
-            SetSourceText(ocrResultText, _viewModel.OCRRepalce(ocrResultText));
+            SetSourceText(ocrResultText, ViewModel.OCRRepalce(ocrResultText));
 
-            if (_viewModel.AutoTransOCRResult)
+            if (ViewModel.AutoTransOCRResult)
                 DoTextTrans(ocrResult);
             else
                 _transLogger.Information($"Only OCR:\n{BKMisc.JsonSerialize(ocrResult)}");
@@ -269,7 +260,7 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
         SetTargetText("文本翻译中...");
 
         string transResultText = "";
-        TransResult transResult = await _viewModel.TransText(srctext);
+        TransResult transResult = await ViewModel.TransText(srctext);
         foreach (var result in transResult.trans_result)
         {
             transResultText += result.result;
@@ -319,7 +310,7 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
             float similarity = newcaptruebmp.DHashCompare((Bitmap)_captureBmp.Clone());
 
             _autoCaptrueTransDebugNum++;
-            if (similarity < _viewModel.AutoCaptrueTransSimilarity)
+            if (similarity < ViewModel.AutoCaptrueTransSimilarity)
             {
                 // 发生变化
                 //newcaptruebmp.Save($"{_autoCaptrueTransDebugNum}_{similarity}_1.png", ImageFormat.Png);
@@ -337,17 +328,17 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
             _autoCaptrueTransStart = false;
         } while (false);
 
-        _autoCaptrueTransCountdown = _viewModel.AutoCaptrueTransCountdown;
+        _autoCaptrueTransCountdown = ViewModel.AutoCaptrueTransCountdown;
     }
 
     private void combobox_ocr_type_CheckClick(object sender, RoutedEventArgs e)
     {
-        _viewModel.UpdateLanguageTypeMap();
+        ViewModel.UpdateLanguageTypeMap();
     }
 
     private void combobox_trans_type_CheckClick(object sender, RoutedEventArgs e)
     {
-        _viewModel.UpdateLanguageTypeMap();
+        ViewModel.UpdateLanguageTypeMap();
     }
 
     private void btn_setting_Click(object sender, RoutedEventArgs e)
@@ -367,7 +358,7 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
 
     private void checkbox_auto_trans_ocr_result_Click(object sender, RoutedEventArgs e)
     {
-        _viewModel.AutoTransOCRResult = !_viewModel.AutoTransOCRResult;
+        ViewModel.AutoTransOCRResult = !ViewModel.AutoTransOCRResult;
     }
 
     private string GetInlineText(RichTextBox richTextBox)
@@ -465,7 +456,7 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
     private void richtextbox_source_text_ContextMenuOpening(object sender, ContextMenuEventArgs e)
     {
         string selectText = GetInlineText(richtextbox_source_text);
-        List<string> similarChars = _viewModel.GetSimilarChars(selectText);
+        List<string> similarChars = ViewModel.GetSimilarChars(selectText);
         menuitem_similar_char.Items.Clear();
         if (similarChars is not null && similarChars.Count > 0)
         {
@@ -489,7 +480,7 @@ public partial class MainPage : wpfui.INavigableView<MainPageViewModel>
 
     private void btn_add_ocr_replace_Click(object sender, RoutedEventArgs e)
     {
-        _viewModel.AddOcrReplaceItem(textbox_ocr_replace_src.Text, textbox_ocr_replace_dst.Text);
+        ViewModel.AddOcrReplaceItem(textbox_ocr_replace_src.Text, textbox_ocr_replace_dst.Text);
         flyout_add_ocr_replace.IsOpen = false;
     }
 }

@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace BKTrans.ValueConverters;
+namespace BKTrans.Converters;
 
-internal class ColllectionElementIndexConverter : IMultiValueConverter
+public class ColllectionElementIndexConverter : IMultiValueConverter
 {
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {

@@ -31,7 +31,6 @@ public partial class SettingsOCRReplaceViewModel : ObservableObject
             new("长度倒序", SortType.ByLengthDesc),
         };
 
-    #region ocr替换
     public List<string> OcrReplace
     {
         get => _settings.ocr_replace.Keys.ToList();
@@ -61,8 +60,6 @@ public partial class SettingsOCRReplaceViewModel : ObservableObject
             );
         }
     }
-
-    #endregion ocr替换
 
     private readonly SettingsModel.Settings _settings;
 

@@ -11,18 +11,13 @@ namespace BKTrans.Views.Pages;
 /// <summary>
 /// Interaction logic for Settings.xaml
 /// </summary>
-public partial class AboutPage : wpfui.INavigableView<AboutViewModel>
+public partial class AboutPage : INavigableView<AboutViewModel>
 {
-    private AboutViewModel _viewModel;
-
-    public AboutViewModel ViewModel
-    {
-        get { return _viewModel; }
-    }
+    public AboutViewModel ViewModel { get; }
 
     public AboutPage(AboutViewModel viewModel)
     {
-        _viewModel = viewModel;
+        ViewModel = viewModel;
         DataContext = this;
         InitializeComponent();
     }
