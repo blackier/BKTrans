@@ -129,88 +129,18 @@ BKTrans的所有设置都会保存在exe所在目录的`BKTransSetting.json`文�
 
 ## 开发
 
-BKTrans的实现逻辑并不复杂，对于有桌面客户端开发经验的人甚至可以说很简单，整个项目依托于vs2022和最新的.net，安装好环境后，clone到本地就可以直接编译开发了。
-
-目前，考虑到复杂度，只支持百度OCR和本地OCR，而添加翻译API时，注意支持的翻译语种与OCR的翻译语种是能匹配的，最起码匹配一种。
+目前，考虑到复杂度，只支持百度OCR和本地OCR，添加翻译API时，注意支持的翻译语种与OCR的翻译语种是能匹配的，最起码匹配一种。
 
 ### 框架
 
 - Visual Studio 2022
 - .NET Last Version
 
-### 规范
-
-一般，一个类从上到下：字段，属性，类方法，自定义方法，事件方法。大体如此，按代码类型有序存放。
-
-c#的代码规范，使用的是[godot](https://github.com/godotengine/godot)的[C# 风格指南](https://docs.godotengine.org/zh_CN/stable/tutorials/scripting/c_sharp/c_sharp_style_guide.html)，这是一份比较全面且合理的c#代码规范，但也有不一样的：
-
-- 使用换行符(`CRLF`)来换行。
-- 使用带字节顺序标记(`BOM`) 的`UTF-8`编码。
-- 代码提交时需要格式化，提交记录请使用`type(scope): message`的格式提交。
-- 注释和提交记录请使用中文，但变量命名请使用英文单词，而不是拼音。
-
-关于类的字段的命名，godot的[命名约定](https://docs.godotengine.org/zh_CN/stable/tutorials/scripting/c_sharp/c_sharp_style_guide.html#naming-conventions)中，只有私有字段才会使用下划线(`_`)加小字母开头的驼峰命名法来命名，但BKTrans中则是在类中，无论是什么类型，只有是成员字段，都采用这种下划线开头的命名法，属性则还是大写字母开头命名。
-
-比如godot中会是这样：
-
-```c#
-namespace ExampleProject
-{
-    public class PlayerCharacter
-    {
-        public const float DefaultSpeed = 10f;
-
-        public float CurrentSpeed { get; set; }
-
-        protected int HitPoints;
-
-        private Vector3 _aimingAt; // Use a `_` prefix for private fields.
-
-        private void Attack(float attackStrength)
-        {
-            Enemy targetFound = FindTarget(_aimingAt);
-
-            targetFound?.Hit(attackStrength);
-        }
-
-    }
-}
-```
-
-BKTrans中则是：
-
-```c#
-namespace ExampleProject
-{
-    public class PlayerCharacter
-    {
-        public const float _defaultSpeed = 10f;
-
-        public float CurrentSpeed { get; set; }
-
-        protected int _hitPoints;
-
-        private Vector3 _aimingAt; // Use a `_` prefix for private fields.
-
-        private void Attack(float attackStrength)
-        {
-            Enemy targetFound = FindTarget(_aimingAt);
-
-            targetFound?.Hit(attackStrength);
-        }
-
-    }
-}
-```
-
-此外，关于xaml中控件的name的命名，则是采用控件类型加下划线的全小写字母的的命名法，比如翻译按钮控件的名称为`button_trans`，翻译结果的为`textbox_trans`，控件类型开头，拼接控件具体作用。
-
-可以提pr，但请遵循以上比较繁琐的开发规范，当然，项目本身很简单，只要在`GPL v3`的许可下，可自由修改使用。
-
 ## 第三方库
 
 - [ShareX](https://github.com/ShareX/ShareX)
 - [wpfui](https://github.com/lepoco/wpfui)
+
 ## 开源许可
 
 - GPL v3
